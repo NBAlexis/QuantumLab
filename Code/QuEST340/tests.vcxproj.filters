@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Catch">
+      <UniqueIdentifier>{5caffa6b-38f2-48b8-a9ce-11ec0c2e47a1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tests\catch\catch.hpp">
+      <Filter>Catch</Filter>
+    </ClInclude>
+    <ClInclude Include="tests\utilities.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tests\main.cpp" />
+    <ClCompile Include="tests\test_calculations.cpp" />
+    <ClCompile Include="tests\test_data_structures.cpp" />
+    <ClCompile Include="tests\test_decoherence.cpp" />
+    <ClCompile Include="tests\test_gates.cpp" />
+    <ClCompile Include="tests\test_operators.cpp" />
+    <ClCompile Include="tests\test_state_initialisations.cpp" />
+    <ClCompile Include="tests\test_unitaries.cpp" />
+    <ClCompile Include="tests\utilities.cpp" />
+  </ItemGroup>
+</Project>

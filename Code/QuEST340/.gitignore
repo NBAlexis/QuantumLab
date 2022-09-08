@@ -1,0 +1,6 @@
+build*/
+**/.DS_Store
+Doxygen_doc/
+docs/
+.github/
+doxyconfig/
