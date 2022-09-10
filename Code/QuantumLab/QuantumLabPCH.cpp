@@ -1,5 +1,5 @@
 //=============================================================================
-// FILENAME : QuantumLabPCH.h
+// FILENAME : QuantumLabPCH.cpp
 // 
 // DESCRIPTION:
 // This is the one header file for all
@@ -8,15 +8,8 @@
 //  [09/09/2022 nbale]
 //=============================================================================
 
-#ifndef _QUANTUMLABPCH_H_
-#define _QUANTUMLABPCH_H_
+#include "QuantumLabPCH.h"
 
-#include "QuEST.h"
-
-#define _QL_PRIVATE 1
-#include "QuantumLab.h"
-
-#endif //#ifndef _QUANTUMLABPCH_H_
 
 //=============================================================================
 // END OF FILE

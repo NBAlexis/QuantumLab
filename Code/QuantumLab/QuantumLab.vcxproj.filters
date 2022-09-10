@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Circuit">
+      <UniqueIdentifier>{beccfd3e-04aa-483b-975e-92b9864d8f9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{9f96a444-4560-4505-8ffe-4fab6a72624f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Circuit\Gates">
+      <UniqueIdentifier>{3cde8551-b683-4d73-a403-a3bf8713c9ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulator">
+      <UniqueIdentifier>{d8df3715-1937-4e2a-9f50-f2e402a36dfd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Circuit\QLGate.cpp">
+      <Filter>Circuit</Filter>
+    </ClCompile>
+    <ClCompile Include="QuantumLabPCH.cpp" />
+    <ClCompile Include="Simulator\QLSimulatorMatrix.cpp">
+      <Filter>Simulator</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Circuit\QLGate.h">
+      <Filter>Circuit</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\QLDefine.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\QLSetup.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\PlatformDefines.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\PlatformIncs.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="QuantumLab.h" />
+    <ClInclude Include="QuantumLabPCH.h" />
+    <ClInclude Include="Simulator\QLSimulator.h">
+      <Filter>Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulator\QLSimulatorMatrix.h">
+      <Filter>Simulator</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

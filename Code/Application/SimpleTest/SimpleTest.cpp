@@ -1,22 +1,22 @@
 //=============================================================================
-// FILENAME : QuantumLabPCH.h
+// FILENAME : SimpleTest.cpp
 // 
 // DESCRIPTION:
-// This is the one header file for all
+// This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [09/09/2022 nbale]
+//  [10/09/2022 nbale]
 //=============================================================================
 
-#ifndef _QUANTUMLABPCH_H_
-#define _QUANTUMLABPCH_H_
-
-#include "QuEST.h"
-
-#define _QL_PRIVATE 1
 #include "QuantumLab.h"
 
-#endif //#ifndef _QUANTUMLABPCH_H_
+int main()
+{
+    QLGate ha = QLGate(EBasicOperation::EBO_H);
+    QLSimulatorMatrix sim(NULL);
+    sim.Simulate(NULL);
+}
+
 
 //=============================================================================
 // END OF FILE
