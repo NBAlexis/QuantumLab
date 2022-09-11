@@ -22,6 +22,12 @@
     <ClCompile Include="Simulator\QLSimulatorMatrix.cpp">
       <Filter>Simulator</Filter>
     </ClCompile>
+    <ClCompile Include="Simulator\QLSimulator.cpp">
+      <Filter>Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Gates\ZYZGate.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -46,6 +52,18 @@
     </ClInclude>
     <ClInclude Include="Simulator\QLSimulatorMatrix.h">
       <Filter>Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\ZYZGate.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\QLFloat.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\CudaIncs.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\OtherComplexFunction.h">
+      <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

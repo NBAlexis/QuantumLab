@@ -11,6 +11,7 @@
 #ifndef _QUANTUMLABPCH_H_
 #define _QUANTUMLABPCH_H_
 
+#include "QuEST_precision.h"
 #include "QuEST.h"
 
 #define _QL_PRIVATE 1

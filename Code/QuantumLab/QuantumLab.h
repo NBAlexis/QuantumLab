@@ -40,7 +40,12 @@
 #    define QLGAPI  
 #endif
 
+#include "Base/CudaIncs.h"
+#include "Base/QLFloat.h"
+#include "Base/OtherComplexFunction.h"
+
 #include "Circuit/QLGate.h"
+#include "Circuit/Gates/ZYZGate.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

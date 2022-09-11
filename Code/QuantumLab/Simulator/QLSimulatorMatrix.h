@@ -19,6 +19,7 @@ public:
 
     //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
     QLGate m_MasterGate;
+    BYTE m_byQubitCount;
 
 };
 

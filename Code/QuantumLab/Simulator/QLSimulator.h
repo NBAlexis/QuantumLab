@@ -48,6 +48,8 @@ public:
 
     virtual void Simulate(const QLSimulatorParameters* params) const = 0;
 
+    std::string PrintComplex(Real fReal, Real fImg) const;
+
     std::ostream* m_pOutput;
     std::ostream* m_pStdOut;
     std::string m_sFloatFormat;

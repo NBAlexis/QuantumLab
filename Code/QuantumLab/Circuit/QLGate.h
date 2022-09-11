@@ -27,23 +27,61 @@ enum class EBasicOperation : UINT
     //Pauli Z
     EBO_Z, 
 
+    /**
+    * 1    0
+    * 0 exp(it)
+    */
     EBO_P,
 
+    /**
+    * exp(it)   0
+    *    0    exp(it)
+    */
+    EBO_Phase,
+
+    /**
+    *   cos(t/2)    -i sin(t/2)
+    * -i sin(t/2)    cos(t/2)
+    */
     EBO_RX,
 
+    /** Note that the sign is different from Qiskit
+    *   cos(t/2)    sin(t/2)
+    *  -sin(t/2)    cos(t/2)
+    */
     EBO_RY,
 
+    /**
+    *  exp(-it/2)      0
+    *  0           exp(it/2)
+    */
     EBO_RZ,
 
-    EBO_CN,
+    //CNOT, controller first, also is controlled pauli x
+    EBO_CX,
 
+    //controlled pauli y
+    EBO_CY,
+
+    //controlled pauli z, controlled phase flip
+    EBO_CZ,
+
+    //controlled phase shift
     EBO_CP,
 
+    //controlled rotation x
     EBO_CRX,
 
+    //controlled rotation y
     EBO_CRY,
 
+    //controlled rotation z
     EBO_CRZ,
+
+
+
+    //controlled collapse
+    EBO_CC,
 
     
 };
@@ -52,19 +90,17 @@ struct QLAPI SBasicOperation
 {
     EBasicOperation m_eOperation;
     std::vector<BYTE> m_lstQubits;
-    std::vector<Real> m_lstClassicalParameters;
+    Real m_fClassicalParameter;
 };
 
-struct QLAPI SClassicalParamters
+struct QLAPI SBasicOperationInGate
 {
-    std::string m_lstParameterNames;
-    Real m_lstClassicalParameters;
+    EBasicOperation m_eOperation;
+    std::vector<BYTE> m_lstQubits;
 };
 
 class QLAPI QLGate
 {
-
-protected:
 
 public:
 
@@ -74,19 +110,37 @@ public:
 
     virtual ~QLGate();
 
-    QLGate* Controlled(BYTE controlledQubitCount) const;
-    QLGate* Dagger() const;
-    void AppendGate(const QLGate& toAppend, const std::vector<BYTE>& lstMappingQubits, const std::vector<SClassicalParamters>& addtoinalParameters);
+    virtual QLGate Controlled(BYTE controlledQubitCount) const;
+
+    void Dagger();
+
+    /**
+    * append a gate as subgate
+    * 'lstMappingQubits' are qubits where the gate 'toAppend' acting on
+    */
+    void AppendGate(QLGate toAppend, const std::vector<BYTE>& lstMappingQubits);
     std::vector<SBasicOperation> GetOperation(const std::vector<BYTE>& lstMappingQubits) const;
+    std::vector<SBasicOperation> GetOperation() const
+    {
+        return GetOperation(m_lstQubits);
+    }
+
+    static void PerformBasicOperation(const struct Qureg& pReg, const SBasicOperation& op);
 
     UBOOL m_bBasicOperation;
+    UBOOL m_bDagger;
     std::string m_sName;
 
     std::vector<BYTE> m_lstQubits;
-    std::vector<SClassicalParamters> m_lstClassicalInputs;
-    
-    std::vector<QLGate*> m_lstSubGates;
-    std::vector<SBasicOperation> m_lstOperations;
+    std::vector<QLGate> m_lstSubGates;
+
+    Real m_fClassicalParameter;
+    std::vector<SBasicOperationInGate> m_lstOperations;
+
+protected:
+
+    void ApplyOnQubits(const std::vector<BYTE>& lstMappingQubits);
+    std::vector<BYTE> ExchangeQubits(const std::vector<BYTE>& lstMappingQubits) const;
 };
 
 

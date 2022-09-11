@@ -11,7 +11,7 @@
 #ifndef _QLSETUP_H_
 #define _QLSETUP_H_
 
-#ifdef DEBUG
+#ifdef _DEBUG
 #define _QL_DEBUG 1
 #endif
 
@@ -20,6 +20,9 @@
 #define _QL_WIN 1
 #endif
 
+#ifndef _QL_DOUBLEFLOAT
+#define _QL_DOUBLEFLOAT 1
+#endif
 
 //_QL_USE_LAUNCH_BOUND = 0 or 1.
 //NOTE: If the regcount required is out-numbered, sometimes, there is NO error message!
@@ -41,8 +44,6 @@
 #define _QL_LAUNCH_MAX_THREADHALF 512
 #endif
 #endif
-
-typedef double Real;
 
 
 #endif //#ifndef _QLSETUP_H_

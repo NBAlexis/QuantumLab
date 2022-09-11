@@ -153,6 +153,28 @@ FORCEINLINE void appGetTimeUtc(TCHAR* outchar, UINT buffSize)
 #endif
 }
 
+#if WIN32 || WIN64
+
+static inline FILE* fopen_(char const* _FileName, char const* _Mode)
+{
+    FILE* ret = NULL;
+    fopen_s(&ret, _FileName, _Mode);
+    return ret;
+}
+
+#define strcpy_ strcpy_s
+#define strcat_ strcat_s
+#define sprintf_ sprintf_s
+#define fscanf_ fscanf_s
+
+#else
+#define fopen_ fopen
+#define strcpy_(dest, length, source) strcpy(dest, source)
+#define strcat_(dest, length, source) strcat(dest, source)
+#define sprintf_(dest, length, format, ...) sprintf(dest, format, __VA_ARGS__)
+#define fscanf_ fscanf
+#endif
+
 __END_NAMESPACE
 
 #endif //#ifndef _PLATFORMDEFINE_H_

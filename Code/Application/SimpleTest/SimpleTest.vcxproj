@@ -81,7 +81,7 @@
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)QuEST340\QuEST\include\;$(ProjectDir);$(IncludePath);$(SolutionDir)QuantumLab\</IncludePath>
+    <IncludePath>$(SolutionDir)QuEST340\QuEST\include\;$(ProjectDir);$(IncludePath);$(SolutionDir)QuantumLab\;$(CUDA_PATH)\include</IncludePath>
     <OutDir>$(SolutionDir)..\Bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Temp\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>$(ProjectName)_d</TargetName>
@@ -90,7 +90,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)..\Bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Temp\$(Configuration)\$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir)QuEST340\QuEST\include\;$(ProjectDir);$(IncludePath);$(SolutionDir)QuantumLab\</IncludePath>
+    <IncludePath>$(SolutionDir)QuEST340\QuEST\include\;$(ProjectDir);$(IncludePath);$(SolutionDir)QuantumLab\;$(CUDA_PATH)\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir)Applications\BetaGradient\;$(SolutionDir)CLGLib\;$(ProjectDir);$(IncludePath);$(CUDA_PATH)\include</IncludePath>

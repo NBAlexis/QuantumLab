@@ -11,10 +11,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base\CudaIncs.h" />
+    <ClInclude Include="Base\OtherComplexFunction.h" />
     <ClInclude Include="Base\PlatformDefines.h" />
     <ClInclude Include="Base\PlatformIncs.h" />
     <ClInclude Include="Base\QLDefine.h" />
+    <ClInclude Include="Base\QLFloat.h" />
     <ClInclude Include="Base\QLSetup.h" />
+    <ClInclude Include="Circuit\Gates\ZYZGate.h" />
     <ClInclude Include="Circuit\QLGate.h" />
     <ClInclude Include="QuantumLab.h" />
     <ClInclude Include="QuantumLabPCH.h" />
@@ -22,8 +26,10 @@
     <ClInclude Include="Simulator\QLSimulatorMatrix.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Circuit\Gates\ZYZGate.cpp" />
     <ClCompile Include="Circuit\QLGate.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />
+    <ClCompile Include="Simulator\QLSimulator.cpp" />
     <ClCompile Include="Simulator\QLSimulatorMatrix.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
