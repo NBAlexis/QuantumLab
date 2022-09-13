@@ -13,6 +13,9 @@
     <Filter Include="Simulator">
       <UniqueIdentifier>{d8df3715-1937-4e2a-9f50-f2e402a36dfd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ClassicalTools">
+      <UniqueIdentifier>{3b9972c5-b1cd-43f0-a147-77a8cdb9a44b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -65,5 +68,19 @@
     <ClInclude Include="Base\OtherComplexFunction.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="ClassicalTools\QLMatrix.h">
+      <Filter>ClassicalTools</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\QLRandom.h">
+      <Filter>ClassicalTools</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="ClassicalTools\QLMatrix.cu">
+      <Filter>ClassicalTools</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ClassicalTools\QLRandom.cu">
+      <Filter>ClassicalTools</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

@@ -30,12 +30,17 @@
 //#include <math_functions.h>
 //#include <device_functions.h>
 
+#include <cublas_v2.h>
+#include <cublas_api.h>
+#include <cusolverDn.h>
+#include <library_types.h>
+
 #if _QL_USE_LAUNCH_BOUND
 #define _QL_LAUNCH_(n,m)  __launch_bounds__(n, m)
-#define _QL_LAUNCH_BOUND_(n)  __launch_bounds__(_CLG_LAUNCH_MAX_THREAD / n, n)
-#define _QL_LAUNCH_BOUND_HALF  __launch_bounds__(_CLG_LAUNCH_MAX_THREADHALF, 1)
-#define _QL_LAUNCH_BOUND_DIV(n)  __launch_bounds__(_CLG_LAUNCH_MAX_THREAD / n, 1)
-#define _QL_LAUNCH_BOUND  __launch_bounds__(_CLG_LAUNCH_MAX_THREAD, 1)
+#define _QL_LAUNCH_BOUND_(n)  __launch_bounds__(_QL_LAUNCH_MAX_THREAD / n, n)
+#define _QL_LAUNCH_BOUND_HALF  __launch_bounds__(_QL_LAUNCH_MAX_THREADHALF, 1)
+#define _QL_LAUNCH_BOUND_DIV(n)  __launch_bounds__(_QL_LAUNCH_MAX_THREAD / n, 1)
+#define _QL_LAUNCH_BOUND  __launch_bounds__(_QL_LAUNCH_MAX_THREAD, 1)
 #define _QL_LAUNCH_BOUND_SINGLE __launch_bounds__(1, 1)
 #else
 #define _QL_LAUNCH_(n,m)
@@ -1589,9 +1594,243 @@ inline bool checkCudaCapabilities(int major_version, int minor_version) {
 
 __END_NAMESPACE
 
-#pragma endregion From cuda_helper
+#pragma endregion
 
+#pragma region From cuSolver_helper
 
+// memory alignment
+#define ALIGN_TO(A, B) (((A + B - 1) / B) * B)
+
+__BEGIN_NAMESPACE
+
+// device memory pitch alignment
+static const SIZE_T device_alignment = 32;
+
+// type traits
+template <typename T> struct traits;
+
+template <> struct traits<float> {
+    // scalar type
+    typedef float T;
+    typedef T S;
+
+    static constexpr T zero = 0.f;
+    static constexpr cudaDataType cuda_data_type = CUDA_R_32F;
+#if CUDART_VERSION >= 11000
+    static constexpr cusolverPrecType_t cusolver_precision_type = CUSOLVER_R_32F;
+#endif
+
+    inline static S abs(T val) { return fabs(val); }
+
+    template <typename RNG> inline static T rand(RNG& gen) { return (S)gen(); }
+
+    inline static T add(T a, T b) { return a + b; }
+
+    inline static T mul(T v, double f) { return v * f; }
+};
+
+template <> struct traits<double> {
+    // scalar type
+    typedef double T;
+    typedef T S;
+
+    static constexpr T zero = 0.;
+    static constexpr cudaDataType cuda_data_type = CUDA_R_64F;
+#if CUDART_VERSION >= 11000
+    static constexpr cusolverPrecType_t cusolver_precision_type = CUSOLVER_R_64F;
+#endif
+
+    inline static S abs(T val) { return fabs(val); }
+
+    template <typename RNG> inline static T rand(RNG& gen) { return (S)gen(); }
+
+    inline static T add(T a, T b) { return a + b; }
+
+    inline static T mul(T v, double f) { return v * f; }
+};
+
+template <> struct traits<cuFloatComplex> {
+    // scalar type
+    typedef float S;
+    typedef cuFloatComplex T;
+
+    static constexpr T zero = { 0.f, 0.f };
+    static constexpr cudaDataType cuda_data_type = CUDA_C_32F;
+#if CUDART_VERSION >= 11000
+    static constexpr cusolverPrecType_t cusolver_precision_type = CUSOLVER_C_32F;
+#endif
+
+    inline static S abs(T val) { return cuCabsf(val); }
+
+    template <typename RNG> inline static T rand(RNG& gen) {
+        return make_cuFloatComplex((S)gen(), (S)gen());
+    }
+
+    inline static T add(T a, T b) { return cuCaddf(a, b); }
+    inline static T add(T a, S b) { return cuCaddf(a, make_cuFloatComplex(b, 0.f)); }
+
+    inline static T mul(T v, double f) { return make_cuFloatComplex(v.x * f, v.y * f); }
+};
+
+template <> struct traits<cuDoubleComplex> {
+    // scalar type
+    typedef double S;
+    typedef cuDoubleComplex T;
+
+    static constexpr T zero = { 0., 0. };
+    static constexpr cudaDataType cuda_data_type = CUDA_C_64F;
+#if CUDART_VERSION >= 11000
+    static constexpr cusolverPrecType_t cusolver_precision_type = CUSOLVER_C_64F;
+#endif
+
+    inline static S abs(T val) { return cuCabs(val); }
+
+    template <typename RNG> inline static T rand(RNG& gen) {
+        return make_cuDoubleComplex((S)gen(), (S)gen());
+    }
+
+    inline static T add(T a, T b) { return cuCadd(a, b); }
+    inline static T add(T a, S b) { return cuCadd(a, make_cuDoubleComplex(b, 0.)); }
+
+    inline static T mul(T v, double f) { return make_cuDoubleComplex(v.x * f, v.y * f); }
+};
+
+//template <typename T> void print_matrix(const int& m, const int& n, const T* A, const int& lda);
+//
+//template <> void print_matrix(const int& m, const int& n, const float* A, const int& lda) {
+//    for (int i = 0; i < m; i++) {
+//        for (int j = 0; j < n; j++) {
+//            std::printf("%0.2f ", A[j * lda + i]);
+//        }
+//        std::printf("\n");
+//    }
+//}
+//
+//template <> void print_matrix(const int& m, const int& n, const double* A, const int& lda) {
+//    for (int i = 0; i < m; i++) {
+//        for (int j = 0; j < n; j++) {
+//            std::printf("%0.2f ", A[j * lda + i]);
+//        }
+//        std::printf("\n");
+//    }
+//}
+//
+//template <> void print_matrix(const int& m, const int& n, const cuComplex* A, const int& lda) {
+//    for (int i = 0; i < m; i++) {
+//        for (int j = 0; j < n; j++) {
+//            std::printf("%0.2f + %0.2fj ", A[j * lda + i].x, A[j * lda + i].y);
+//        }
+//        std::printf("\n");
+//    }
+//}
+//
+//template <>
+//void print_matrix(const int& m, const int& n, const cuDoubleComplex* A, const int& lda) {
+//    for (int i = 0; i < m; i++) {
+//        for (int j = 0; j < n; j++) {
+//            std::printf("%0.2f + %0.2fj ", A[j * lda + i].x, A[j * lda + i].y);
+//        }
+//        std::printf("\n");
+//    }
+//}
+
+//template <typename T>
+//void generate_random_matrix(cusolver_int_t m, cusolver_int_t n, T** A, int* lda) {
+//    std::random_device rd;
+//    std::mt19937 gen(rd());
+//    std::uniform_real_distribution<typename traits<T>::S> dis(-1.0, 1.0);
+//    auto rand_gen = std::bind(dis, gen);
+//
+//    *lda = n;
+//
+//    size_t matrix_mem_size = static_cast<size_t>(*lda * m * sizeof(T));
+//    // suppress gcc 7 size warning
+//    if (matrix_mem_size <= PTRDIFF_MAX)
+//        *A = (T*)malloc(matrix_mem_size);
+//    else
+//        throw std::runtime_error("Memory allocation size is too large");
+//
+//    if (*A == NULL)
+//        throw std::runtime_error("Unable to allocate host matrix");
+//
+//    // random matrix and accumulate row sums
+//    for (int i = 0; i < m; ++i) {
+//        for (int j = 0; j < n; ++j) {
+//            T* A_row = (*A) + *lda * i;
+//            A_row[j] = traits<T>::rand(rand_gen);
+//        }
+//    }
+//}
+
+// Makes matrix A of size mxn and leading dimension lda diagonal dominant
+template <typename T>
+void make_diag_dominant_matrix(cusolver_int_t m, cusolver_int_t n, T* A, int lda) {
+    for (int i = 0; i < std::min(m, n); ++i) {
+        T* A_row = A + lda * i;
+        auto row_sum = traits<typename traits<T>::S>::zero;
+        for (int j = 0; j < n; ++j) {
+            row_sum += traits<T>::abs(A_row[j]);
+        }
+        A_row[i] = traits<T>::add(A_row[i], row_sum);
+    }
+}
+
+// Returns cudaDataType value as defined in library_types.h for the string containing type name
+//cudaDataType get_cuda_library_type(std::string type_string) {
+//    if (type_string.compare("CUDA_R_16F") == 0)
+//        return CUDA_R_16F;
+//    else if (type_string.compare("CUDA_C_16F") == 0)
+//        return CUDA_C_16F;
+//    else if (type_string.compare("CUDA_R_32F") == 0)
+//        return CUDA_R_32F;
+//    else if (type_string.compare("CUDA_C_32F") == 0)
+//        return CUDA_C_32F;
+//    else if (type_string.compare("CUDA_R_64F") == 0)
+//        return CUDA_R_64F;
+//    else if (type_string.compare("CUDA_C_64F") == 0)
+//        return CUDA_C_64F;
+//    else if (type_string.compare("CUDA_R_8I") == 0)
+//        return CUDA_R_8I;
+//    else if (type_string.compare("CUDA_C_8I") == 0)
+//        return CUDA_C_8I;
+//    else if (type_string.compare("CUDA_R_8U") == 0)
+//        return CUDA_R_8U;
+//    else if (type_string.compare("CUDA_C_8U") == 0)
+//        return CUDA_C_8U;
+//    else if (type_string.compare("CUDA_R_32I") == 0)
+//        return CUDA_R_32I;
+//    else if (type_string.compare("CUDA_C_32I") == 0)
+//        return CUDA_C_32I;
+//    else if (type_string.compare("CUDA_R_32U") == 0)
+//        return CUDA_R_32U;
+//    else if (type_string.compare("CUDA_C_32U") == 0)
+//        return CUDA_C_32U;
+//    else
+//        throw std::runtime_error("Unknown CUDA datatype");
+//}
+
+// Returns cusolverIRSRefinement_t value as defined in cusolver_common.h for the string containing
+// solver name
+//cusolverIRSRefinement_t get_cusolver_refinement_solver(std::string solver_string) {
+//    if (solver_string.compare("CUSOLVER_IRS_REFINE_NONE") == 0)
+//        return CUSOLVER_IRS_REFINE_NONE;
+//    else if (solver_string.compare("CUSOLVER_IRS_REFINE_CLASSICAL") == 0)
+//        return CUSOLVER_IRS_REFINE_CLASSICAL;
+//    else if (solver_string.compare("CUSOLVER_IRS_REFINE_GMRES") == 0)
+//        return CUSOLVER_IRS_REFINE_GMRES;
+//    else if (solver_string.compare("CUSOLVER_IRS_REFINE_CLASSICAL_GMRES") == 0)
+//        return CUSOLVER_IRS_REFINE_CLASSICAL_GMRES;
+//    else if (solver_string.compare("CUSOLVER_IRS_REFINE_GMRES_GMRES") == 0)
+//        return CUSOLVER_IRS_REFINE_GMRES_GMRES;
+//    else
+//        printf("Unknown solver parameter: \"%s\"\n", solver_string.c_str());
+//
+//    return CUSOLVER_IRS_REFINE_NOT_SET;
+//}
+
+__END_NAMESPACE
+
+#pragma endregion
 
 
 #endif //#ifndef _CUDAINCS_H_

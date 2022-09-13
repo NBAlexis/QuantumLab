@@ -36,6 +36,7 @@ std::string QLSimulator::PrintComplex(Real fReal, Real fImg) const
     return std::string(buffer);
 }
 
+
 __END_NAMESPACE
 
 

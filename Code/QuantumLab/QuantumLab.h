@@ -44,6 +44,9 @@
 #include "Base/QLFloat.h"
 #include "Base/OtherComplexFunction.h"
 
+#include "ClassicalTools/QLRandom.h"
+#include "ClassicalTools/QLMatrix.h"
+
 #include "Circuit/QLGate.h"
 #include "Circuit/Gates/ZYZGate.h"
 
