@@ -89,14 +89,24 @@ enum class EBasicOperation : UINT
 struct QLAPI SBasicOperation
 {
     EBasicOperation m_eOperation;
-    std::vector<BYTE> m_lstQubits;
+    TArray<BYTE> m_lstQubits;
     Real m_fClassicalParameter;
+
+    UBOOL operator==(const SBasicOperation& other) const
+    {
+        return FALSE;
+    }
 };
 
 struct QLAPI SBasicOperationInGate
 {
     EBasicOperation m_eOperation;
-    std::vector<BYTE> m_lstQubits;
+    TArray<BYTE> m_lstQubits;
+
+    UBOOL operator==(const SBasicOperationInGate& other) const
+    {
+        return FALSE;
+    }
 };
 
 class QLAPI QLGate
@@ -118,9 +128,9 @@ public:
     * append a gate as subgate
     * 'lstMappingQubits' are qubits where the gate 'toAppend' acting on
     */
-    void AppendGate(QLGate toAppend, const std::vector<BYTE>& lstMappingQubits);
-    std::vector<SBasicOperation> GetOperation(const std::vector<BYTE>& lstMappingQubits) const;
-    std::vector<SBasicOperation> GetOperation() const
+    void AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits);
+    TArray<SBasicOperation> GetOperation(const TArray<BYTE>& lstMappingQubits) const;
+    TArray<SBasicOperation> GetOperation() const
     {
         return GetOperation(m_lstQubits);
     }
@@ -129,18 +139,23 @@ public:
 
     UBOOL m_bBasicOperation;
     UBOOL m_bDagger;
-    std::string m_sName;
+    CCString m_sName;
 
-    std::vector<BYTE> m_lstQubits;
-    std::vector<QLGate> m_lstSubGates;
+    TArray<BYTE> m_lstQubits;
+    TArray<QLGate> m_lstSubGates;
 
     Real m_fClassicalParameter;
-    std::vector<SBasicOperationInGate> m_lstOperations;
+    TArray<SBasicOperationInGate> m_lstOperations;
+
+    UBOOL operator==(const QLGate& other) const
+    {
+        return FALSE;
+    }
 
 protected:
 
-    void ApplyOnQubits(const std::vector<BYTE>& lstMappingQubits);
-    std::vector<BYTE> ExchangeQubits(const std::vector<BYTE>& lstMappingQubits) const;
+    void ApplyOnQubits(const TArray<BYTE>& lstMappingQubits);
+    TArray<BYTE> ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const;
 };
 
 

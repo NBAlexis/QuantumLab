@@ -1626,7 +1626,7 @@ template <> struct traits<float> {
 
     inline static T add(T a, T b) { return a + b; }
 
-    inline static T mul(T v, double f) { return v * f; }
+    inline static T mul(T v, double f) { return static_cast<T>(v * f); }
 };
 
 template <> struct traits<double> {
@@ -1669,7 +1669,7 @@ template <> struct traits<cuFloatComplex> {
     inline static T add(T a, T b) { return cuCaddf(a, b); }
     inline static T add(T a, S b) { return cuCaddf(a, make_cuFloatComplex(b, 0.f)); }
 
-    inline static T mul(T v, double f) { return make_cuFloatComplex(v.x * f, v.y * f); }
+    inline static T mul(T v, double f) { return make_cuFloatComplex(v.x * static_cast<FLOAT>(f), v.y * static_cast<FLOAT>(f)); }
 };
 
 template <> struct traits<cuDoubleComplex> {

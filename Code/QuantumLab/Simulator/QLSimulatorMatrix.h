@@ -30,8 +30,8 @@ protected:
 
 public:
 
-    QLSimulatorMatrix(std::ostream* pOutput, const std::string& sFloatFormat = "%.6f")
-        : QLSimulator(pOutput, sFloatFormat)
+    QLSimulatorMatrix()
+        : QLSimulator()
     {
 
     }

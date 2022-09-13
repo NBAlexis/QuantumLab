@@ -34,25 +34,12 @@ protected:
 public:
 
     //pOutput will be deleted in the destroy of QLSimulator
-    QLSimulator(std::ostream* pOutput, const std::string& sFloatFormat = "%.6f")
-        : m_pOutput(pOutput)
-        , m_sFloatFormat(sFloatFormat)
-    {
-        m_pStdOut = new std::ostream(std::cout.rdbuf());
-    }
-    virtual ~QLSimulator() 
-    {
-        appSafeDelete(m_pOutput);
-        appSafeDelete(m_pStdOut);
-    }
+    QLSimulator() { }
+
+    virtual ~QLSimulator() { }
 
     virtual void Simulate(const QLSimulatorParameters* params) const = 0;
 
-    std::string PrintComplex(Real fReal, Real fImg) const;
-
-    std::ostream* m_pOutput;
-    std::ostream* m_pStdOut;
-    std::string m_sFloatFormat;
 };
 
 

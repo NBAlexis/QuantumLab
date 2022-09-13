@@ -15,20 +15,20 @@ __BEGIN_NAMESPACE
 void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
 {
     const QLSimulatorParametersMatrix* param = dynamic_cast<const QLSimulatorParametersMatrix*>(params);
-    std::vector<BYTE> qubits;
+    TArray<BYTE> qubits;
     for (BYTE byQ = 0; byQ < param->m_byQubitCount; ++byQ)
     {
-        qubits.push_back(byQ);
+        qubits.AddItem(byQ);
     }
-    std::vector<SBasicOperation> ops = param->m_MasterGate.GetOperation(qubits);
-    SIZE_T opssize = ops.size();
+    TArray<SBasicOperation> ops = param->m_MasterGate.GetOperation(qubits);
+    SIZE_T opssize = ops.Num();
 
     QuESTEnv evn = createQuESTEnv();
     Qureg vec = createQureg(param->m_byQubitCount, evn);
     
 
     //This is a lazy slow implement, I need to use cuda to improve it
-    *m_pStdOut << "{\n";
+    appGeneral("{\n");
     LONGLONG veclen = 1LL << param->m_byQubitCount;
     for (LONGLONG line = 0; line < veclen; ++line)
     {
@@ -48,7 +48,7 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
         }
         copyStateToGPU(vec);
 
-        for (SIZE_T i = 0; i < opssize; ++i)
+        for (INT i = 0; i < opssize; ++i)
         {
             QLGate::PerformBasicOperation(vec, ops[i]);
         }
@@ -59,21 +59,21 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
         {
             if (0 == line2)
             {
-                *m_pStdOut << "{";
+                appGeneral("{");
             }
             else 
             {
-                *m_pStdOut << ", ";
+                appGeneral(", ");
             }
-            *m_pStdOut << PrintComplex(vec.stateVec.real[line2], vec.stateVec.imag[line2]);
+            appGeneral(appPrintComplex(vec.stateVec.real[line2], vec.stateVec.imag[line2]));
         }
         if (line == (veclen - 1))
         {
-            *m_pStdOut << "}\n}\n";
+            appGeneral("}\n}\n");
         }
         else
         {
-            *m_pStdOut << "},\n";
+            appGeneral("},\n");
         }
     }
 

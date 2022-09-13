@@ -13,7 +13,7 @@
 
 __BEGIN_NAMESPACE
 
-extern QLGate QLAPI CreateZYZGate(const std::vector<std::vector<QLComplex>>& u, UBOOL bNormalize = TRUE);
+extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize = TRUE);
 
 __END_NAMESPACE
 

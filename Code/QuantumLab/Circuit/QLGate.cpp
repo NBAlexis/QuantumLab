@@ -23,140 +23,140 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 	switch (eOp)
 	{
 	case EBasicOperation::EBO_H:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "H";
 		break;
 	case EBasicOperation::EBO_X:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "X";
 		break;
 	case EBasicOperation::EBO_Y:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "Y";
 		break;
 	case EBasicOperation::EBO_Z:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "Z";
 		break;
 	case EBasicOperation::EBO_P:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "p";
 		break;
 	case EBasicOperation::EBO_Phase:
 	{
-		m_lstQubits.push_back(0);
+		m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_1;
 		op_1.m_eOperation = EBasicOperation::EBO_P;
-		op_1.m_lstQubits.push_back(0);
+		op_1.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_2;
 		op_2.m_eOperation = EBasicOperation::EBO_X;
-		op_2.m_lstQubits.push_back(0);
+		op_2.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_3;
 		op_3.m_eOperation = EBasicOperation::EBO_P;
-		op_3.m_lstQubits.push_back(0);
+		op_3.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_4;
 		op_4.m_eOperation = EBasicOperation::EBO_X;
-		op_4.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_1);
-		m_lstOperations.push_back(op_2);
-		m_lstOperations.push_back(op_3);
-		m_lstOperations.push_back(op_4);
+		op_4.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_1);
+		m_lstOperations.AddItem(op_2);
+		m_lstOperations.AddItem(op_3);
+		m_lstOperations.AddItem(op_4);
 		m_sName = "phase";
 	}
 		break;
 
 	case EBasicOperation::EBO_RX:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "rx";
 		break;
 	case EBasicOperation::EBO_RY:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "ry";
 		break;
 	case EBasicOperation::EBO_RZ:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "rz";
 		break;
 
 	case EBasicOperation::EBO_CX:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "CNOT";
 		break;
 	case EBasicOperation::EBO_CY:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "CY";
 		break;
 	case EBasicOperation::EBO_CZ:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "CZ";
 		break;
 
 	case EBasicOperation::EBO_CP:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "cp";
 		break;
 	case EBasicOperation::EBO_CRX:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 	case EBasicOperation::EBO_CRY:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 	case EBasicOperation::EBO_CRZ:
-		m_lstQubits.push_back(0);
-		m_lstQubits.push_back(1);
-		op_h.m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(1);
-		m_lstOperations.push_back(op_h);
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		op_h.m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(1);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 
 	case EBasicOperation::EBO_CC:
-		m_lstQubits.push_back(0);
-		op_h.m_lstQubits.push_back(0);
+		m_lstQubits.AddItem(0);
+		op_h.m_lstQubits.AddItem(0);
 		m_fClassicalParameter = m_fClassicalParameter + 0.00001; // to avoid 1.00000 been treated as 0.999999
-		m_lstOperations.push_back(op_h);
+		m_lstOperations.AddItem(op_h);
 		m_sName = "collapse";
 		break;
 	default:
@@ -174,8 +174,8 @@ void QLGate::Dagger()
 	m_bDagger = !m_bDagger;
 	if (!m_bBasicOperation)
 	{
-		SIZE_T gateSize = m_lstSubGates.size();
-		for (SIZE_T i = 0; i < gateSize; ++i)
+		INT gateSize = m_lstSubGates.Num();
+		for (INT i = 0; i < gateSize; ++i)
 		{
 			m_lstSubGates[i].Dagger();
 		}
@@ -188,7 +188,7 @@ QLGate QLGate::Controlled(BYTE controlledQubitCount) const
 }
 
 
-void QLGate::AppendGate(QLGate toAppend, const std::vector<BYTE>& lstMappingQubits)
+void QLGate::AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits)
 {
 	if (m_bBasicOperation)
 	{
@@ -197,24 +197,24 @@ void QLGate::AppendGate(QLGate toAppend, const std::vector<BYTE>& lstMappingQubi
 	}
 
 	toAppend.ApplyOnQubits(lstMappingQubits);
-	m_lstSubGates.push_back(toAppend);
+	m_lstSubGates.AddItem(toAppend);
 }
 
-std::vector<SBasicOperation> QLGate::GetOperation(const std::vector<BYTE>& lstMappingQubits) const
+TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubits) const
 {
-	std::vector<SBasicOperation> ret;
+	TArray<SBasicOperation> ret;
 	if (m_bBasicOperation)
 	{
-		SIZE_T opsize = m_lstOperations.size();
-		for (SIZE_T i = 0; i < opsize; ++i)
+		INT opsize = m_lstOperations.Num();
+		for (INT i = 0; i < opsize; ++i)
 		{
-			SIZE_T opIndex = m_bDagger ? (opsize - i - 1)  : i;
+			INT opIndex = m_bDagger ? (opsize - i - 1)  : i;
 			SBasicOperation newone;
 			newone.m_eOperation = m_lstOperations[opIndex].m_eOperation;
-			SIZE_T qubitsize = m_lstOperations[opIndex].m_lstQubits.size();
-			for (SIZE_T j = 0; j < qubitsize; ++j)
+			INT qubitsize = m_lstOperations[opIndex].m_lstQubits.Num();
+			for (INT j = 0; j < qubitsize; ++j)
 			{
-				newone.m_lstQubits.push_back(lstMappingQubits[m_lstOperations[opIndex].m_lstQubits[j]]);
+				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstOperations[opIndex].m_lstQubits[j]]);
 			}
 			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
 			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
@@ -223,43 +223,43 @@ std::vector<SBasicOperation> QLGate::GetOperation(const std::vector<BYTE>& lstMa
 				newone.m_fClassicalParameter = m_fClassicalParameter;
 			}
 
-			ret.push_back(newone);
+			ret.AddItem(newone);
 		}
 	}
 	else
 	{
-		SIZE_T gatesize = m_lstSubGates.size();
-		for (SIZE_T i = 0; i < gatesize; ++i)
+		INT gatesize = m_lstSubGates.Num();
+		for (INT i = 0; i < gatesize; ++i)
 		{
-			SIZE_T gateIndex = m_bDagger ? (gatesize - i - 1) : i;
-			std::vector<BYTE> subgateQubits = ExchangeQubits(lstMappingQubits);
-			std::vector<SBasicOperation> oplist = m_lstSubGates[gateIndex].GetOperation(subgateQubits);
-			ret.insert(ret.end(), oplist.begin(), oplist.end());
+			INT gateIndex = m_bDagger ? (gatesize - i - 1) : i;
+			TArray<BYTE> subgateQubits = ExchangeQubits(lstMappingQubits);
+			TArray<SBasicOperation> oplist = m_lstSubGates[gateIndex].GetOperation(subgateQubits);
+			ret.Append(oplist);
 		}
 	}
 	return ret;
 }
 
-void QLGate::ApplyOnQubits(const std::vector<BYTE>& lstMappingQubits)
+void QLGate::ApplyOnQubits(const TArray<BYTE>& lstMappingQubits)
 {
 	m_lstQubits = ExchangeQubits(lstMappingQubits);
 	if (!m_bBasicOperation)
 	{
-		SIZE_T gatesize = m_lstSubGates.size();
-		for (SIZE_T i = 0; i < gatesize; ++i)
+		INT gatesize = m_lstSubGates.Num();
+		for (INT i = 0; i < gatesize; ++i)
 		{
 			m_lstSubGates[i].ApplyOnQubits(m_lstQubits);
 		}
 	}
 }
 
-std::vector<BYTE> QLGate::ExchangeQubits(const std::vector<BYTE>& lstMappingQubits) const
+TArray<BYTE> QLGate::ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const
 {
-	std::vector<BYTE> ret;
-	SIZE_T qubitSize = m_lstQubits.size();
-	for (SIZE_T i = 0; i < qubitSize; ++i)
+	TArray<BYTE> ret;
+	INT qubitSize = m_lstQubits.Num();
+	for (INT i = 0; i < qubitSize; ++i)
 	{
-		ret.push_back(lstMappingQubits[m_lstQubits[i]]);
+		ret.AddItem(lstMappingQubits[m_lstQubits[i]]);
 	}
 	return ret;
 }

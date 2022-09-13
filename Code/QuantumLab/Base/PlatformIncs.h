@@ -35,8 +35,6 @@
 #include <chrono> //for timer
 #include <unordered_map> //for dictionary
 
-
-
 #endif //#ifndef _PLATFORMINCS_H_
 
 //=============================================================================

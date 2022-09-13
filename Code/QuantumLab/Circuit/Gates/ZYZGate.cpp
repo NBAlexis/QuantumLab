@@ -12,7 +12,7 @@
 
 __BEGIN_NAMESPACE
 
-std::vector<Real> GetZYZDecompose(const std::vector<std::vector<QLComplex>>& u, UBOOL bNormalize)
+std::vector<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
 {
     std::vector<Real> ret;
 
@@ -21,10 +21,10 @@ std::vector<Real> GetZYZDecompose(const std::vector<std::vector<QLComplex>>& u, 
     Real delta = F(0.0);
     Real beta = F(0.0);
 
-    QLComplex u11 = u[0][0];
-    QLComplex u12 = u[0][1];
-    QLComplex u21 = u[1][0];
-    QLComplex u22 = u[1][1];
+    QLComplex u11 = u.Get(0, 0);
+    QLComplex u12 = u.Get(0, 1);
+    QLComplex u21 = u.Get(1, 0);
+    QLComplex u22 = u.Get(1, 1);
 
     QLComplex m12 = _make_cuComplex(-u12.x, -u12.y);
 
@@ -85,11 +85,11 @@ std::vector<Real> GetZYZDecompose(const std::vector<std::vector<QLComplex>>& u, 
     return ret;
 }
 
-extern QLGate QLAPI CreateZYZGate(const std::vector<std::vector<QLComplex>>& u, UBOOL bNormalize)
+extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
 {
     QLGate retGate;
     retGate.m_bBasicOperation = FALSE;
-    retGate.m_lstQubits.push_back(0);
+    retGate.m_lstQubits.AddItem(0);
     
     std::vector<Real> degrees = GetZYZDecompose(u, bNormalize);
 

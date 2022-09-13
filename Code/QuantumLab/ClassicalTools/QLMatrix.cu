@@ -80,17 +80,6 @@ QLMatrix::~QLMatrix()
     appSafeFree(m_pHostBuffer);
 }
 
-
-inline const QLComplex& QLMatrix::operator[](INT xy[]) const
-{
-    return m_pHostBuffer[m_uiY * xy[0] + xy[1]];
-}
-
-inline QLComplex& QLMatrix::operator[](INT xy[])
-{
-    return m_pHostBuffer[m_uiY * xy[0] + xy[1]];
-}
-
 void QLMatrix::RandomOne()
 {
     UINT uiMax = m_uiX * m_uiY;
@@ -105,13 +94,13 @@ void QLMatrix::RandomOne()
     checkCudaErrors(cudaFree(deviceBuffer));
 }
 
-std::string QLMatrix::Print() const
+CCString QLMatrix::Print() const
 {
-    std::string ret;
+    CCString ret;
     ret += "{\n";
-    for (INT y = 0; y < m_uiY; ++y)
+    for (UINT y = 0; y < m_uiY; ++y)
     {
-        for (INT x = 0; x < m_uiX; ++x)
+        for (UINT x = 0; x < m_uiX; ++x)
         {
             if (0 == x)
             {
@@ -121,8 +110,9 @@ std::string QLMatrix::Print() const
             {
                 ret += ", ";
             }
-            INT xy[2] = { x, y };
-            ret += PrintComplex((*this)[xy]);
+            INT xy[2] = { static_cast<INT>(x), static_cast<INT>(y) };
+            QLComplex toPrint = (*this)[xy];
+            ret += appPrintComplex(toPrint.x, toPrint.y);
         }
         if (y == (m_uiY - 1))
         {
@@ -134,30 +124,6 @@ std::string QLMatrix::Print() const
         }
     }
     return ret;
-}
-
-std::string QLMatrix::PrintComplex(const QLComplex& c)
-{
-    static TCHAR bufferf[256];
-    static TCHAR buffer[256];
-    if (abs(c.y) > REAL_EPS)
-    {
-        if (c.y > 0)
-        {
-            sprintf_(bufferf, 256, "%s + %s I", "%.6f", "%.6f");
-        }
-        else
-        {
-            sprintf_(bufferf, 256, "%s - %s I", "%.6f", "%.6f");
-        }
-        sprintf_(buffer, 256, bufferf, c.x, abs(c.y));
-    }
-    else
-    {
-        sprintf_(bufferf, 256, "%s", "%.6f");
-        sprintf_(buffer, 256, bufferf, c.x);
-    }
-    return std::string(buffer);
 }
 
 void QLMatrix::QR(QLMatrix** q, QLMatrix** r)
@@ -179,12 +145,10 @@ void QLMatrix::QR(QLMatrix** q, QLMatrix** r)
     //std::vector<double> R(n * n, 0);   // R = I - Q**T*Q
 
     /* device memory */
-    QLComplex* d_A = nullptr;
-    QLComplex* d_tau = nullptr;
-    INT* d_info = nullptr;
-    QLComplex* d_work = nullptr;
-
-    QLComplex* d_R = nullptr;
+    QLComplex* d_A = NULL;
+    QLComplex* d_tau = NULL;
+    INT* d_info = NULL;
+    QLComplex* d_work = NULL;
 
     INT lwork_geqrf = 0;
     INT lwork_orgqr = 0;
@@ -235,12 +199,12 @@ void QLMatrix::QR(QLMatrix** q, QLMatrix** r)
 
     checkCudaErrors(cudaStreamSynchronize(stream));
 
-    if (0 > info) {
-        std::printf("%d-th parameter is wrong \n", -info);
-        exit(1);
+    if (0 > info) 
+    {
+        appCrucial("%d-th parameter is wrong \n", -info);
     }
 
-    for (UINT i = 0; i < n; ++i)
+    for (INT i = 0; i < n; ++i)
     {
         checkCudaErrors(cudaMemcpyAsync(pRHost + i * n, d_A + i * m, sizeof(QLComplex) * (i + 1), cudaMemcpyDeviceToHost, stream));
     }
@@ -257,9 +221,9 @@ void QLMatrix::QR(QLMatrix** q, QLMatrix** r)
 
     checkCudaErrors(cudaStreamSynchronize(stream));
 
-    if (0 > info) {
-        printf("%d-th parameter is wrong \n", -info);
-        exit(1);
+    if (0 > info) 
+    {
+        appCrucial("%d-th parameter is wrong \n", -info);
     }
 
     checkCudaErrors(cudaMemcpyAsync(pQHost, d_A, sizeof(QLComplex) * m * n, cudaMemcpyDeviceToHost, stream));

@@ -18,6 +18,7 @@
     <ClInclude Include="Base\QLDefine.h" />
     <ClInclude Include="Base\QLFloat.h" />
     <ClInclude Include="Base\QLSetup.h" />
+    <ClInclude Include="Base\STLExport.h" />
     <ClInclude Include="Circuit\Gates\ZYZGate.h" />
     <ClInclude Include="Circuit\QLGate.h" />
     <ClInclude Include="ClassicalTools\QLMatrix.h" />
@@ -26,6 +27,15 @@
     <ClInclude Include="QuantumLabPCH.h" />
     <ClInclude Include="Simulator\QLSimulator.h" />
     <ClInclude Include="Simulator\QLSimulatorMatrix.h" />
+    <ClInclude Include="ToolClass\CBitFlag.h" />
+    <ClInclude Include="ToolClass\CCString.h" />
+    <ClInclude Include="ToolClass\CLinkedList.h" />
+    <ClInclude Include="ToolClass\CNMD5.h" />
+    <ClInclude Include="ToolClass\MemStack.h" />
+    <ClInclude Include="ToolClass\STDStringFunctions.h" />
+    <ClInclude Include="ToolClass\TArray.h" />
+    <ClInclude Include="ToolClass\THashMap.h" />
+    <ClInclude Include="ToolClass\Tracer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\Gates\ZYZGate.cpp" />
@@ -33,6 +43,8 @@
     <ClCompile Include="QuantumLabPCH.cpp" />
     <ClCompile Include="Simulator\QLSimulator.cpp" />
     <ClCompile Include="Simulator\QLSimulatorMatrix.cpp" />
+    <ClCompile Include="ToolClass\CCString.cpp" />
+    <ClCompile Include="ToolClass\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu" />
@@ -99,7 +111,7 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_86,sm_86</CodeGeneration>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
-      <GenerateLineInfo>true</GenerateLineInfo>
+      <GenerateLineInfo>false</GenerateLineInfo>
       <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>

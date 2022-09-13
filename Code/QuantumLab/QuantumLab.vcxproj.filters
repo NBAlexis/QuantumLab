@@ -16,6 +16,9 @@
     <Filter Include="ClassicalTools">
       <UniqueIdentifier>{3b9972c5-b1cd-43f0-a147-77a8cdb9a44b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ToolClass">
+      <UniqueIdentifier>{e2dfbce5-8fc4-4c27-a86e-d6b7de92474f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -30,6 +33,12 @@
     </ClCompile>
     <ClCompile Include="Circuit\Gates\ZYZGate.cpp">
       <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolClass\CCString.cpp">
+      <Filter>ToolClass</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolClass\Tracer.cpp">
+      <Filter>ToolClass</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +82,36 @@
     </ClInclude>
     <ClInclude Include="ClassicalTools\QLRandom.h">
       <Filter>ClassicalTools</Filter>
+    </ClInclude>
+    <ClInclude Include="Base\STLExport.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CCString.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CLinkedList.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CNMD5.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\STDStringFunctions.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\TArray.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\THashMap.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\Tracer.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CBitFlag.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\MemStack.h">
+      <Filter>ToolClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

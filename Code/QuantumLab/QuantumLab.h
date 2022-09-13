@@ -40,9 +40,22 @@
 #    define QLGAPI  
 #endif
 
+#include "Base/STLExport.h"
 #include "Base/CudaIncs.h"
 #include "Base/QLFloat.h"
 #include "Base/OtherComplexFunction.h"
+
+//These are my tool classes, I want to use std but don't know how to get rid of warning 4251
+//They are tested for years
+#include "ToolClass/CLinkedList.h"
+#include "ToolClass/STDStringFunctions.h"
+#include "ToolClass/TArray.h"
+#include "ToolClass/CBitFlag.h"
+#include "ToolClass/CCString.h"
+#include "ToolClass/CNMD5.h"
+#include "ToolClass/MemStack.h"
+#include "ToolClass/THashMap.h"
+#include "ToolClass/Tracer.h"
 
 #include "ClassicalTools/QLRandom.h"
 #include "ClassicalTools/QLMatrix.h"
