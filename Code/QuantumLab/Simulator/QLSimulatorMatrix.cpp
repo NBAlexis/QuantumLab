@@ -28,6 +28,7 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
     
 
     //This is a lazy slow implement, I need to use cuda to improve it
+    appPushLogDate(FALSE);
     appGeneral("{\n");
     LONGLONG veclen = 1LL << param->m_byQubitCount;
     for (LONGLONG line = 0; line < veclen; ++line)
@@ -76,7 +77,7 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
             appGeneral("},\n");
         }
     }
-
+    appPopLogDate();
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 }

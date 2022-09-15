@@ -10,21 +10,48 @@
 
 #include "QuantumLab.h"
 
+void TestCSD2By1()
+{
+    QLMatrix m(4, 10);
+
+    m.RandomUnitary();
+    m.Print("m");
+    QLMatrix q1, q2, c, s, v;
+    m.CSD2BY1(q1, q2, c, s, v, 6);
+    QLMatrix q = q1.BlockAdd(q2, 0);
+    q.Print("q");
+    QLMatrix cs = c.BlockAdd(s, 2);
+    cs.Print("cs");
+    v.Print("v");
+
+}
+
+
+void TestCSD()
+{
+    QLMatrix m(8, 8);
+    UINT xSep = 4;
+    UINT ySep = 4;
+
+    m.RandomUnitary();
+    m.Print("m");
+    QLMatrix q1, q2, c, s, v1, v2;
+    m.CSD(q1, q2, c, s, v1, v2, xSep, ySep);
+
+    QLMatrix q, cs, v;
+
+    QLMatrix::CombinedCSD(q, cs, v, q1, q2, c, s, v1, v2, xSep, ySep);
+
+    q.Print("q");
+    cs.Print("cs");
+    v.Print("v");
+}
+
 int main()
 {
     QLRandomInitializer random;
+    TestCSD();
 
-    QLMatrix mtr(6, 8);
-    mtr.RandomOne();
-    printf(mtr.Print().c_str());
-
-    QLMatrix* q;
-    QLMatrix* r;
-    mtr.QR(&q, &r);
-    printf(q->Print().c_str());
-    printf(r->Print().c_str());
-    appSafeDelete(q);
-    appSafeDelete(r);
 
     //std::vector<QLComplex> l1;
     //l1.push_back(_make_cuComplex(-0.70876551, -0.66743494));

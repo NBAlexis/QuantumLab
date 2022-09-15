@@ -12,14 +12,14 @@
 
 __BEGIN_NAMESPACE
 
-std::vector<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
+TArray<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
 {
-    std::vector<Real> ret;
+    TArray<Real> ret;
 
     Real theta = F(0.0);
     Real alpha = F(0.0);
     Real delta = F(0.0);
-    Real beta = F(0.0);
+    Real beta  = F(0.0);
 
     QLComplex u11 = u.Get(0, 0);
     QLComplex u12 = u.Get(0, 1);
@@ -33,10 +33,10 @@ std::vector<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
         theta = PI;
         delta = (__cuCargf(m12) + __cuCargf(u21)) / F(2.0);
         beta = __cuCargf(m12) - __cuCargf(u21);
-        ret.push_back(theta);
-        ret.push_back(beta);
-        ret.push_back(alpha);
-        ret.push_back(delta);
+        ret.AddItem(theta);
+        ret.AddItem(beta);
+        ret.AddItem(alpha);
+        ret.AddItem(delta);
         return ret;
     }
 
@@ -44,10 +44,10 @@ std::vector<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
     {
         delta = (__cuCargf(u22) + __cuCargf(u11)) / F(2.0);
         beta = __cuCargf(u22) - __cuCargf(u11);
-        ret.push_back(theta);
-        ret.push_back(beta);
-        ret.push_back(alpha);
-        ret.push_back(delta);
+        ret.AddItem(theta);
+        ret.AddItem(beta);
+        ret.AddItem(alpha);
+        ret.AddItem(delta);
         return ret;
     }
 
@@ -78,10 +78,10 @@ std::vector<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
     alpha = __cuCargf(u12) - __cuCargf(u22);
     delta = (__cuCargf(u11) - alpha / 2 - beta / 2);
 
-    ret.push_back(theta);
-    ret.push_back(beta);
-    ret.push_back(alpha);
-    ret.push_back(delta);
+    ret.AddItem(theta);
+    ret.AddItem(beta);
+    ret.AddItem(alpha);
+    ret.AddItem(delta);
     return ret;
 }
 
@@ -91,7 +91,7 @@ extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
     retGate.m_bBasicOperation = FALSE;
     retGate.m_lstQubits.AddItem(0);
     
-    std::vector<Real> degrees = GetZYZDecompose(u, bNormalize);
+    TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
 
     QLGate rz1(EBasicOperation::EBO_RZ, -degrees[1]);
     QLGate ry(EBasicOperation::EBO_RY, degrees[0]);
