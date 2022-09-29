@@ -77,6 +77,7 @@ QLGate QLAPI CreateCnNot(BYTE numOfController)
 
     QLGate retGate;
     retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnNOT");
 
     TArray<BYTE> controllerBits;
     for (BYTE bit = 0; bit < numOfController; ++bit)
@@ -113,6 +114,7 @@ QLGate QLAPI CreateCnU(BYTE numOfController, const QLMatrix& mtr)
 
     QLGate retGate;
     retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnU");
 
     TArray<BYTE> controllerBits;
     for (BYTE bit = 0; bit < numOfController; ++bit)
@@ -129,18 +131,20 @@ QLGate QLAPI CreateCnU(BYTE numOfController, const QLMatrix& mtr)
     czyzBits.AddItem(numOfController);
 
     QLGate cv = CreateControlledZYZGate(v);
+    cv.m_sName = _T("CV");
     retGate.AppendGate(cv, czyzBits);
 
     QLGate subCnNot = CreateCnNot(numOfController - 1);
-
     retGate.AppendGate(subCnNot, controllerBits);
 
     cv.Dagger();
+    cv.m_sName = _T("CVd");
     retGate.AppendGate(cv, czyzBits);
 
     retGate.AppendGate(subCnNot, controllerBits);
 
     QLGate subCnU = CreateCnU(numOfController - 1, v);
+    subCnU.m_sName = _T("CnV");
     retGate.AppendGate(subCnU, subCnUBits);
 
     return retGate;

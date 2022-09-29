@@ -1,4 +1,4 @@
-//=============================================================================
+﻿//=============================================================================
 // FILENAME : QLGate.cpp
 // 
 // DESCRIPTION:
@@ -459,6 +459,643 @@ void QLGate::PerformBasicOperation(const Qureg& reg, const SBasicOperation& op)
 		break;
 	default:
 		printf("not supported type!\n");
+		break;
+	}
+}
+
+void QLGate::DebugPrint(INT iDepth) const
+{
+	BYTE maxQ = 0;
+	for (INT i = 0; i < m_lstQubits.Num(); ++i)
+	{
+		if (m_lstQubits[i] > maxQ)
+		{
+			maxQ = m_lstQubits[i];
+		}
+	}
+
+	appPushLogDate(FALSE);
+
+	PrintQubits(maxQ + 1);
+	PrintOneGate(iDepth, maxQ + 1);
+	PrintEmptyLine(maxQ + 1);
+
+	appPopLogDate();
+}
+
+void QLGate::PrintQubits(BYTE qubitCount)
+{
+	PrintGateName(_T(""));
+	for (INT i = 0; i < qubitCount; ++i)
+	{
+		if (i < 10)
+		{
+			appGeneral(_T("  %d  "), i);
+		}
+		else if (i < 100)
+		{
+			appGeneral(_T("  %d "), i);
+		}
+		else
+		{
+			appGeneral(_T(" %d "), i);
+		}
+	}
+	appGeneral(_T("\n"));
+}
+
+void QLGate::PrintOneGate(INT iDepth, BYTE qubitCount) const
+{
+	if (EBasicOperation::EBO_Composite == m_eOp)
+	{
+		if (0 == iDepth)
+		{
+			PrintOneCompositeGate(qubitCount);
+		}
+		else
+		{
+			INT iNextDepth = iDepth > 0 ? (iDepth - 1) : iDepth;
+
+			INT gatesize = m_lstSubGates.Num();
+			UBOOL bHasComposite = FALSE;
+			for (INT i = 0; i < gatesize; ++i)
+			{
+				if (EBasicOperation::EBO_Composite == m_lstSubGates[i].m_eOp)
+				{
+					bHasComposite = TRUE;
+					break;
+				}
+			}
+
+			if (!bHasComposite)
+			{
+				PrintGateName(_T(""));
+				for (BYTE i = 0; i < qubitCount; ++i)
+				{
+					if (m_lstQubits.FindItemIndex(i) >= 0)
+					{
+						appGeneral(_T(" ─│─ "));
+					}
+					else
+					{
+						appGeneral(_T("  │  "));
+					}
+				}
+				appGeneral(_T("\n"));
+			}
+			else
+			{
+				PrintEmptyLine(qubitCount);
+			}
+
+			for (INT i = 0; i < gatesize; ++i)
+			{
+				INT gateIndex = m_bDagger ? (gatesize - i - 1) : i;
+				m_lstSubGates[gateIndex].PrintOneGate(iNextDepth, qubitCount);
+			}
+
+			if (!bHasComposite)
+			{
+				PrintGateName(_T(""));
+				for (BYTE i = 0; i < qubitCount; ++i)
+				{
+					if (m_lstQubits.FindItemIndex(i) >= 0)
+					{
+						appGeneral(_T(" ─│─ "));
+					}
+					else
+					{
+						appGeneral(_T("  │  "));
+					}
+				}
+				appGeneral(_T("\n"));
+			}
+		}
+	}
+	else
+	{
+		INT opsize = m_lstOperations.Num();
+		for (INT i = 0; i < opsize; ++i)
+		{
+			INT opIndex = m_bDagger ? (opsize - i - 1) : i;
+			SBasicOperation newone;
+			newone.m_eOperation = m_lstOperations[opIndex].m_eOperation;
+			INT qubitsize = m_lstOperations[opIndex].m_lstQubits.Num();
+			for (INT j = 0; j < qubitsize; ++j)
+			{
+				newone.m_lstQubits.AddItem(m_lstQubits[m_lstOperations[opIndex].m_lstQubits[j]]);
+			}
+			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
+			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
+			{
+				printf("dagger of controlled collapse not support!\n");
+				newone.m_fClassicalParameter = m_fClassicalParameter;
+			}
+
+			PrintOneOp(newone, qubitCount);
+		}
+	}
+}
+
+void QLGate::PrintOneCompositeGate(BYTE qubitCount) const
+{
+	PrintEmptyLine(qubitCount);
+	BYTE minQubit = qubitCount;
+	BYTE maxQubit = 0;
+	for (INT i = 0; i < m_lstQubits.Num(); ++i)
+	{
+		if (m_lstQubits[i] > maxQubit)
+		{
+			maxQubit = m_lstQubits[i];
+		}
+
+		if (m_lstQubits[i] < minQubit)
+		{
+			minQubit = m_lstQubits[i];
+		}
+	}
+
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit < minQubit)
+		{
+			appGeneral(_T("  │  "));
+		}
+		else if (qubit <= maxQubit)
+		{
+			if (qubit == minQubit && qubit == maxQubit)
+			{
+				appGeneral(_T("┌─┴─┐"));
+			}
+			else if (qubit == minQubit)
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("┌────"));
+				}
+				else
+				{
+					appGeneral(_T("┌─┴──"));
+				}
+			}
+			else if (qubit == maxQubit)
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("────┐"));
+				}
+				else
+				{
+					appGeneral(_T("──┴─┐"));
+				}
+			}
+			else
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("─────"));
+				}
+				else
+				{
+					appGeneral(_T("──┴──"));
+				}
+			}
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(m_sName);
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit < minQubit)
+		{
+			appGeneral(_T("  │  "));
+		}
+		else if (qubit <= maxQubit)
+		{
+			if (qubit == minQubit && qubit == maxQubit)
+			{
+				appGeneral(_T("│ 0 │"));
+			}
+			else if (qubit == minQubit)
+			{
+				INT innerQubit = m_lstQubits.FindItemIndex(qubit);
+				if (innerQubit >= 0)
+				{
+					if (innerQubit < 10)
+					{
+						appGeneral(_T("│ %d  "), innerQubit);
+					}
+					else if (innerQubit < 100)
+					{
+						appGeneral(_T("│ %d "), innerQubit);
+					}
+					else
+					{
+						appGeneral(_T("│%d"), innerQubit);
+					}
+				}
+				else
+				{
+					appGeneral(_T("│    "));
+				}
+			}
+			else if (qubit == maxQubit)
+			{
+				INT innerQubit = m_lstQubits.FindItemIndex(qubit);
+				if (innerQubit >= 0)
+				{
+					if (innerQubit < 10)
+					{
+						appGeneral(_T("  %d │"), innerQubit);
+					}
+					else if (innerQubit < 100)
+					{
+						appGeneral(_T(" %d │"), innerQubit);
+					}
+					else
+					{
+						appGeneral(_T("%d│"), innerQubit);
+					}
+				}
+				else
+				{
+					appGeneral(_T("    │"));
+				}
+			}
+			else
+			{
+				INT innerQubit = m_lstQubits.FindItemIndex(qubit);
+				if (innerQubit < 0)
+				{
+					appGeneral(_T("     "));
+				}
+				else
+				{
+					if (innerQubit < 10)
+					{
+						appGeneral(_T("  %d  "), innerQubit);
+					}
+					else if (innerQubit < 100)
+					{
+						appGeneral(_T("  %d "), innerQubit);
+					}
+					else
+					{
+						appGeneral(_T(" %d "), innerQubit);
+					}
+				}
+			}
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit < minQubit)
+		{
+			appGeneral(_T("  │  "));
+		}
+		else if (qubit <= maxQubit)
+		{
+			if (qubit == minQubit && qubit == maxQubit)
+			{
+				appGeneral(_T("└─┬─┘"));
+			}
+			else if (qubit == minQubit)
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("└────"));
+				}
+				else
+				{
+					appGeneral(_T("└─┬──"));
+				}
+			}
+			else if (qubit == maxQubit)
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("────┘"));
+				}
+				else
+				{
+					appGeneral(_T("──┬─┘"));
+				}
+			}
+			else
+			{
+				if (m_lstQubits.FindItemIndex(qubit) < 0)
+				{
+					appGeneral(_T("─────"));
+				}
+				else
+				{
+					appGeneral(_T("──┬──"));
+				}
+			}
+		}
+		else
+		{ 
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+}
+
+void QLGate::PrintOneOp(const SBasicOperation& op, BYTE qubitCount)
+{
+	CCString sName;
+	switch (op.m_eOperation)
+	{
+	case EBasicOperation::EBO_H:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("H"));
+		break;
+	case EBasicOperation::EBO_X:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("X"));
+		break;
+	case EBasicOperation::EBO_Y:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Y"));
+		break;
+	case EBasicOperation::EBO_Z:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Z"));
+		break;
+	case EBasicOperation::EBO_P:
+		sName.Format(_T("%s:%.3f"), _T("p"), op.m_fClassicalParameter);
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("p"));
+		break;
+	case EBasicOperation::EBO_Phase:
+		sName.Format(_T("%s:%.3f"), _T("ph"), op.m_fClassicalParameter);
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Ph"));
+		break;
+	case EBasicOperation::EBO_RX:
+		sName.Format(_T("%s:%.3f"), _T("rx"), op.m_fClassicalParameter);
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Rx"));
+		break;
+	case EBasicOperation::EBO_RY:
+		sName.Format(_T("%s:%.3f"), _T("ry"), op.m_fClassicalParameter);
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Ry"));
+		break;
+	case EBasicOperation::EBO_RZ:
+		sName.Format(_T("%s:%.3f"), _T("rz"), op.m_fClassicalParameter);
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("Rz"));
+		break;
+	case EBasicOperation::EBO_CX:
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Not"));
+		break;
+	case EBasicOperation::EBO_CY:
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Y"));
+		break;
+	case EBasicOperation::EBO_CZ:
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Z"));
+		break;
+	case EBasicOperation::EBO_CP:
+		sName.Format(_T("%s:%.3f"), _T("cp"), op.m_fClassicalParameter);
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("p"));
+		break;
+	case EBasicOperation::EBO_CRX:
+		sName.Format(_T("%s:%.3f"), _T("crx"), op.m_fClassicalParameter);
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Rx"));
+		break;
+	case EBasicOperation::EBO_CRY:
+		sName.Format(_T("%s:%.3f"), _T("cry"), op.m_fClassicalParameter);
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Ry"));
+		break;
+	case EBasicOperation::EBO_CRZ:
+		sName.Format(_T("%s:%.3f"), _T("crz"), op.m_fClassicalParameter);
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("Rz"));
+		break;
+	case EBasicOperation::EBO_CC:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("m"));
+		break;
+	default:
+		appCrucial(_T("not supported!\n"));
+		break;
+	}
+}
+
+void QLGate::PrintEmptyLine(BYTE qubitCount)
+{
+	PrintGateName(_T(""));
+	for (INT i = 0; i < qubitCount; ++i)
+	{
+		appGeneral(_T("  │  "));
+	}
+	appGeneral(_T("\n"));
+}
+
+void QLGate::PrintBasicSingle(BYTE target, BYTE qubitCount, const CCString& sName, const CCString& sInner)
+{
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit == target)
+		{
+			appGeneral(_T("┌─┴─┐"));
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(sName);
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit == target)
+		{
+			if (1 == sInner.GetLength())
+			{
+				appGeneral(_T("│ %s │"), sInner.c_str());
+			}
+			else if (2 == sInner.GetLength())
+			{
+				appGeneral(_T("│ %s│"), sInner.c_str());
+			}
+			else if (3 == sInner.GetLength())
+			{
+				appGeneral(_T("│%s│"), sInner.c_str());
+			}
+			else
+			{
+				appGeneral(_T("│   │"));
+			}
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit == target)
+		{
+			appGeneral(_T("└─┬─┘"));
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+}
+
+void QLGate::PrintBasicTwo(BYTE ctr, BYTE target, BYTE qubitCount, const CCString& sName, const CCString& sInner)
+{
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit == target)
+		{
+			appGeneral(_T("┌─┴─┐"));
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(sName);
+	if (ctr < target)
+	{
+		for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+		{
+			if (qubit == ctr)
+			{
+				appGeneral(_T("  ├──"));
+			}
+			else if (qubit > ctr && qubit < target)
+			{
+				appGeneral(_T("─────"));
+			}
+			else if (qubit == target)
+			{
+				if (1 == sInner.GetLength())
+				{
+					appGeneral(_T("┤ %s │"), sInner.c_str());
+				}
+				else if (2 == sInner.GetLength())
+				{
+					appGeneral(_T("┤ %s│"), sInner.c_str());
+				}
+				else if (3 == sInner.GetLength())
+				{
+					appGeneral(_T("┤%s│"), sInner.c_str());
+				}
+				else
+				{
+					appGeneral(_T("┤   │"));
+				}
+			}
+			else
+			{
+				appGeneral(_T("  │  "));
+			}
+		}
+	}
+	else
+	{
+		for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+		{
+			if (qubit == ctr)
+			{
+				appGeneral(_T("──┤  "));
+			}
+			else if (qubit < ctr && qubit > target)
+			{
+				appGeneral(_T("─────"));
+			}
+			else if (qubit == target)
+			{
+				if (1 == sInner.GetLength())
+				{
+					appGeneral(_T("│ %s ├"), sInner.c_str());
+				}
+				else if (2 == sInner.GetLength())
+				{
+					appGeneral(_T("│ %s├"), sInner.c_str());
+				}
+				else if (3 == sInner.GetLength())
+				{
+					appGeneral(_T("│%s├"), sInner.c_str());
+				}
+				else
+				{
+					appGeneral(_T("│   ├"));
+				}
+			}
+			else
+			{
+				appGeneral(_T("  │  "));
+			}
+		}
+	}
+	appGeneral(_T("\n"));
+
+	PrintGateName(_T(""));
+	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
+	{
+		if (qubit == target)
+		{
+			appGeneral(_T("└─┬─┘"));
+		}
+		else
+		{
+			appGeneral(_T("  │  "));
+		}
+	}
+	appGeneral(_T("\n"));
+}
+
+void QLGate::PrintGateName(const CCString& sName)
+{
+	switch (sName.GetLength())
+	{
+	case 0:
+		appGeneral(_T("        "));
+		break;
+	case 1:
+		appGeneral(_T("%s       "), sName.c_str());
+		break;
+	case 2:
+		appGeneral(_T("%s      "), sName.c_str());
+		break;
+	case 3:
+		appGeneral(_T("%s     "), sName.c_str());
+		break;
+	case 4:
+		appGeneral(_T("%s    "), sName.c_str());
+		break;
+	case 5:
+		appGeneral(_T("%s   "), sName.c_str());
+		break;
+	case 6:
+		appGeneral(_T("%s  "), sName.c_str());
+		break;
+	case 7:
+		appGeneral(_T("%s "), sName.c_str());
+		break;
+	case 8:
+		appGeneral(_T("%s"), sName.c_str());
+		break;
+	default:
+		appGeneral(_T("%s"), sName.Left(8).c_str());
 		break;
 	}
 }

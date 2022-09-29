@@ -24,7 +24,7 @@ inline QLMatrix Sqrt2by2(const QLMatrix& m)
     const QLComplex s = __cuCsqrtf(delta);
     const QLComplex t = __cuCsqrtf(_cuCaddf(tau, cuCmulf_cr(s, F(2.0))));
 
-    QLComplex v[] = { _cuCdivf(_cuCaddf(u00, s), t), _cuCdivf(u10, t),  _cuCdivf(u01, t),  _cuCdivf(_cuCaddf(u11, s), t) };
+    QLComplex v[] = { _cuCdivf(_cuCaddf(u00, s), t), _cuCdivf(u01, t),  _cuCdivf(u10, t),  _cuCdivf(_cuCaddf(u11, s), t) };
     return QLMatrix::CopyCreate(2, 2, v);
 }
 
@@ -36,7 +36,9 @@ extern QLGate QLAPI CreateCnNot(BYTE controllerBits);
 
 inline QLGate CreateToffoliGate()
 {
-    return CreateCnNot(2);
+    QLGate ret = CreateCnNot(2);
+    ret.m_sName = _T("CCN");
+    return ret;
 }
 
 extern QLGate QLAPI CreateCnU(BYTE controllerBits, const QLMatrix& mtr);

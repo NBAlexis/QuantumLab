@@ -148,12 +148,12 @@ public:
         return m_nMaxSize; 
     }
 
-    inline INT FindItemIndex(ARG_TYPE Item)
+    inline INT FindItemIndex(ARG_TYPE Item) const
     {
         const INT ret = INDEX_NONE;
         for(INT i = 0; i < m_nSize; ++i)
         {
-            if(m_pData[i] == Item)
+            if(Item == m_pData[i])
             {
                 return i;
             }

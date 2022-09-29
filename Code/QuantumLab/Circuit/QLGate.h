@@ -192,10 +192,21 @@ public:
 
     const QLGate& operator=(const QLGate& other);
 
+    void DebugPrint(INT iDepth) const;
+
 protected:
 
     void ApplyOnQubits(const TArray<BYTE>& lstMappingQubits);
     TArray<BYTE> ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const;
+
+    static void PrintQubits(BYTE qubitCount);
+    void PrintOneGate(INT iDepth, BYTE qubitCount) const;
+    void PrintOneCompositeGate(BYTE qubitCount) const;
+    static void PrintOneOp(const SBasicOperation& op, BYTE qubitCount);
+    static void PrintEmptyLine(BYTE qubitCount);
+    static void PrintBasicSingle(BYTE target, BYTE qubitCount, const CCString& sName, const CCString& sInner);
+    static void PrintBasicTwo(BYTE ctr, BYTE target, BYTE qubitCount, const CCString& sName, const CCString& sInner);
+    static void PrintGateName(const CCString& sName);
 };
 
 

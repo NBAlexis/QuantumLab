@@ -120,6 +120,17 @@ void TestToffoli()
     sim.Simulate(&param);
 }
 
+void TestMatrixSqrt()
+{
+    QLMatrix m(2, 2);
+    m.RandomUnitary();
+    m.Print("m");
+
+    QLMatrix v = Sqrt2by2(m);
+    v = v * v;
+    v.Print("v");
+}
+
 void TestCnU()
 {
     QLMatrix m(2, 2);
@@ -133,6 +144,7 @@ void TestCnU()
     param.m_MasterGate = ch;
     QLSimulatorMatrix sim;
     sim.Simulate(&param);
+    ch.DebugPrint(1);
 }
 
 void TestCP()

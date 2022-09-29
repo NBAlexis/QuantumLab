@@ -89,6 +89,7 @@ QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
 {
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
+    retGate.m_sName = _T("ZYZ");
     
     TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
 
@@ -110,6 +111,7 @@ QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize)
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
     retGate.m_lstQubits.AddItem(1);
+    retGate.m_sName = _T("CZYZ");
 
     TArray<BYTE> controller;
     TArray<BYTE> target;
@@ -144,6 +146,7 @@ QLGate QLAPI CreateSwapGate()
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
     retGate.m_lstQubits.AddItem(1);
+    retGate.m_sName = _T("Swap");
 
     TArray<BYTE> inverseQubit;
     inverseQubit.AddItem(1);
@@ -162,6 +165,7 @@ QLGate QLAPI CreateControlledHadamardGate()
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
     retGate.m_lstQubits.AddItem(1);
+    retGate.m_sName = _T("CH");
 
     TArray<BYTE> target;
     target.AddItem(1);
