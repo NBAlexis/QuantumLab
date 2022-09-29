@@ -90,6 +90,8 @@ public:
 
     QLMatrix(const QLMatrix& other);
 
+    static QLMatrix CopyCreate(UINT uiX, UINT uiY, QLComplex* buffer);
+
     const QLMatrix& QLMatrix::operator=(const QLMatrix& other)
     {
         if (m_uiX * m_uiY != other.m_uiX * other.m_uiY)
@@ -338,7 +340,16 @@ protected:
         
     UINT m_uiX;
     UINT m_uiY;
+
+public:
+
 };
+
+extern const QLAPI QLMatrix _hadamard;
+extern const QLAPI QLMatrix _PauliX;
+extern const QLAPI QLMatrix _PauliY;
+extern const QLAPI QLMatrix _PauliZ;
+extern const QLAPI QLMatrix _I2;
 
 
 

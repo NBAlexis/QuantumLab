@@ -28,9 +28,14 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
     
 
     //This is a lazy slow implement, I need to use cuda to improve it
-    appPushLogDate(FALSE);
-    appGeneral("{\n");
     LONGLONG veclen = 1LL << param->m_byQubitCount;
+    QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex)* veclen * veclen));
+    if (NULL == res)
+    {
+        appCrucial("buffer not created!");
+        return;
+    }
+
     for (LONGLONG line = 0; line < veclen; ++line)
     {
         syncQuESTEnv(evn);
@@ -58,28 +63,15 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
 
         for (LONGLONG line2 = 0; line2 < veclen; ++line2)
         {
-            if (0 == line2)
-            {
-                appGeneral("{");
-            }
-            else 
-            {
-                appGeneral(", ");
-            }
-            appGeneral(appPrintComplex(vec.stateVec.real[line2], vec.stateVec.imag[line2]));
-        }
-        if (line == (veclen - 1))
-        {
-            appGeneral("}\n}\n");
-        }
-        else
-        {
-            appGeneral("},\n");
+            res[line * veclen + line2].x = static_cast<Real>(vec.stateVec.real[line2]);
+            res[line * veclen + line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
         }
     }
-    appPopLogDate();
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
+
+    QLMatrix resmtr(static_cast<UINT>(veclen), static_cast<UINT>(veclen), res);
+    resmtr.Print();
 }
 
 __END_NAMESPACE

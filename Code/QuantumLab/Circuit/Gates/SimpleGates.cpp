@@ -1,5 +1,5 @@
 //=============================================================================
-// FILENAME : ZYZGate.cpp
+// FILENAME : SimpleGates.cpp
 // 
 // DESCRIPTION:
 // This is the file for building options
@@ -22,8 +22,8 @@ TArray<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
     Real beta  = F(0.0);
 
     QLComplex u11 = u.Get(0, 0);
-    QLComplex u12 = u.Get(0, 1);
-    QLComplex u21 = u.Get(1, 0);
+    QLComplex u12 = u.Get(1, 0);
+    QLComplex u21 = u.Get(0, 1);
     QLComplex u22 = u.Get(1, 1);
 
     QLComplex m12 = _make_cuComplex(-u12.x, -u12.y);
@@ -85,16 +85,15 @@ TArray<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
     return ret;
 }
 
-extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
+QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
 {
     QLGate retGate;
-    retGate.m_bBasicOperation = FALSE;
     retGate.m_lstQubits.AddItem(0);
     
     TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
 
     QLGate rz1(EBasicOperation::EBO_RZ, -degrees[1]);
-    QLGate ry(EBasicOperation::EBO_RY, degrees[0]);
+    QLGate ry(EBasicOperation::EBO_RY, -degrees[0]);
     QLGate rz2(EBasicOperation::EBO_RZ, -degrees[2]);
     QLGate ph(EBasicOperation::EBO_Phase, degrees[3]);
 
@@ -106,6 +105,77 @@ extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
     return retGate;
 }
 
+QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize)
+{
+    QLGate retGate;
+    retGate.m_lstQubits.AddItem(0);
+    retGate.m_lstQubits.AddItem(1);
+
+    TArray<BYTE> controller;
+    TArray<BYTE> target;
+    controller.AddItem(0);
+    target.AddItem(1);
+
+    TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
+
+    QLGate rz1(EBasicOperation::EBO_RZ, (degrees[2] - degrees[1]) / 2);
+    QLGate cnot1(EBasicOperation::EBO_CX);
+    QLGate rz2(EBasicOperation::EBO_RZ, (degrees[2] + degrees[1]) / 2);
+    QLGate ry1(EBasicOperation::EBO_RY, degrees[0] / 2);
+    QLGate cnot2(EBasicOperation::EBO_CX);
+    QLGate ry2(EBasicOperation::EBO_RY, -degrees[0] / 2);
+    QLGate rz3(EBasicOperation::EBO_RZ, -degrees[2]);
+    QLGate p(EBasicOperation::EBO_P, degrees[3]);
+
+    retGate.AppendGate(rz1, target);
+    retGate.AppendGate(cnot1, retGate.m_lstQubits);
+    retGate.AppendGate(rz2, target);
+    retGate.AppendGate(ry1, target);
+    retGate.AppendGate(cnot2, retGate.m_lstQubits);
+    retGate.AppendGate(ry2, target);
+    retGate.AppendGate(rz3, target);
+    retGate.AppendGate(p, controller);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateSwapGate()
+{
+    QLGate retGate;
+    retGate.m_lstQubits.AddItem(0);
+    retGate.m_lstQubits.AddItem(1);
+
+    TArray<BYTE> inverseQubit;
+    inverseQubit.AddItem(1);
+    inverseQubit.AddItem(0);
+
+    QLGate cnot(EBasicOperation::EBO_CX);
+    retGate.AppendGate(cnot, retGate.m_lstQubits);
+    retGate.AppendGate(cnot, inverseQubit);
+    retGate.AppendGate(cnot, retGate.m_lstQubits);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateControlledHadamardGate()
+{
+    QLGate retGate;
+    retGate.m_lstQubits.AddItem(0);
+    retGate.m_lstQubits.AddItem(1);
+
+    TArray<BYTE> target;
+    target.AddItem(1);
+
+    QLGate cy1(EBasicOperation::EBO_RY, PI / 4);
+    QLGate cnot(EBasicOperation::EBO_CX);
+    QLGate cy2(EBasicOperation::EBO_RY, -PI / 4);
+
+    retGate.AppendGate(cy1, target);
+    retGate.AppendGate(cnot, retGate.m_lstQubits);
+    retGate.AppendGate(cy2, target);
+
+    return retGate;
+}
 __END_NAMESPACE
 
 

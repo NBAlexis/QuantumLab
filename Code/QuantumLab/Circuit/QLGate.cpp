@@ -13,7 +13,7 @@
 __BEGIN_NAMESPACE
 
 QLGate::QLGate(EBasicOperation eOp, Real fParam)
-    : m_bBasicOperation(TRUE)
+    : m_eOp(eOp)
 	, m_bDagger(FALSE)
 	, m_fClassicalParameter(fParam)
 {
@@ -169,10 +169,34 @@ QLGate::~QLGate()
 	
 }
 
+QLGate::QLGate(const QLGate& other)
+	: m_eOp(other.m_eOp)
+	, m_bDagger(other.m_bDagger)
+	, m_sName(other.m_sName)
+	, m_lstQubits(other.m_lstQubits)
+	, m_lstSubGates(other.m_lstSubGates)
+	, m_fClassicalParameter(other.m_fClassicalParameter)
+	, m_lstOperations(other.m_lstOperations)
+{
+
+}
+
+const QLGate& QLGate::operator=(const QLGate& other)
+{
+	m_eOp = other.m_eOp;
+	m_bDagger = other.m_bDagger;
+	m_sName = other.m_sName;
+	m_lstQubits = other.m_lstQubits;
+	m_lstSubGates = other.m_lstSubGates;
+	m_fClassicalParameter = other.m_fClassicalParameter;
+	m_lstOperations = other.m_lstOperations;
+	return *this;
+}
+
 void QLGate::Dagger()
 {
 	m_bDagger = !m_bDagger;
-	if (!m_bBasicOperation)
+	if (EBasicOperation::EBO_Composite == m_eOp)
 	{
 		INT gateSize = m_lstSubGates.Num();
 		for (INT i = 0; i < gateSize; ++i)
@@ -182,15 +206,130 @@ void QLGate::Dagger()
 	}
 }
 
-QLGate QLGate::Controlled(BYTE controlledQubitCount) const
+QLGate QLGate::CreateControlled() const
 {
-	return *this;
+	return Controlled(0, m_lstQubits);
+}
+
+QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQubits) const
+{
+	if (EBasicOperation::EBO_Composite != m_eOp)
+	{
+		TArray<BYTE> combinedQubits;
+		combinedQubits.AddItem(controlledQubit);
+		combinedQubits.Append(lstMappingQubits);
+		switch (m_eOp)
+		{
+		case EBasicOperation::EBO_H:
+		{
+			QLGate ret = CreateControlledZYZGate(_hadamard, FALSE);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_X:
+			{
+				QLGate ret(EBasicOperation::EBO_CX);
+				ret.ApplyOnQubits(combinedQubits);
+				return ret;
+			}
+		case EBasicOperation::EBO_Y:
+		{
+			QLGate ret(EBasicOperation::EBO_CY);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_Z:
+		{
+			QLGate ret(EBasicOperation::EBO_CZ);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_P:
+		{
+			QLGate ret(EBasicOperation::EBO_CP, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_Phase:
+		{
+			TArray<BYTE> combinedQubits2;
+			combinedQubits2.AddItem(controlledQubit);
+			QLGate ret(EBasicOperation::EBO_P, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits2);
+			return ret;
+		}
+
+		case EBasicOperation::EBO_RX:
+		{
+			QLGate ret(EBasicOperation::EBO_CRX, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_RY:
+		{
+			QLGate ret(EBasicOperation::EBO_CRY, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+		case EBasicOperation::EBO_RZ:
+		{
+			QLGate ret(EBasicOperation::EBO_CRZ, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			return ret;
+		}
+
+		case EBasicOperation::EBO_CX:
+			//ccnot
+			break;
+		case EBasicOperation::EBO_CY:
+			//ccy
+			break;
+		case EBasicOperation::EBO_CZ:
+			//ccz
+			break;
+
+		case EBasicOperation::EBO_CP:
+			//ccp
+			break;
+		case EBasicOperation::EBO_CRX:
+			//ccrx
+			break;
+		case EBasicOperation::EBO_CRY:
+			//ccry
+			break;
+		case EBasicOperation::EBO_CRZ:
+			//ccrz
+			break;
+
+		case EBasicOperation::EBO_CC:
+			appCrucial("Not supported!");
+			break;
+		default:
+			break;
+		}
+
+		appCrucial("something wrong!\n");
+		return QLGate();
+	}
+
+	QLGate ret;
+	ret.m_lstQubits.AddItem(controlledQubit);
+	for (INT i = 0; i < m_lstQubits.Num(); ++i)
+	{
+		ret.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[i]]);
+	}
+
+	for (INT i = 0; i < m_lstSubGates.Num(); ++i)
+	{
+		ret.m_lstSubGates.AddItem(m_lstSubGates[i].Controlled(controlledQubit, lstMappingQubits));
+	}
+	return ret;
 }
 
 
 void QLGate::AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits)
 {
-	if (m_bBasicOperation)
+	if (EBasicOperation::EBO_Composite != m_eOp)
 	{
 		printf("Basic operation gate not allowed to append gates\n");
 		return;
@@ -203,7 +342,7 @@ void QLGate::AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits)
 TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubits) const
 {
 	TArray<SBasicOperation> ret;
-	if (m_bBasicOperation)
+	if (EBasicOperation::EBO_Composite != m_eOp)
 	{
 		INT opsize = m_lstOperations.Num();
 		for (INT i = 0; i < opsize; ++i)
@@ -214,7 +353,7 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 			INT qubitsize = m_lstOperations[opIndex].m_lstQubits.Num();
 			for (INT j = 0; j < qubitsize; ++j)
 			{
-				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstOperations[opIndex].m_lstQubits[j]]);
+				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[m_lstOperations[opIndex].m_lstQubits[j]]]);
 			}
 			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
 			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
@@ -232,8 +371,8 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 		for (INT i = 0; i < gatesize; ++i)
 		{
 			INT gateIndex = m_bDagger ? (gatesize - i - 1) : i;
-			TArray<BYTE> subgateQubits = ExchangeQubits(lstMappingQubits);
-			TArray<SBasicOperation> oplist = m_lstSubGates[gateIndex].GetOperation(subgateQubits);
+			//TArray<BYTE> subgateQubits = ExchangeQubits(lstMappingQubits);
+			TArray<SBasicOperation> oplist = m_lstSubGates[gateIndex].GetOperation(lstMappingQubits);
 			ret.Append(oplist);
 		}
 	}
@@ -242,13 +381,13 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 
 void QLGate::ApplyOnQubits(const TArray<BYTE>& lstMappingQubits)
 {
-	m_lstQubits = ExchangeQubits(lstMappingQubits);
-	if (!m_bBasicOperation)
+	m_lstQubits = ExchangeQubits(lstMappingQubits); //thess changes are enough for basic gates
+	if (EBasicOperation::EBO_Composite == m_eOp)
 	{
 		INT gatesize = m_lstSubGates.Num();
 		for (INT i = 0; i < gatesize; ++i)
 		{
-			m_lstSubGates[i].ApplyOnQubits(m_lstQubits);
+			m_lstSubGates[i].ApplyOnQubits(lstMappingQubits);
 		}
 	}
 }

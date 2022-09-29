@@ -47,10 +47,117 @@ void TestCSD()
     v.Print("v");
 }
 
+void TestRYGate()
+{
+    QLGate ch = QLGate(EBasicOperation::EBO_Phase, 0.3);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 1;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestZYZGate()
+{
+    QLMatrix m(2, 2);
+    m.RandomUnitary();
+
+    m.Print("m");
+
+    QLGate ch = CreateZYZGate(m);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 1;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestControoledZYZ()
+{
+    QLMatrix m(2, 2);
+    m.RandomUnitary();
+    m.Print("m");
+    QLGate ch = CreateControlledZYZGate(m);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 2;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestControoledHadamard()
+{
+    QLGate ha = QLGate(EBasicOperation::EBO_H);
+    TArray<BYTE> testtarget0;
+    testtarget0.AddItem(0);
+    TArray<BYTE> testtarget1;
+    testtarget1.AddItem(1);
+    QLGate ch = ha.Controlled(1, testtarget0);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 2;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestSwap()
+{
+    QLGate ch = CreateSwapGate();
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 2;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestToffoli()
+{
+    QLGate ch = CreateToffoliGate();
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestCnU()
+{
+    QLMatrix m(2, 2);
+    m.RandomUnitary();
+
+    m.Print("m");
+
+    QLGate ch = CreateCnU(3, m);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestCP()
+{
+    QLGate ch = QLGate(EBasicOperation::EBO_CP, 0.3);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 2;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+}
+
+void TestSqrtNot()
+{
+    QLMatrix sqrt = Sqrt2by2(_PauliX);
+    sqrt.Print();
+
+    QLMatrix back = sqrt * sqrt;
+    back.Print("back");
+}
+
 int main()
 {
     QLRandomInitializer random;
-    TestCSD();
+    TestCnU();
 
 
     //std::vector<QLComplex> l1;

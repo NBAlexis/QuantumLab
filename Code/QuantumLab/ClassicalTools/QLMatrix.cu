@@ -142,6 +142,13 @@ QLMatrix::QLMatrix(UINT uiX, UINT uiY, QLComplex* buffer)
     m_pData->m_pData = buffer;
 }
 
+QLMatrix QLMatrix::CopyCreate(UINT uiX, UINT uiY, QLComplex* buffer)
+{
+    QLComplex* pCopyBuffer = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * uiX * uiY));
+    memcpy(pCopyBuffer, buffer, sizeof(QLComplex) * uiX * uiY);
+    return QLMatrix(uiX, uiY, pCopyBuffer);
+}
+
 QLMatrix::QLMatrix(const QLMatrix& other)
     : m_uiX(other.m_uiX)
     , m_uiY(other.m_uiY)
@@ -1173,8 +1180,6 @@ void QLMatrix::CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatri
     QLMatrix leftBlock = GetBlock(0, uiXSep, 0, m_uiY);
     leftBlock.CSD2BY1(u1, u2, c, s, v1, uiYSep);
 
-    const UINT n = m_uiX;
-
     assert(u1.m_uiX == uiYSep);
     assert(u1.m_uiY == uiYSep);
     assert(u2.m_uiX == m_uiY - uiYSep);
@@ -1290,6 +1295,47 @@ QLMatrix QLMatrix::CreateEye(UINT uiX, UINT uiY)
     }
     return QLMatrix(uiX, uiY, pBuffer);
 }
+
+static QLComplex _hadamardmtr[4] = { 
+    _make_cuComplex(InvSqrt2, F(0.0)), 
+    _make_cuComplex(InvSqrt2, F(0.0)), 
+    _make_cuComplex(InvSqrt2, F(0.0)), 
+    _make_cuComplex(-InvSqrt2, F(0.0)) 
+};
+
+static QLComplex _PauliXmtr[4] = {
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(1.0), F(0.0)),
+    _make_cuComplex(F(1.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(0.0))
+};
+
+static QLComplex _PauliYmtr[4] = {
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(-1.0)),
+    _make_cuComplex(F(0.0), F(1.0)),
+    _make_cuComplex(F(0.0), F(0.0))
+};
+
+static QLComplex _PauliZmtr[4] = {
+    _make_cuComplex(F(1.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(-1.0), F(0.0))
+};
+
+static QLComplex _I2mtr[4] = {
+    _make_cuComplex(F(1.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(0.0), F(0.0)),
+    _make_cuComplex(F(1.0), F(0.0))
+};
+
+const QLAPI QLMatrix _hadamard = QLMatrix::CopyCreate(2U, 2U, _hadamardmtr);
+const QLAPI QLMatrix _PauliX = QLMatrix::CopyCreate(2U, 2U, _PauliXmtr);
+const QLAPI QLMatrix _PauliY = QLMatrix::CopyCreate(2U, 2U, _PauliYmtr);
+const QLAPI QLMatrix _PauliZ = QLMatrix::CopyCreate(2U, 2U, _PauliZmtr);
+const QLAPI QLMatrix _I2 = QLMatrix::CopyCreate(2U, 2U, _I2mtr);
 
 __END_NAMESPACE
 

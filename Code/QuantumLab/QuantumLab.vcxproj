@@ -19,7 +19,8 @@
     <ClInclude Include="Base\QLFloat.h" />
     <ClInclude Include="Base\QLSetup.h" />
     <ClInclude Include="Base\STLExport.h" />
-    <ClInclude Include="Circuit\Gates\ZYZGate.h" />
+    <ClInclude Include="Circuit\Gates\CnUGate.h" />
+    <ClInclude Include="Circuit\Gates\SimpleGates.h" />
     <ClInclude Include="Circuit\QLGate.h" />
     <ClInclude Include="ClassicalTools\QLMatrix.h" />
     <ClInclude Include="ClassicalTools\QLRandom.h" />
@@ -38,7 +39,8 @@
     <ClInclude Include="ToolClass\Tracer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Circuit\Gates\ZYZGate.cpp" />
+    <ClCompile Include="Circuit\Gates\CnUGate.cpp" />
+    <ClCompile Include="Circuit\Gates\SimpleGates.cpp" />
     <ClCompile Include="Circuit\QLGate.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />
     <ClCompile Include="Simulator\QLSimulator.cpp" />

@@ -61,7 +61,8 @@
 #include "ClassicalTools/QLMatrix.h"
 
 #include "Circuit/QLGate.h"
-#include "Circuit/Gates/ZYZGate.h"
+#include "Circuit/Gates/SimpleGates.h"
+#include "Circuit/Gates/CnUGate.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

@@ -76,7 +76,7 @@ extern "C" {
     /**
     * _sqrt(c)
     */
-    __device__ static __inline__ QLComplex __cuCsqrtf(const QLComplex& c)
+    __device__ __host__ static __inline__ QLComplex __cuCsqrtf(const QLComplex& c)
     {
         const Real fRadius = _cuCabsf(c);
         const Real fCosA = __div(c.x, fRadius);

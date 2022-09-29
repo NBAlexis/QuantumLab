@@ -45,9 +45,9 @@ enum class EBasicOperation : UINT
     */
     EBO_RX,
 
-    /** Note that the sign is different from Qiskit
-    *   cos(t/2)    sin(t/2)
-    *  -sin(t/2)    cos(t/2)
+    /** Note that the sign is same as Qiskit
+    *   cos(t/2)   -sin(t/2)
+    *   sin(t/2)    cos(t/2)
     */
     EBO_RY,
 
@@ -83,6 +83,8 @@ enum class EBasicOperation : UINT
     //controlled collapse
     EBO_CC,
 
+    //composite gates
+    EBO_Composite,
     
 };
 
@@ -114,13 +116,24 @@ class QLAPI QLGate
 
 public:
 
-    QLGate() {}
+    QLGate() 
+        : m_eOp(EBasicOperation::EBO_Composite) 
+        , m_bDagger(FALSE)
+    {
+    }
 
     QLGate(EBasicOperation eOp, Real fParam = 0.0);
 
+    QLGate(const QLGate& other);
+
     virtual ~QLGate();
 
-    virtual QLGate Controlled(BYTE controlledQubitCount) const;
+    /**
+    * return a gate with 0 the controller, others the mapping qubits 
+    */
+    virtual QLGate CreateControlled() const;
+
+    virtual QLGate Controlled(BYTE controlledQubitCount, const TArray<BYTE>& lstMappingQubits) const;
 
     void Dagger();
 
@@ -137,10 +150,23 @@ public:
 
     static void PerformBasicOperation(const struct Qureg& pReg, const SBasicOperation& op);
 
-    UBOOL m_bBasicOperation;
+    EBasicOperation m_eOp;
     UBOOL m_bDagger;
     CCString m_sName;
 
+    /**
+    * For basic gates, 
+    * 
+    * operation are applied on m_lstQubits[m_lstOperations[i]]
+    * where m_lstOperations are 0,1,2,3,4,...
+    * and m_lstQubits could be any, for example, 4,1,3,2,...
+    * 
+    * For sub gates,
+    * 
+    * m_lstQubits = sub.m_lstQubits (could be part of parent) = sub.sub.m_lstQubits (could be part of parent) = ...
+    * operation are applied on sub.sub.m_lstQubits[m_lstOperations[i]] or, just m_lstQubits[m_lstOperations[i]]
+    * 
+    */
     TArray<BYTE> m_lstQubits;
     TArray<QLGate> m_lstSubGates;
 
@@ -151,6 +177,20 @@ public:
     {
         return FALSE;
     }
+
+    void AddQubits(BYTE add)
+    {
+        assert(0 == m_lstQubits.Num());
+        if (0 == m_lstQubits.Num())
+        {
+            for (BYTE i = 0; i < add; ++i)
+            {
+                m_lstQubits.AddItem(i);
+            }
+        }
+    }
+
+    const QLGate& operator=(const QLGate& other);
 
 protected:
 
