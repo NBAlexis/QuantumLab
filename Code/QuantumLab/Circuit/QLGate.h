@@ -96,7 +96,8 @@ struct QLAPI SBasicOperation
 
     UBOOL operator==(const SBasicOperation& other) const
     {
-        return FALSE;
+        appCrucial(_T("== not support for QLMatrix\n"));
+        return m_eOperation == other.m_eOperation && m_lstQubits == other.m_lstQubits && abs(m_fClassicalParameter - other.m_fClassicalParameter) < _QL_FLT_EPSILON;
     }
 };
 
@@ -107,7 +108,7 @@ struct QLAPI SBasicOperationInGate
 
     UBOOL operator==(const SBasicOperationInGate& other) const
     {
-        return FALSE;
+        return m_eOperation == other.m_eOperation && m_lstQubits == other.m_lstQubits;
     }
 };
 

@@ -166,10 +166,89 @@ void TestSqrtNot()
     back.Print("back");
 }
 
+void TestCCPhase()
+{
+    QLGate ch = CreateCnPh(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+    //ch.DebugPrint(1);
+}
+
+void TestFRy()
+{
+    TArray <Real> angles;
+    angles.AddItem(F(0.1));
+    angles.AddItem(F(0.2));
+    angles.AddItem(F(0.3));
+    angles.AddItem(F(0.4));
+    angles.AddItem(F(0.5));
+    angles.AddItem(F(0.6));
+    angles.AddItem(F(0.7));
+    angles.AddItem(F(0.8));
+
+    TArray <Real> angles2;
+    angles2.AddItem(F(0.11));
+    angles2.AddItem(F(0.12));
+    angles2.AddItem(F(0.13));
+    angles2.AddItem(F(0.14));
+    angles2.AddItem(F(0.15));
+    angles2.AddItem(F(0.16));
+    angles2.AddItem(F(0.17));
+    angles2.AddItem(F(0.18));
+
+    QLGate fryz = FRyz(angles, angles2, 4);
+    //QLGate fryz = FRy(angles, 4);
+
+    /**
+    TArray <BYTE> reverse;
+    reverse.AddItem(3);
+    reverse.AddItem(2);
+    reverse.AddItem(1);
+    reverse.AddItem(0);
+    QLGate ch;
+    ch.AddQubits(4);
+    ch.AppendGate(fry, reverse);
+    */
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    //param.m_MasterGate = ch;
+    param.m_MasterGate = fryz;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+    //fry.DebugPrint(1);
+}
+
+
+void TestCSDGate()
+{
+    QLMatrix m(32, 32);
+    m.RandomUnitary();
+    
+    QLGate ch = CSDDecompose(m, 5);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 5;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+
+    QLSimulatorOutputMatrix output;
+
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    
+    m = m - output.m_OutputMatrix;
+    m.Print(_T("Delta"));
+}
+
 int main()
 {
     QLRandomInitializer random;
-    TestCnU();
+    TestCSDGate();
+
+
 
 
     //std::vector<QLComplex> l1;

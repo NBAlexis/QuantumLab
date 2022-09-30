@@ -32,7 +32,7 @@ inline QLMatrix Sqrt2by2(const QLMatrix& m)
 * total bits is number of controller bits + 1
 * The target is the last one qubit
 */
-extern QLGate QLAPI CreateCnNot(BYTE controllerBits);
+extern QLGate QLAPI CreateCnNot(BYTE numOfController);
 
 inline QLGate CreateToffoliGate()
 {
@@ -41,7 +41,17 @@ inline QLGate CreateToffoliGate()
     return ret;
 }
 
-extern QLGate QLAPI CreateCnU(BYTE controllerBits, const QLMatrix& mtr);
+extern QLGate QLAPI CreateCnU(BYTE numOfController, const QLMatrix& mtr);
+
+extern QLGate QLAPI CreateCnRX(BYTE numOfController, Real fDegree);
+
+extern QLGate QLAPI CreateCnRY(BYTE numOfController, Real fDegree);
+
+extern QLGate QLAPI CreateCnRZ(BYTE numOfController, Real fDegree);
+
+extern QLGate QLAPI CreateCnP(BYTE numOfController, Real fDegree);
+
+extern QLGate QLAPI CreateCnPh(BYTE numOfController, Real fDegree);
 
 __END_NAMESPACE
 

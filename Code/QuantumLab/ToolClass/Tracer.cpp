@@ -115,7 +115,7 @@ QLAPI void appParanoiac(const TCHAR *format, ...)
     }
 }
 
-CCString CTracer::PrintComplex(Real fReal, Real fImg) const
+CCString CTracer::PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length)
 {
     static TCHAR bufferf[256];
     static TCHAR buffer[256];
@@ -123,20 +123,26 @@ CCString CTracer::PrintComplex(Real fReal, Real fImg) const
     {
         if (fImg > 0)
         {
-            sprintf_(bufferf, 256, "%s + %s I", m_sFloatFormat.c_str(), m_sFloatFormat.c_str());
+            sprintf_(bufferf, 256, "%s + %s I", sFloatFormat.c_str(), sFloatFormat.c_str());
         }
         else
         {
-            sprintf_(bufferf, 256, "%s - %s I", m_sFloatFormat.c_str(), m_sFloatFormat.c_str());
+            sprintf_(bufferf, 256, "%s - %s I", sFloatFormat.c_str(), sFloatFormat.c_str());
         }
         sprintf_(buffer, 256, bufferf, fReal, abs(fImg));
     }
     else
     {
-        sprintf_(bufferf, 256, "%s", m_sFloatFormat.c_str());
+        sprintf_(bufferf, 256, "%s", sFloatFormat.c_str());
         sprintf_(buffer, 256, bufferf, fReal);
     }
-    return CCString(buffer);
+    INT bufferL = static_cast<INT>(appStrlen(buffer));
+    CCString sSpaces;
+    for (INT i = 0; i < static_cast<INT>(length) - bufferL; ++i)
+    {
+        sSpaces = sSpaces + _T(" ");
+    }
+    return sSpaces + CCString(buffer);
 }
 
 __END_NAMESPACE

@@ -43,6 +43,12 @@
     <ClCompile Include="Circuit\Gates\CnUGate.cpp">
       <Filter>Circuit\Gates</Filter>
     </ClCompile>
+    <ClCompile Include="Circuit\Gates\FRGate.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Gates\CSDDecompose.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -117,6 +123,12 @@
       <Filter>ToolClass</Filter>
     </ClInclude>
     <ClInclude Include="Circuit\Gates\CnUGate.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\FRGate.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\CSDDecompose.h">
       <Filter>Circuit\Gates</Filter>
     </ClInclude>
   </ItemGroup>

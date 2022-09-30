@@ -17,10 +17,27 @@ class QLAPI QLSimulatorParametersMatrix : public QLSimulatorParameters
 {
 public:
 
+    QLSimulatorParametersMatrix()
+        : m_MasterGate()
+        , m_byQubitCount(0)
+        , m_bPrint(TRUE)
+    {
+
+    }
+
     //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
     QLGate m_MasterGate;
     BYTE m_byQubitCount;
+    UBOOL m_bPrint;
 
+};
+
+class QLAPI QLSimulatorOutputMatrix : public QLSimulatorOutput
+{
+public:
+
+    //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
+    QLMatrix m_OutputMatrix;
 };
 
 class QLAPI QLSimulatorMatrix : public QLSimulator
@@ -36,7 +53,7 @@ public:
 
     }
 
-    void Simulate(const QLSimulatorParameters* params) const override;
+    void Simulate(const QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const override;
 
 };
 

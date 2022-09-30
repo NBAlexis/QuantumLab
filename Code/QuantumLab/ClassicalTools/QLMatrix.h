@@ -221,6 +221,7 @@ public:
     void Print(const CCString& sName = __EmptyString) const;
 
     QLMatrix GetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen) const;
+    void SetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen, const QLComplex* content);
     QLMatrix GetDiag() const;
     QLMatrix SquareMatrixByAddOne() const;
     QLMatrix ExtendZeros(UINT uiNewX, UINT uiNewY) const;
@@ -250,14 +251,14 @@ public:
     *     | Q2 |
     * where Q1, Q2 have m_uiY >= m_uiX, C and S has same size as Q1, Q2
     */
-    void CSD2BY1(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v, UINT uiSep);
+    void CSD2BY1(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v, UINT uiSep) const;
 
     /**
     * M = | U1 0  | | C -S| |V1  0|^+
     *     | 0  U2 | | S  C| |0  V2|
     * NOTE~!!! it only tested for square matrix, with half decompose!
     */
-    void CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v1, QLMatrix& v2, UINT uiXSep, UINT uiYSep);
+    void CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v1, QLMatrix& v2, UINT uiXSep, UINT uiYSep) const;
 
     /**
     * explain the result of csd.
@@ -343,6 +344,14 @@ protected:
 
 public:
 
+    UBOOL operator==(const QLMatrix& other) const
+    {
+        appCrucial(_T("== not support for QLMatrix\n"));
+        return FALSE;
+    }
+
+    UINT X() const { return m_uiX; }
+    UINT Y() const { return m_uiY; }
 };
 
 extern const QLAPI QLMatrix _hadamard;

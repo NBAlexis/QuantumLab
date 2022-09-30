@@ -1098,6 +1098,27 @@ QLMatrix QLMatrix::GetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYL
     return QLMatrix(uiXLen, uiYLen, pBuffer);
 }
 
+void QLMatrix::SetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen, const QLComplex* content)
+{
+    if (uiXStart + uiXLen > m_uiX)
+    {
+        appCrucial("Block larger than the matrix\n");
+        return;
+    }
+
+    if (uiYStart + uiYLen > m_uiY)
+    {
+        appCrucial("Block larger than the matrix\n");
+        return;
+    }
+
+    OnChangeContent();
+    for (UINT uiX = 0; uiX < uiXLen; ++uiX)
+    {
+        memcpy(m_pData->m_pData + m_uiY * (uiXStart + uiX) + uiYStart, content + uiYLen * uiX, uiYLen * sizeof(QLComplex));
+    }
+}
+
 QLMatrix QLMatrix::GetDiag() const
 {
     QLComplex* pBuffer = reinterpret_cast<QLComplex*>(calloc(m_uiX * m_uiY, sizeof(QLComplex)));
@@ -1157,7 +1178,7 @@ QLMatrix QLMatrix::BlockAdd(const QLMatrix& m, BYTE addtype) const
     return QLMatrix(maxX, uiLengthAllY, pBuffer);
 }
 
-void QLMatrix::CSD2BY1(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v, UINT uiSep)
+void QLMatrix::CSD2BY1(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v, UINT uiSep) const
 {
     if (uiSep < 1 || uiSep > (m_uiY - 1))
     {
@@ -1175,7 +1196,7 @@ void QLMatrix::CSD2BY1(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLM
     c = r.GetDiag();
 }
 
-void QLMatrix::CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v1, QLMatrix& v2, UINT uiXSep, UINT uiYSep)
+void QLMatrix::CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatrix& v1, QLMatrix& v2, UINT uiXSep, UINT uiYSep) const
 {
     QLMatrix leftBlock = GetBlock(0, uiXSep, 0, m_uiY);
     leftBlock.CSD2BY1(u1, u2, c, s, v1, uiYSep);

@@ -224,30 +224,40 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 		{
 			QLGate ret = CreateControlledZYZGate(_hadamard, FALSE);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_X:
 			{
 				QLGate ret(EBasicOperation::EBO_CX);
 				ret.ApplyOnQubits(combinedQubits);
+				ret.m_sName = _T("c") + m_sName;
+				ret.m_bDagger = m_bDagger;
 				return ret;
 			}
 		case EBasicOperation::EBO_Y:
 		{
 			QLGate ret(EBasicOperation::EBO_CY);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_Z:
 		{
 			QLGate ret(EBasicOperation::EBO_CZ);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_P:
 		{
 			QLGate ret(EBasicOperation::EBO_CP, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_Phase:
@@ -256,6 +266,8 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 			combinedQubits2.AddItem(controlledQubit);
 			QLGate ret(EBasicOperation::EBO_P, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits2);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 
@@ -263,44 +275,78 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 		{
 			QLGate ret(EBasicOperation::EBO_CRX, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_RY:
 		{
 			QLGate ret(EBasicOperation::EBO_CRY, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 		case EBasicOperation::EBO_RZ:
 		{
 			QLGate ret(EBasicOperation::EBO_CRZ, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
 			return ret;
 		}
 
 		case EBasicOperation::EBO_CX:
-			//ccnot
-			break;
+		{
+			QLGate ret = CreateToffoliGate();
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CY:
-			//ccy
-			break;
+		{
+			QLGate ret = CreateCnU(2, _PauliY);
+			ret.m_sName = _T("CCY");
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CZ:
-			//ccz
-			break;
-
+		{
+			QLGate ret = CreateCnU(2, _PauliZ);
+			ret.m_sName = _T("CCZ");
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CP:
-			//ccp
-			break;
+		{
+			QLGate ret = CreateCnP(2, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CRX:
-			//ccrx
-			break;
+		{
+			QLGate ret = CreateCnRX(2, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CRY:
-			//ccry
-			break;
+		{
+			QLGate ret = CreateCnRY(2, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CRZ:
-			//ccrz
-			break;
-
+		{
+			QLGate ret = CreateCnRZ(2, m_fClassicalParameter);
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_CC:
 			appCrucial("Not supported!");
 			break;
@@ -323,6 +369,8 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 	{
 		ret.m_lstSubGates.AddItem(m_lstSubGates[i].Controlled(controlledQubit, lstMappingQubits));
 	}
+	ret.m_bDagger = m_bDagger;
+	ret.m_sName = _T("c") + m_sName;
 	return ret;
 }
 
@@ -669,7 +717,7 @@ void QLGate::PrintOneCompositeGate(BYTE qubitCount) const
 	}
 	appGeneral(_T("\n"));
 
-	PrintGateName(m_sName);
+	PrintGateName(m_bDagger ? (_T("d") + m_sName) : m_sName);
 	for (BYTE qubit = 0; qubit < qubitCount; ++qubit)
 	{
 		if (qubit < minQubit)

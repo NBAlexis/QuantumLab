@@ -466,6 +466,23 @@ public:
 
     inline TArray& operator=( const TArray& Other ) { Copy(Other); return *this; }
 
+    inline UBOOL operator==(const TArray& other) const
+    {
+        if (Num() != other.Num())
+        {
+            return FALSE;
+        }
+
+        for (INT i = 0; i < Num(); ++i)
+        {
+            if (!(GetAt(i) == other[i]))
+            {
+                return FALSE;
+            }
+        }
+        return TRUE;
+    }
+
 protected:
 
     TYPE*   m_pData;   // the actual array of data

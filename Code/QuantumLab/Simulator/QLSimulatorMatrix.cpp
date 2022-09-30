@@ -12,7 +12,7 @@
 
 __BEGIN_NAMESPACE
 
-void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
+void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params, QLSimulatorOutput* output) const
 {
     const QLSimulatorParametersMatrix* param = dynamic_cast<const QLSimulatorParametersMatrix*>(params);
     TArray<BYTE> qubits;
@@ -71,7 +71,16 @@ void QLSimulatorMatrix::Simulate(const QLSimulatorParameters * params) const
     destroyQuESTEnv(evn);
 
     QLMatrix resmtr(static_cast<UINT>(veclen), static_cast<UINT>(veclen), res);
-    resmtr.Print();
+    if (param->m_bPrint)
+    {
+        resmtr.Print();
+    }
+
+    QLSimulatorOutputMatrix* outputMatrix = dynamic_cast<QLSimulatorOutputMatrix*>(output);
+    if (NULL != outputMatrix)
+    {
+        outputMatrix->m_OutputMatrix = resmtr;
+    }
 }
 
 __END_NAMESPACE

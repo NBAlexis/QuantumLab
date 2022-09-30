@@ -35,6 +35,7 @@ public:
         , m_pStream(NULL)
         , m_pStdStream(NULL)
         , m_bLogDate(TRUE)
+        , m_uiTableComplexLength(16)
     {
         Initial(EVerboseLevel::PARANOIAC);
     }
@@ -96,7 +97,7 @@ public:
         }
     }
 
-    inline void Initial(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("stdout"), const CCString& sFloatFormat = _T("%.6f"))
+    inline void Initial(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("stdout"), const CCString& sFloatFormat = _T("%.4f"))
     {
         m_eLevel = eLevel;
         m_sFloatFormat = sFloatFormat;
@@ -252,7 +253,12 @@ public:
 
     inline void SetFloatFormat(const CCString& sFormat) { m_sFloatFormat = sFormat; }
 
-    CCString PrintComplex(Real fReal, Real fImg) const;
+    static CCString PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length);
+
+    CCString PrintComplex(Real fReal, Real fImg) const
+    {
+        return PrintComplex(fReal, fImg, m_sFloatFormat, m_uiTableComplexLength);
+    }
 
 private:
 
@@ -265,6 +271,7 @@ private:
     TArray<EVerboseLevel> m_eLogLevelHist;
     CCString m_sTraceHeader;
     CCString m_sFloatFormat;
+    UINT m_uiTableComplexLength;
 };
 
 extern QLAPI void appInitialTracer(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("stdout"), const CCString& sFloatFormat = _T("%.6f"));

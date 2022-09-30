@@ -26,6 +26,12 @@ public:
     virtual ~QLSimulatorParameters() {}
 };
 
+class QLAPI QLSimulatorOutput
+{
+public:
+    virtual ~QLSimulatorOutput() {}
+};
+
 class QLAPI QLSimulator
 {
 
@@ -38,7 +44,7 @@ public:
 
     virtual ~QLSimulator() { }
 
-    virtual void Simulate(const QLSimulatorParameters* params) const = 0;
+    virtual void Simulate(const QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const = 0;
 
 };
 

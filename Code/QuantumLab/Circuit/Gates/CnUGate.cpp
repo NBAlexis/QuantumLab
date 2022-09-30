@@ -150,6 +150,221 @@ QLGate QLAPI CreateCnU(BYTE numOfController, const QLMatrix& mtr)
     return retGate;
 }
 
+QLGate QLAPI CreateCnRX(BYTE numOfController, Real fDegree)
+{
+    if (1 == numOfController)
+    {
+        //this is a c-u
+        return QLGate(EBasicOperation::EBO_CRX, fDegree);
+    }
+
+    QLGate retGate;
+    retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnRx");
+
+    TArray<BYTE> controllerBits;
+    for (BYTE bit = 0; bit < numOfController; ++bit)
+    {
+        controllerBits.AddItem(bit);
+    }
+    TArray<BYTE> newControllerBits = controllerBits;
+    newControllerBits.Pop();
+    TArray<BYTE> subCnUBits = newControllerBits;
+    subCnUBits.AddItem(numOfController);
+
+    TArray<BYTE> czyzBits;
+    czyzBits.AddItem(numOfController - 1);
+    czyzBits.AddItem(numOfController);
+
+    QLGate cv = QLGate(EBasicOperation::EBO_CRX, fDegree / 2);
+    retGate.AppendGate(cv, czyzBits);
+
+    QLGate subCnNot = CreateCnNot(numOfController - 1);
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    cv.Dagger();
+    retGate.AppendGate(cv, czyzBits);
+
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    QLGate subCnU = CreateCnRX(numOfController - 1, fDegree / 2);
+    retGate.AppendGate(subCnU, subCnUBits);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateCnRY(BYTE numOfController, Real fDegree)
+{
+    if (1 == numOfController)
+    {
+        //this is a c-u
+        return QLGate(EBasicOperation::EBO_CRY, fDegree);
+    }
+
+    QLGate retGate;
+    retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnRy");
+
+    TArray<BYTE> controllerBits;
+    for (BYTE bit = 0; bit < numOfController; ++bit)
+    {
+        controllerBits.AddItem(bit);
+    }
+    TArray<BYTE> newControllerBits = controllerBits;
+    newControllerBits.Pop();
+    TArray<BYTE> subCnUBits = newControllerBits;
+    subCnUBits.AddItem(numOfController);
+
+    TArray<BYTE> czyzBits;
+    czyzBits.AddItem(numOfController - 1);
+    czyzBits.AddItem(numOfController);
+
+    QLGate cv = QLGate(EBasicOperation::EBO_CRY, fDegree / 2);
+    retGate.AppendGate(cv, czyzBits);
+
+    QLGate subCnNot = CreateCnNot(numOfController - 1);
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    cv.Dagger();
+    retGate.AppendGate(cv, czyzBits);
+
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    QLGate subCnU = CreateCnRY(numOfController - 1, fDegree / 2);
+    retGate.AppendGate(subCnU, subCnUBits);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateCnRZ(BYTE numOfController, Real fDegree)
+{
+    if (1 == numOfController)
+    {
+        //this is a c-u
+        return QLGate(EBasicOperation::EBO_CRZ, fDegree);
+    }
+
+    QLGate retGate;
+    retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnRz");
+
+    TArray<BYTE> controllerBits;
+    for (BYTE bit = 0; bit < numOfController; ++bit)
+    {
+        controllerBits.AddItem(bit);
+    }
+    TArray<BYTE> newControllerBits = controllerBits;
+    newControllerBits.Pop();
+    TArray<BYTE> subCnUBits = newControllerBits;
+    subCnUBits.AddItem(numOfController);
+
+    TArray<BYTE> czyzBits;
+    czyzBits.AddItem(numOfController - 1);
+    czyzBits.AddItem(numOfController);
+
+    QLGate cv = QLGate(EBasicOperation::EBO_CRZ, fDegree / 2);
+    retGate.AppendGate(cv, czyzBits);
+
+    QLGate subCnNot = CreateCnNot(numOfController - 1);
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    cv.Dagger();
+    retGate.AppendGate(cv, czyzBits);
+
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    QLGate subCnU = CreateCnRZ(numOfController - 1, fDegree / 2);
+    retGate.AppendGate(subCnU, subCnUBits);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateCnP(BYTE numOfController, Real fDegree)
+{
+    if (1 == numOfController)
+    {
+        //this is a c-u
+        return QLGate(EBasicOperation::EBO_CP, fDegree);
+    }
+
+    QLGate retGate;
+    retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnP");
+
+    TArray<BYTE> controllerBits;
+    for (BYTE bit = 0; bit < numOfController; ++bit)
+    {
+        controllerBits.AddItem(bit);
+    }
+    TArray<BYTE> newControllerBits = controllerBits;
+    newControllerBits.Pop();
+    TArray<BYTE> subCnUBits = newControllerBits;
+    subCnUBits.AddItem(numOfController);
+
+    TArray<BYTE> czyzBits;
+    czyzBits.AddItem(numOfController - 1);
+    czyzBits.AddItem(numOfController);
+
+    QLGate cv = QLGate(EBasicOperation::EBO_CP, fDegree / 2);
+    retGate.AppendGate(cv, czyzBits);
+
+    QLGate subCnNot = CreateCnNot(numOfController - 1);
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    cv.Dagger();
+    retGate.AppendGate(cv, czyzBits);
+
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    QLGate subCnU = CreateCnP(numOfController - 1, fDegree / 2);
+    retGate.AppendGate(subCnU, subCnUBits);
+
+    return retGate;
+}
+
+QLGate QLAPI CreateCnPh(BYTE numOfController, Real fDegree)
+{
+    if (1 == numOfController)
+    {
+        //this is a c-u
+        return QLGate(EBasicOperation::EBO_Phase, fDegree).CreateControlled();
+    }
+
+    QLGate retGate;
+    retGate.AddQubits(numOfController + 1);
+    retGate.m_sName = _T("CnPh");
+
+    TArray<BYTE> controllerBits;
+    for (BYTE bit = 0; bit < numOfController; ++bit)
+    {
+        controllerBits.AddItem(bit);
+    }
+    TArray<BYTE> newControllerBits = controllerBits;
+    newControllerBits.Pop();
+    TArray<BYTE> subCnUBits = newControllerBits;
+    subCnUBits.AddItem(numOfController);
+
+    TArray<BYTE> czyzBits;
+    czyzBits.AddItem(numOfController - 1);
+    czyzBits.AddItem(numOfController);
+
+    QLGate cv = QLGate(EBasicOperation::EBO_Phase, fDegree / 2).CreateControlled();
+    retGate.AppendGate(cv, czyzBits);
+
+    QLGate subCnNot = CreateCnNot(numOfController - 1);
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    cv.Dagger();
+    retGate.AppendGate(cv, czyzBits);
+
+    retGate.AppendGate(subCnNot, controllerBits);
+
+    QLGate subCnU = CreateCnPh(numOfController - 1, fDegree / 2);
+    retGate.AppendGate(subCnU, subCnUBits);
+
+    return retGate;
+}
+
 __END_NAMESPACE
 
 

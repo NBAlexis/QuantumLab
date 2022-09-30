@@ -63,6 +63,8 @@
 #include "Circuit/QLGate.h"
 #include "Circuit/Gates/SimpleGates.h"
 #include "Circuit/Gates/CnUGate.h"
+#include "Circuit/Gates/FRGate.h"
+#include "Circuit/Gates/CSDDecompose.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"
