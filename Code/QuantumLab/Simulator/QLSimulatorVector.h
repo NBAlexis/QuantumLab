@@ -1,38 +1,49 @@
 //=============================================================================
-// FILENAME : QLSimulatorMatrix.h
+// FILENAME : QLSimulatorVector.h
 // 
 // DESCRIPTION:
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [10/09/2022 nbale]
+//  [01/10/2022 nbale]
 //=============================================================================
 
-#ifndef _QLSIMULATORMATRIX_H_
-#define _QLSIMULATORMATRIX_H_
+#ifndef _QLSIMULATORVECTOR_H_
+#define _QLSIMULATORVECTOR_H_
 
 __BEGIN_NAMESPACE
 
-class QLAPI QLSimulatorParametersMatrix : public QLSimulatorParameters
+class QLAPI QLSimulatorParametersVector : public QLSimulatorParameters
 {
 public:
 
-    QLSimulatorParametersMatrix()
+    QLSimulatorParametersVector()
         : m_MasterGate()
         , m_byQubitCount(0)
         , m_bPrint(TRUE)
     {
+        
+    }
 
+    void BuildZeroStart(BYTE byQubit)
+    {
+        m_byQubitCount = byQubit;
+        UINT uiVectorLength = 1U << byQubit;
+        m_lstStart.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+        for (UINT i = 1; i < uiVectorLength; ++i)
+        {
+            m_lstStart.AddItem(_make_cuComplex(F(0.0), F(0.0)));
+        }
     }
 
     //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
     QLGate m_MasterGate;
     BYTE m_byQubitCount;
     UBOOL m_bPrint;
-
+    TArray<QLComplex> m_lstStart;
 };
 
-class QLAPI QLSimulatorOutputMatrix : public QLSimulatorOutput
+class QLAPI QLSimulatorOutputVector : public QLSimulatorOutput
 {
 public:
 
@@ -40,14 +51,14 @@ public:
     QLMatrix m_OutputMatrix;
 };
 
-class QLAPI QLSimulatorMatrix : public QLSimulator
+class QLAPI QLSimulatorVector : public QLSimulator
 {
 
 protected:
 
 public:
 
-    QLSimulatorMatrix()
+    QLSimulatorVector()
         : QLSimulator()
     {
 
@@ -61,7 +72,7 @@ public:
 __END_NAMESPACE
 
 
-#endif //#ifndef _QLSIMULATORMATRIX_H_
+#endif //#ifndef _QLSIMULATORVECTOR_H_
 
 //=============================================================================
 // END OF FILE

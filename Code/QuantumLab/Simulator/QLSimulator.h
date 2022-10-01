@@ -44,7 +44,7 @@ public:
 
     virtual ~QLSimulator() { }
 
-    virtual void Simulate(const QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const = 0;
+    virtual void Simulate(QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const = 0;
 
 };
 

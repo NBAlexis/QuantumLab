@@ -12,6 +12,43 @@
 
 __BEGIN_NAMESPACE
 
+void DebugGate(const CSDMatrix& m, INT iLevel)
+{
+    QLGate ch;
+    ch.AddQubits(iLevel);
+    ch.m_sName = _T("CSD");
+
+    m.Gate(ch);
+
+    appGeneral(_T("matrix type: %d\n"), m.m_eType);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = iLevel;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+
+    m.PrintMe().Print("m");
+}
+
+void DebugGate(const CSDMatrix& m1, const CSDMatrix& m2, INT iLevel)
+{
+    QLGate ch;
+    ch.AddQubits(iLevel);
+    ch.m_sName = _T("CSD");
+
+    m1.CombinedYZGate(ch, m2.m_lstDegreeContent);
+
+    appGeneral(_T("matrix type: %d\n"), m1.m_eType);
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = iLevel;
+    param.m_MasterGate = ch;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param);
+
+    (m1.PrintMe() * m2.PrintMe()).Print("m");
+}
+
+
 void CSDMatrix::SetAsUMatrix(INT level, INT totLevel, const TArray<QLMatrix>& u)
 {
     UINT halfSize = 1U << (level - 1);
@@ -165,12 +202,12 @@ QLMatrix CSDMatrix::PrintAsBlockedUMatrix() const
 QLMatrix CSDMatrix::PrintAsDiagonalUMatrix() const
 {
     UINT totalSize = 1U << m_iTotLevel;
-    QLComplex* oneMatrix = (QLComplex*)malloc(sizeof(QLComplex) * totalSize * totalSize);
+    QLComplex* oneMatrix = (QLComplex*)calloc(totalSize * totalSize, sizeof(QLComplex));
     if (NULL == oneMatrix)
     {
         return QLMatrix();
     }
-    memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
+    //memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
     for (UINT i = 0; i < totalSize; ++i)
     {
         oneMatrix[i * totalSize + i] = _make_cuComplex(_cos(m_lstDegreeContent[i]), _sin(m_lstDegreeContent[i]));
@@ -181,12 +218,12 @@ QLMatrix CSDMatrix::PrintAsDiagonalUMatrix() const
 QLMatrix CSDMatrix::PrintAsFRZMatrix() const
 {
     UINT totalSize = 1U << m_iTotLevel;
-    QLComplex* oneMatrix = (QLComplex*)malloc(sizeof(QLComplex) * totalSize * totalSize);
+    QLComplex* oneMatrix = (QLComplex*)calloc(totalSize * totalSize, sizeof(QLComplex));
     if (NULL == oneMatrix)
     {
         return QLMatrix();
     }
-    memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
+    //memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
     UINT matrixCount = 1U << (m_iLevel - 1);
     UINT halfMatrixSize = 1U << (m_iTotLevel - m_iLevel);
     UINT matrixSize = halfMatrixSize << 1;
@@ -206,12 +243,12 @@ QLMatrix CSDMatrix::PrintAsFRZMatrix() const
 QLMatrix CSDMatrix::PrintAsPartialFRZMatrix() const
 {
     UINT totalSize = 1U << m_iTotLevel;
-    QLComplex* oneMatrix = (QLComplex*)malloc(sizeof(QLComplex) * totalSize * totalSize);
+    QLComplex* oneMatrix = (QLComplex*)calloc(totalSize * totalSize, sizeof(QLComplex));
     if (NULL == oneMatrix)
     {
         return QLMatrix();
     }
-    memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
+    //memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
     UINT degreeCount = 1U << m_iLevel;
     UINT repeatLength = 1U << (m_iTotLevel - m_iLevel - 1);
     for (UINT i = 0; i < degreeCount; ++i)
@@ -228,12 +265,12 @@ QLMatrix CSDMatrix::PrintAsPartialFRZMatrix() const
 QLMatrix CSDMatrix::PrintAsGlobalPhase() const
 {
     UINT totalSize = 1U << m_iTotLevel;
-    QLComplex* oneMatrix = (QLComplex*)malloc(sizeof(QLComplex) * totalSize * totalSize);
+    QLComplex* oneMatrix = (QLComplex*)calloc(totalSize * totalSize, sizeof(QLComplex));
     if (NULL == oneMatrix)
     {
         return QLMatrix();
     }
-    memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
+    //memset(oneMatrix, 0, sizeof(QLComplex) * totalSize * totalSize);
     for (UINT i = 0; i < totalSize; ++i)
     {
         oneMatrix[i * totalSize + i] = _make_cuComplex(_cos(m_lstDegreeContent[0]), _sin(m_lstDegreeContent[0]));
@@ -664,42 +701,6 @@ QLGate QLAPI CSDDecompose(const QLMatrix& u, INT iLevel)
     }
 
     return ret;
-}
-
-void QLAPI DebugGate(const CSDMatrix& m, INT iLevel)
-{
-    QLGate ch;
-    ch.AddQubits(iLevel);
-    ch.m_sName = _T("CSD");
-
-    m.Gate(ch);
-
-    appGeneral(_T("matrix type: %d\n"), m.m_eType);
-    QLSimulatorParametersMatrix param;
-    param.m_byQubitCount = iLevel;
-    param.m_MasterGate = ch;
-    QLSimulatorMatrix sim;
-    sim.Simulate(&param);
-
-    m.PrintMe().Print("m");
-}
-
-void QLAPI DebugGate(const CSDMatrix& m1, const CSDMatrix& m2, INT iLevel)
-{
-    QLGate ch;
-    ch.AddQubits(iLevel);
-    ch.m_sName = _T("CSD");
-
-    m1.CombinedYZGate(ch, m2.m_lstDegreeContent);
-
-    appGeneral(_T("matrix type: %d\n"), m1.m_eType);
-    QLSimulatorParametersMatrix param;
-    param.m_byQubitCount = iLevel;
-    param.m_MasterGate = ch;
-    QLSimulatorMatrix sim;
-    sim.Simulate(&param);
-
-    (m1.PrintMe() * m2.PrintMe()).Print("m");
 }
 
 __END_NAMESPACE

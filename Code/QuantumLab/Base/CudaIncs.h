@@ -35,6 +35,8 @@
 #include <cusolverDn.h>
 #include <library_types.h>
 
+#include <cufft.h>
+
 #if _QL_USE_LAUNCH_BOUND
 #define _QL_LAUNCH_(n,m)  __launch_bounds__(n, m)
 #define _QL_LAUNCH_BOUND_(n)  __launch_bounds__(_QL_LAUNCH_MAX_THREAD / n, n)

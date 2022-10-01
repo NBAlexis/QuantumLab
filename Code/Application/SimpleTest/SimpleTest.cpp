@@ -240,13 +240,63 @@ void TestCSDGate()
     sim.Simulate(&param, &output);
     
     m = m - output.m_OutputMatrix;
-    m.Print(_T("Delta"));
+    QLComplex norm = m.VectorDot(m);
+    appGeneral(_T("||d||=%f"), norm.x);
+}
+
+void TestAmplitudeEncode()
+{
+    QLMatrix m(1, 8);
+    m.RandomOne();
+    m = m / _sqrt(m.VectorDot(m).x);
+    m.Print(_T("v"));
+    TArray<QLComplex> v = m.ToVector();
+
+    QLGate ae = AmplitudeEncode(v);
+
+    QLSimulatorParametersVector param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = ae;
+
+    QLSimulatorVector sim;
+    sim.Simulate(&param);
+}
+
+void TestQFFT()
+{
+    QLMatrix m(1, 8);
+    m.RandomOne();
+    m = m / _sqrt(m.VectorDot(m).x);
+    m.Print(_T("m"));
+    QLMatrix fft = m.VectorFFT(FALSE);
+    fft = fft / _sqrt(fft.VectorDot(fft).x);
+    fft.Print(_T("fft"));
+
+    QLGate ae = AmplitudeEncode(m.ToVector());
+
+    QLGate fftg = QuantumFFTGate(3);
+
+    QLGate all;
+    all.AddQubits(3);
+    TArray<BYTE> allqubits;
+    allqubits.AddItem(0);
+    allqubits.AddItem(1);
+    allqubits.AddItem(2);
+    all.AppendGate(ae, allqubits);
+    all.AppendGate(fftg, allqubits);
+
+    QLSimulatorParametersVector param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = all;
+
+    QLSimulatorVector sim;
+    sim.Simulate(&param);
 }
 
 int main()
 {
     QLRandomInitializer random;
-    TestCSDGate();
+    TestQFFT();
 
 
 

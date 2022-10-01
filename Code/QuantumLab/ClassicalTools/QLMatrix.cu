@@ -50,7 +50,10 @@ _kernelOpposite(QLComplex* pDevicePtr, UINT uiYLen, UINT uiMax)
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = _make_cuComplex(-pDevicePtr[uiID1].x, -pDevicePtr[uiID1].y);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _make_cuComplex(-pDevicePtr[uiID1].x, -pDevicePtr[uiID1].y);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -59,7 +62,10 @@ _kernelAdd(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT ui
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = _cuCaddf(pDevicePtr[uiID1], pSource[uiID1]);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCaddf(pDevicePtr[uiID1], pSource[uiID1]);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -67,7 +73,10 @@ _kernelAdd(QLComplex* pDevicePtr, QLComplex v, UINT uiYLen, UINT uiMax)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiID1 = uiYLen * uiX + uiX;
-    pDevicePtr[uiID1] = _cuCaddf(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCaddf(pDevicePtr[uiID1], v);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -75,7 +84,10 @@ _kernelAdd(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiID1 = uiYLen * uiX + uiX;
-    pDevicePtr[uiID1] = cuCaddf_cr(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = cuCaddf_cr(pDevicePtr[uiID1], v);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -84,7 +96,10 @@ _kernelMul(QLComplex* pDevicePtr, QLComplex v, UINT uiYLen, UINT uiMax)
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = _cuCmulf(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCmulf(pDevicePtr[uiID1], v);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -93,7 +108,10 @@ _kernelMul(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = cuCmulf_cr(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = cuCmulf_cr(pDevicePtr[uiID1], v);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -102,7 +120,10 @@ _kernelDiv(QLComplex* pDevicePtr, QLComplex v, UINT uiYLen, UINT uiMax)
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = _cuCdivf(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCdivf(pDevicePtr[uiID1], v);
+    }
 }
 
 __global__ void _QL_LAUNCH_BOUND
@@ -111,7 +132,55 @@ _kernelDiv(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
     const UINT uiID1 = uiYLen * uiX + uiY;
-    pDevicePtr[uiID1] = cuCdivf_cr(pDevicePtr[uiID1], v);
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = cuCdivf_cr(pDevicePtr[uiID1], v);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelDot(QLComplex* pDevicePtr, const QLComplex* __restrict__ pDevicePtr2, UINT uiYLen, UINT uiMax, UBOOL bConjLeft, UBOOL bConjRight)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        if (bConjLeft && !bConjRight)
+        {
+            pDevicePtr[uiID1] = _cuCmulf(_cuConjf(pDevicePtr[uiID1]), pDevicePtr2[uiID1]);
+        }
+        else if (!bConjLeft && bConjRight)
+        {
+            pDevicePtr[uiID1] = _cuCmulf(pDevicePtr[uiID1], _cuConjf(pDevicePtr2[uiID1]));
+        }
+        else if (bConjLeft && bConjRight)
+        {
+            pDevicePtr[uiID1] = _cuCmulf(_cuConjf(pDevicePtr[uiID1]), _cuConjf(pDevicePtr2[uiID1]));
+        }
+        else
+        {
+            pDevicePtr[uiID1] = _cuCmulf(pDevicePtr[uiID1], pDevicePtr2[uiID1]);
+        }
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelReduceComplex(QLComplex* arr, UINT uiJump, UINT uiMax)
+{
+    //for length 16 array
+    //for jump = 1, this is 1->0, 3->2, 5->4, 7->6, 9->10, 11->10, 13->12, 15->14 
+    //for jump = 2, this is 2->0, 6->4, 10->8, 14->12 
+    //for jump = 4, this is 4->0, 12->8 
+    //for jump = 8, this is 8->0, and is finished.
+
+    //id target = idx * (jump << 1)
+    //id from = target + jump
+    UINT uiIdFrom = (threadIdx.x + blockIdx.x * blockDim.x) * (uiJump << 1) + uiJump;
+    if (uiIdFrom < uiMax)
+    {
+        arr[uiIdFrom - uiJump] = _cuCaddf(arr[uiIdFrom - uiJump], arr[uiIdFrom]);
+    }
 }
 
 #pragma endregion
@@ -1254,6 +1323,38 @@ void QLMatrix::CSD(QLMatrix& u1, QLMatrix& u2, QLMatrix& c, QLMatrix& s, QLMatri
     v2 = q22.Mul(u21, CUBLAS_OP_C) * mulc - q12.Mul(u11, CUBLAS_OP_C) * muls;
 }
 
+QLComplex QLMatrix::VectorDot(const QLMatrix& other, UBOOL bConjL, UBOOL bConjR) const
+{
+    UINT uiL = m_uiX * m_uiY;
+    if (uiL != other.m_uiX * other.m_uiY)
+    {
+        appWarning(_T("matrix size not same!\n"));
+        const UINT uiL2 = other.m_uiX * other.m_uiY;
+        if (uiL2 < uiL)
+        {
+            uiL = uiL2;
+        }
+    }
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    QLComplex* deviceBuffer1 = NULL;
+    QLComplex* deviceBuffer2 = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * uiL));
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * uiL));
+    checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * uiL, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(deviceBuffer2, other.HostBuffer(), sizeof(QLComplex) * uiL, cudaMemcpyHostToDevice));
+
+    _kernelDot<<<blocks, threads>>>(deviceBuffer1, deviceBuffer2, m_uiY, uiL, bConjL, bConjR);
+
+    QLComplex res = ReduceSum(deviceBuffer1, uiL);
+
+    checkCudaErrors(cudaFree(deviceBuffer1));
+    checkCudaErrors(cudaFree(deviceBuffer2));
+
+    return res;
+}
+
 void QLMatrix::CombinedCSD(QLMatrix& u, QLMatrix& cs, QLMatrix& v, const QLMatrix& u1, const QLMatrix& u2, const QLMatrix& c, const QLMatrix& s, const QLMatrix& v1, const QLMatrix& v2, UINT uiXSep, UINT uiYSep)
 {
     u = u1.BlockAdd(u2, 0);
@@ -1315,6 +1416,73 @@ QLMatrix QLMatrix::CreateEye(UINT uiX, UINT uiY)
         pBuffer[i * uiY + i] = _make_cuComplex(F(1.0), F(0.0));
     }
     return QLMatrix(uiX, uiY, pBuffer);
+}
+
+QLComplex QLMatrix::ReduceSum(QLComplex* deviceBuffer, UINT uiLength)
+{
+    const UINT iRequiredDim = (uiLength + 1) >> 1;
+    const UINT iPower = MostSignificantPowerTwo(iRequiredDim);
+    for (UINT i = 0; i <= iPower; ++i)
+    {
+        UINT iJump = 1 << i;
+        UINT iThreadNeeded = 1 << (iPower - i);
+        UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? iThreadNeeded / _QL_LAUNCH_MAX_THREAD : 1;
+        UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? _QL_LAUNCH_MAX_THREAD : iThreadNeeded;
+        _kernelReduceComplex << <iBlock, iThread >> > (deviceBuffer, iJump, uiLength);
+    }
+    QLComplex result[1];
+    checkCudaErrors(cudaMemcpy(result, deviceBuffer, sizeof(QLComplex), cudaMemcpyDeviceToHost));
+    return result[0];
+}
+
+QLMatrix QLMatrix::VectorFFT(UBOOL bForward) const
+{
+    cufftHandle plan;
+    INT n[1] = { static_cast<INT>(m_uiX * m_uiY) };
+
+    const cufftResult planRes = cufftPlanMany(&plan, 1, n,
+        n, 1, 1,
+        n, 1, 1,
+        CUFFT_Z2Z, 1);
+
+    if (CUFFT_SUCCESS != planRes)
+    {
+        appCrucial(_T("cufftPlanMany failed! %d\n"), planRes);
+        return QLMatrix();
+    }
+
+    QLComplex* buffer = NULL;
+    checkCudaErrors(cudaMalloc((void**)&buffer, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(buffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+
+#if _QL_DOUBLEFLOAT
+    const cufftResult res = cufftExecZ2Z(plan, buffer, buffer, bForward ? CUFFT_FORWARD : CUFFT_INVERSE);
+#else
+    const cufftResult res = cufftExecC2C(plan, buffer, buffer, bForward ? CUFFT_FORWARD : CUFFT_INVERSE);
+#endif
+
+    if (CUFFT_SUCCESS != res)
+    {
+        appCrucial(_T("cufftResult failed! %d\n"), res);
+        checkCudaErrors(cudaFree(buffer));
+        return QLMatrix();
+    }
+
+    QLComplex* hostBuffer = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(hostBuffer, buffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(buffer));
+    return QLMatrix(m_uiX, m_uiY, hostBuffer);
+}
+
+TArray<QLComplex> QLMatrix::ToVector() const
+{
+    const QLComplex* buffer = HostBuffer();
+    TArray<QLComplex> ret;
+    for (UINT i = 0; i < m_uiX * m_uiY; ++i)
+    {
+        ret.AddItem(buffer[i]);
+    }
+    return ret;
 }
 
 static QLComplex _hadamardmtr[4] = { 

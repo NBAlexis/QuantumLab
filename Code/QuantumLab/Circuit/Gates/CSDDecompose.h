@@ -130,10 +130,6 @@ public:
 
 extern QLGate QLAPI CSDDecompose(const QLMatrix& u, INT iLevel);
 
-extern void QLAPI DebugGate(const CSDMatrix& m, INT iLevel);
-
-extern void QLAPI DebugGate(const CSDMatrix& m1, const CSDMatrix& m2, INT iLevel);
-
 __END_NAMESPACE
 
 

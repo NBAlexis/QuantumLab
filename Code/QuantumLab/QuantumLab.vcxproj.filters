@@ -49,6 +49,15 @@
     <ClCompile Include="Circuit\Gates\CSDDecompose.cpp">
       <Filter>Circuit\Gates</Filter>
     </ClCompile>
+    <ClCompile Include="Circuit\Gates\AmplitudeEncode.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulator\QLSimulatorVector.cpp">
+      <Filter>Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Gates\QuantumFFT.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -129,6 +138,15 @@
       <Filter>Circuit\Gates</Filter>
     </ClInclude>
     <ClInclude Include="Circuit\Gates\CSDDecompose.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\AmplitudeEncode.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulator\QLSimulatorVector.h">
+      <Filter>Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\QuantumFFT.h">
       <Filter>Circuit\Gates</Filter>
     </ClInclude>
   </ItemGroup>

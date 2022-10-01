@@ -65,9 +65,12 @@
 #include "Circuit/Gates/CnUGate.h"
 #include "Circuit/Gates/FRGate.h"
 #include "Circuit/Gates/CSDDecompose.h"
+#include "Circuit/Gates/AmplitudeEncode.h"
+#include "Circuit/Gates/QuantumFFT.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"
+#include "Simulator/QLSimulatorVector.h"
 
 #ifndef _QL_PRIVATE
 __USE_NAMESPACE

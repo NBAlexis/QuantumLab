@@ -150,10 +150,10 @@ public:
         m_pData->m_pData[m_uiY * x + y] = v;
     }
 
-    void SetHostBuffer(QLComplex* pBuffer)
-    {
+    //void SetHostBuffer(QLComplex* pBuffer)
+    //{
 
-    }
+    //}
 
     inline const QLComplex* HostBuffer() const
     {
@@ -168,6 +168,15 @@ public:
 
     //M = Q.R, where Q^+ Q =1, R is upper traingular
     void QR(QLMatrix& q, QLMatrix& r) const;
+
+    void ReShape(UINT uiX, UINT uiY)
+    {
+        if (uiX * uiY == m_uiX * m_uiY)
+        {
+            m_uiX = uiX;
+            m_uiY = uiY;
+        }
+    }
 
 protected:
     void _QR(QLMatrix& q, QLMatrix& r) const;
@@ -352,6 +361,12 @@ public:
 
     UINT X() const { return m_uiX; }
     UINT Y() const { return m_uiY; }
+
+    TArray<QLComplex> ToVector() const;
+    QLComplex VectorDot(const QLMatrix& other, UBOOL bConjL = TRUE, UBOOL bConjR = FALSE) const;
+    QLMatrix VectorFFT(UBOOL bForward = TRUE) const;
+
+    static QLComplex ReduceSum(QLComplex* deviceBuffer, UINT uiLen);
 };
 
 extern const QLAPI QLMatrix _hadamard;
