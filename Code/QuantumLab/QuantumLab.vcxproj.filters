@@ -58,6 +58,15 @@
     <ClCompile Include="Circuit\Gates\QuantumFFT.cpp">
       <Filter>Circuit\Gates</Filter>
     </ClCompile>
+    <ClCompile Include="Circuit\Gates\QuantumPhaseEstimate.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Gates\PauliSimulate.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulator\QLSimulatorMeasure.cpp">
+      <Filter>Simulator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -148,6 +157,15 @@
     </ClInclude>
     <ClInclude Include="Circuit\Gates\QuantumFFT.h">
       <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\QuantumPhaseEstimate.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Gates\PauliSimulate.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulator\QLSimulatorMeasure.h">
+      <Filter>Simulator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

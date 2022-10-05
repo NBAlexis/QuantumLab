@@ -15,6 +15,22 @@
 
 __BEGIN_NAMESPACE
 
+#pragma region device functions
+
+__inline__ __device__ QLComplex IExp(const QLComplex& c, Real r)
+{
+    return __cuCexpf(_make_cuComplex(-c.y * r, c.x * r));
+}
+
+__device__ complexfunc devicefunctionExp = __cuCexpf;
+__device__ complexfunc devicefunctionSqrt = __cuCsqrtf;
+
+__device__ complexfuncTwoR devicefunctionIExp = IExp;
+
+#pragma endregion
+
+
+
 #pragma region kernels
 
 __global__ void _QL_LAUNCH_BOUND
@@ -180,6 +196,55 @@ _kernelReduceComplex(QLComplex* arr, UINT uiJump, UINT uiMax)
     if (uiIdFrom < uiMax)
     {
         arr[uiIdFrom - uiJump] = _cuCaddf(arr[uiIdFrom - uiJump], arr[uiIdFrom]);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelComplexFunc(QLComplex* pDevicePtr, UINT uiYLen, UINT uiMax, complexfunc func)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = (*func)(pDevicePtr[uiID1]);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelComplexFuncTwoR(QLComplex* pDevicePtr, UINT uiYLen, UINT uiMax, complexfuncTwoR func, Real r)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = (*func)(pDevicePtr[uiID1], r);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelKronecker(QLComplex* pDevicePtr, 
+    const QLComplex* __restrict__ pDevicem1, 
+    const QLComplex* __restrict__ pDevicem2,
+    UINT uiYm1,
+    UINT uiYm2,
+    UINT uiXm2,
+    UINT uiMax1,
+    UINT uiMax2)
+{
+    const UINT uiX1 = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY1 = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYm1 * uiX1 + uiY1;
+
+    const UINT uiID2 = threadIdx.z + blockDim.z * blockIdx.z;
+    const UINT uiX2 = uiID2 / uiYm2;
+    const UINT uiY2 = uiID2 - uiX2 * uiYm2;
+
+    if (uiID1 < uiMax1 && uiID2 < uiMax2)
+    {
+        const UINT uiIDres = ((uiX1 * uiXm2) + uiX2) * uiYm1 * uiYm2 + (uiY1 * uiYm2) + uiY2;
+        pDevicePtr[uiIDres] = _cuCmulf(pDevicem1[uiID1], pDevicem2[uiID2]);
     }
 }
 
@@ -1407,6 +1472,228 @@ void QLMatrix::CombinedCSD(QLMatrix& u, QLMatrix& cs, QLMatrix& v, const QLMatri
     }
 }
 
+/**
+* see https://github.com/NVIDIA/CUDALibrarySamples/blob/master/cuSOLVER/Xsyevd/cusolver_Xsyevd_example.cu
+*/
+void QLMatrix::EVD(QLMatrix& vm, QLMatrix& lm) const
+{
+    if (m_uiX != m_uiY)
+    {
+        appCrucial(_T("EVD only supports squared matrix!\n"));
+        return;
+    }
+
+    cusolverDnHandle_t cusolverH = NULL;
+    cudaStream_t stream = NULL;
+
+    const INT m = static_cast<INT>(m_uiX);
+    const INT lda = static_cast<INT>(m_uiY);
+    /*
+     *       | 3.5 0.5 0.0 |
+     *   A = | 0.5 3.5 0.0 |
+     *       | 0.0 0.0 2.0 |
+     *
+     */
+    //const std::vector<data_type> A = { 3.5, 0.5, 0.0, 0.5, 3.5, 0.0, 0.0, 0.0, 2.0 };
+    //const std::vector<data_type> lambda = { 2.0, 3.0, 4.0 };
+
+    //std::vector<data_type> V(lda * m, 0); // eigenvectors
+    //std::vector<data_type> W(m, 0);       // eigenvalues
+
+    QLComplex* d_A = NULL;
+    Real* d_W = NULL;
+    INT* d_info = NULL;
+
+    INT info = 0;
+
+    INT d_lwork = 0;     /* size of workspace */
+    QLComplex* d_work = NULL; /* device workspace */
+
+    //std::printf("A = (matlab base-1)\n");
+    //print_matrix(m, m, A.data(), lda);
+    //std::printf("=====\n");
+
+    /* step 1: create cusolver handle, bind a stream */
+    checkCudaErrors(cusolverDnCreate(&cusolverH));
+
+    checkCudaErrors(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+    checkCudaErrors(cusolverDnSetStream(cusolverH, stream));
+
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_A), sizeof(QLComplex) * m * lda));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_W), sizeof(Real) * m));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_info), sizeof(INT)));
+
+    checkCudaErrors(cudaMemcpyAsync(d_A, HostBuffer(), sizeof(QLComplex) * m * lda, cudaMemcpyHostToDevice, stream));
+
+    // step 3: query working space of syevd
+    cusolverEigMode_t jobz = CUSOLVER_EIG_MODE_VECTOR; // compute eigenvalues and eigenvectors.
+    cublasFillMode_t uplo = CUBLAS_FILL_MODE_LOWER;
+
+#if _QL_DOUBLEFLOAT
+    checkCudaErrors(cusolverDnZheevd_bufferSize(cusolverH, jobz, uplo, m, d_A, lda, d_W, &d_lwork));
+#else
+    checkCudaErrors(cusolverDnCheevd_bufferSize(cusolverH, jobz, uplo, m, d_A, lda, d_W, &d_lwork));
+#endif
+
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_work), sizeof(QLComplex) * d_lwork));
+
+    // step 4: compute spectrum
+#if _QL_DOUBLEFLOAT
+    checkCudaErrors(cusolverDnZheevd(cusolverH, jobz, uplo, m, d_A, lda, d_W, d_work, d_lwork, d_info));
+#else
+    checkCudaErrors(cusolverDnCheevd(cusolverH, jobz, uplo, m, d_A, lda, d_W, d_work, d_lwork, d_info));
+#endif
+
+
+    QLComplex* v = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * lda * m));
+    Real* w = reinterpret_cast<Real*>(malloc(sizeof(Real) * m));
+
+    checkCudaErrors(cudaMemcpyAsync(v, d_A, sizeof(QLComplex) * lda * m, cudaMemcpyDeviceToHost, stream));
+    checkCudaErrors(cudaMemcpyAsync(w, d_W, sizeof(Real) * m, cudaMemcpyDeviceToHost, stream));
+    checkCudaErrors(cudaMemcpyAsync(&info, d_info, sizeof(INT), cudaMemcpyDeviceToHost, stream));
+
+    checkCudaErrors(cudaStreamSynchronize(stream));
+
+    if (0 > info) 
+    {
+        appCrucial("%d-th parameter is wrong \n", -info);
+        checkCudaErrors(cudaFree(d_A));
+        checkCudaErrors(cudaFree(d_W));
+        checkCudaErrors(cudaFree(d_info));
+        checkCudaErrors(cudaFree(d_work));
+
+        appSafeFree(v);
+        appSafeFree(w);
+
+        return;
+    }
+
+    /* free resources */
+    QLComplex* cw = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m));
+    for (INT i = 0; i < m; ++i)
+    {
+        cw[i] = _make_cuComplex(w[i], F(0.0));
+    }
+
+    checkCudaErrors(cudaFree(d_A));
+    checkCudaErrors(cudaFree(d_W));
+    checkCudaErrors(cudaFree(d_info));
+    checkCudaErrors(cudaFree(d_work));
+    appSafeFree(w);
+
+    checkCudaErrors(cusolverDnDestroy(cusolverH));
+    checkCudaErrors(cudaStreamDestroy(stream));
+
+    vm = QLMatrix(m_uiY, m_uiX, v);
+    lm = QLMatrix(m_uiX, 1, cw);
+}
+
+void QLMatrix::MatrixFunction(complexfunc func)
+{
+    if (m_uiX != m_uiY)
+    {
+        appCrucial(_T("EVD only supports squared matrix!\n"));
+        return;
+    }
+
+    QLMatrix v, w;
+    EVD(v, w);
+
+    w.ElementWiseFunction(func);
+
+    OnChangeContent();
+    memset(m_pData->m_pData, 0, sizeof(QLComplex) * m_uiX * m_uiY);
+    for (UINT i = 0; i < m_uiX; ++i)
+    {
+        m_pData->m_pData[i * m_uiY + i] = w.Get(i, 0);
+    }
+    Print("w");
+
+    *this = v * (*this);
+    v.Dagger();
+    *this = (*this) * v;
+}
+
+void QLMatrix::MatrixFunctionTwoR(complexfuncTwoR func, Real r)
+{
+    if (m_uiX != m_uiY)
+    {
+        appCrucial(_T("EVD only supports squared matrix!\n"));
+        return;
+    }
+
+    QLMatrix v, w;
+    EVD(v, w);
+    w.ElementWiseFunctionTwoR(func, r);
+
+    OnChangeContent();
+    memset(m_pData->m_pData, 0, sizeof(QLComplex) * m_uiX * m_uiY);
+    for (UINT i = 0; i < m_uiX; ++i)
+    {
+        m_pData->m_pData[i * m_uiY + i] = w.Get(i, 0);
+    }
+
+    *this = v * (*this);
+    v.Dagger();
+    *this = (*this) * v;
+}
+
+void QLMatrix::ElementWiseFunction(complexfunc func)
+{
+    QLComplex* deviceBuffer;
+    checkCudaErrors(cudaMalloc(reinterpret_cast <void**>(&deviceBuffer), sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    _kernelComplexFunc << <blocks, threads >> > (deviceBuffer, m_uiY, m_uiX * m_uiY, func);
+    checkCudaErrors(cudaGetLastError());
+    OnChangeContent();
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::ElementWiseFunctionTwoR(complexfuncTwoR func, Real r)
+{
+    QLComplex* deviceBuffer;
+    checkCudaErrors(cudaMalloc(reinterpret_cast <void**>(&deviceBuffer), sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    _kernelComplexFuncTwoR << <blocks, threads >> > (deviceBuffer, m_uiY, m_uiX * m_uiY, func, r);
+    checkCudaErrors(cudaGetLastError());
+    OnChangeContent();
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::MatrixIExp(Real t)
+{
+    complexfuncTwoR host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionIExp, sizeof(complexfuncTwoR)));
+
+    MatrixFunctionTwoR(host_func, t);
+}
+
+void QLMatrix::MatrixExp()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionExp, sizeof(complexfunc)));
+
+    MatrixFunction(host_func);
+}
+
+void QLMatrix::MatrixSqrt()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionSqrt, sizeof(complexfunc)));
+
+    MatrixFunction(host_func);
+}
+
 QLMatrix QLMatrix::CreateEye(UINT uiX, UINT uiY)
 {
     QLComplex* pBuffer = (QLComplex*)calloc(uiX * uiY, sizeof(QLComplex));
@@ -1485,6 +1772,49 @@ TArray<QLComplex> QLMatrix::ToVector() const
     return ret;
 }
 
+QLMatrix QLMatrix::KroneckerProduct(const QLMatrix& m2) const
+{
+    const UINT resX = m_uiX * m2.m_uiX;
+    const UINT resY = m_uiY * m2.m_uiY;
+
+    QLComplex* resbuffer;
+    QLComplex* m1buffer;
+    QLComplex* m2buffer;
+    checkCudaErrors(cudaMalloc((void**)&resbuffer, sizeof(QLComplex) * resX * resY));
+    checkCudaErrors(cudaMalloc((void**)&m1buffer, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMalloc((void**)&m2buffer, sizeof(QLComplex) * m2.m_uiX * m2.m_uiY));
+
+    checkCudaErrors(cudaMemcpy(m1buffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(m2buffer, m2.HostBuffer(), sizeof(QLComplex) * m2.m_uiX * m2.m_uiY, cudaMemcpyHostToDevice));
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+
+    const UINT uiMaxThreadAllowed = Ceil(_QL_LAUNCH_MAX_THREAD, threads.x * threads.y);
+    const UINT uiThreadNeeded = m2.m_uiX * m2.m_uiY;
+    UINT uiThreadZ = (uiThreadNeeded >= uiMaxThreadAllowed) ? uiMaxThreadAllowed : uiThreadNeeded;
+    UINT uiBlockZ = (uiThreadZ > 1) ? Ceil(uiThreadNeeded, uiThreadZ) : uiThreadNeeded;
+    if (uiBlockZ > 1)
+    {
+        uiThreadZ = Ceil(uiThreadNeeded, uiBlockZ);
+    }
+
+    blocks.z = uiBlockZ;
+    threads.z = uiThreadZ;
+
+    _kernelKronecker << <blocks, threads >> > (resbuffer, m1buffer, m2buffer, m_uiY, m2.m_uiY, m2.m_uiX, m_uiX * m_uiY, uiThreadNeeded);
+
+    QLComplex* hostBuffer = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * resX * resY));
+    checkCudaErrors(cudaMemcpy(hostBuffer, resbuffer, sizeof(QLComplex) * resX * resY, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(resbuffer));
+    checkCudaErrors(cudaFree(m1buffer));
+    checkCudaErrors(cudaFree(m2buffer));
+
+    return QLMatrix(resX, resY, hostBuffer);
+}
+
 static QLComplex _hadamardmtr[4] = { 
     _make_cuComplex(InvSqrt2, F(0.0)), 
     _make_cuComplex(InvSqrt2, F(0.0)), 
@@ -1501,8 +1831,8 @@ static QLComplex _PauliXmtr[4] = {
 
 static QLComplex _PauliYmtr[4] = {
     _make_cuComplex(F(0.0), F(0.0)),
-    _make_cuComplex(F(0.0), F(-1.0)),
     _make_cuComplex(F(0.0), F(1.0)),
+    _make_cuComplex(F(0.0), F(-1.0)),
     _make_cuComplex(F(0.0), F(0.0))
 };
 

@@ -13,6 +13,8 @@
 
 __BEGIN_NAMESPACE
 
+enum { _kPrintName = 12 };
+
 enum class EBasicOperation : UINT
 {
     //hadamard
@@ -96,7 +98,6 @@ struct QLAPI SBasicOperation
 
     UBOOL operator==(const SBasicOperation& other) const
     {
-        appCrucial(_T("== not support for QLMatrix\n"));
         return m_eOperation == other.m_eOperation && m_lstQubits == other.m_lstQubits && abs(m_fClassicalParameter - other.m_fClassicalParameter) < _QL_FLT_EPSILON;
     }
 };
@@ -104,11 +105,10 @@ struct QLAPI SBasicOperation
 struct QLAPI SBasicOperationInGate
 {
     EBasicOperation m_eOperation;
-    TArray<BYTE> m_lstQubits;
 
     UBOOL operator==(const SBasicOperationInGate& other) const
     {
-        return m_eOperation == other.m_eOperation && m_lstQubits == other.m_lstQubits;
+        return m_eOperation == other.m_eOperation;
     }
 };
 
@@ -195,9 +195,10 @@ public:
 
     void DebugPrint(INT iDepth) const;
 
-protected:
-
     void ApplyOnQubits(const TArray<BYTE>& lstMappingQubits);
+
+protected:
+    
     TArray<BYTE> ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const;
 
     static void PrintQubits(BYTE qubitCount);

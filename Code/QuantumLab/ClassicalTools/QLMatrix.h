@@ -18,6 +18,10 @@
 
 __BEGIN_NAMESPACE
 
+typedef QLComplex(*complexfunc)(const QLComplex& c);
+typedef QLComplex(*complexfuncTwo)(const QLComplex& c1, const QLComplex& c2);
+typedef QLComplex(*complexfuncTwoR)(const QLComplex& c, Real r);
+
 class QLMatrixData
 {
     QLMatrixData()
@@ -43,7 +47,6 @@ public:
     QLComplex* m_pData;
 };
 
-//TODO MAKE DATA REF
 class QLAPI QLMatrix
 {
 private:
@@ -284,6 +287,35 @@ public:
     */
     static void CombinedCSD(QLMatrix& u, QLMatrix& cs, QLMatrix& v, const QLMatrix& u1, const QLMatrix& u2, const QLMatrix& c, const QLMatrix& s, const QLMatrix& v1, const QLMatrix& v2, UINT uiXSep, UINT uiYSep);
 
+    /**
+    * M V = V L
+    * M must be a nxn Hermitian matrix
+    * where L is a nxn diagonal matrix, filled with eignvalues in ascending order
+    * V is eigenvector
+    */
+    void EVD(QLMatrix& v, QLMatrix& l) const;
+
+    QLMatrix KroneckerProduct(const QLMatrix& m2) const;
+
+protected:
+
+    /**
+    * func(M)
+    * M must be a nxn Hermitian matrix
+    * func must be a static device function
+    * the function pointer must be on device, therefore this method is protected.
+    */
+    void MatrixFunction(complexfunc func);
+    void MatrixFunctionTwoR(complexfuncTwoR func, Real r);
+    void ElementWiseFunction(complexfunc func);
+    void ElementWiseFunctionTwoR(complexfuncTwoR func, Real r);
+
+public:
+    
+    void MatrixIExp(Real t);
+    void MatrixExp();
+    void MatrixSqrt();
+
     static QLMatrix CreateEye(UINT uiX, UINT uiY);
 
 protected:
@@ -328,10 +360,10 @@ protected:
 
     void GetDim(dim3& blocks, dim3& threads) const
     {
-        UINT uiThreadX = _QL_LAUNCH_MAX_THREAD_SQRT;
-        UINT uiThreadY = _QL_LAUNCH_MAX_THREAD_SQRT;
-        UINT uiBlockX = Ceil(m_uiX, _QL_LAUNCH_MAX_THREAD_SQRT);
-        UINT uiBlockY = Ceil(m_uiY, _QL_LAUNCH_MAX_THREAD_SQRT);
+        UINT uiThreadX = (m_uiX >= _QL_LAUNCH_MAX_THREAD_SQRT) ? _QL_LAUNCH_MAX_THREAD_SQRT : m_uiX;
+        UINT uiThreadY = (m_uiY >= _QL_LAUNCH_MAX_THREAD_SQRT) ? _QL_LAUNCH_MAX_THREAD_SQRT : m_uiY;
+        UINT uiBlockX = Ceil(m_uiX, uiThreadX);
+        UINT uiBlockY = Ceil(m_uiY, uiThreadY);
 
         if (uiBlockX > 1)
         {
@@ -374,8 +406,6 @@ extern const QLAPI QLMatrix _PauliX;
 extern const QLAPI QLMatrix _PauliY;
 extern const QLAPI QLMatrix _PauliZ;
 extern const QLAPI QLMatrix _I2;
-
-
 
 
 __END_NAMESPACE

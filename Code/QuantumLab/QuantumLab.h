@@ -67,10 +67,13 @@
 #include "Circuit/Gates/CSDDecompose.h"
 #include "Circuit/Gates/AmplitudeEncode.h"
 #include "Circuit/Gates/QuantumFFT.h"
+#include "Circuit/Gates/QuantumPhaseEstimate.h"
+#include "Circuit/Gates/PauliSimulate.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"
 #include "Simulator/QLSimulatorVector.h"
+#include "Simulator/QLSimulatorMeasure.h"
 
 #ifndef _QL_PRIVATE
 __USE_NAMESPACE

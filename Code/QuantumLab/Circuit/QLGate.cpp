@@ -24,31 +24,26 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 	{
 	case EBasicOperation::EBO_H:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "H";
 		break;
 	case EBasicOperation::EBO_X:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "X";
 		break;
 	case EBasicOperation::EBO_Y:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "Y";
 		break;
 	case EBasicOperation::EBO_Z:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "Z";
 		break;
 	case EBasicOperation::EBO_P:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "p";
 		break;
@@ -57,16 +52,12 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 		m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_1;
 		op_1.m_eOperation = EBasicOperation::EBO_P;
-		op_1.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_2;
 		op_2.m_eOperation = EBasicOperation::EBO_X;
-		op_2.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_3;
 		op_3.m_eOperation = EBasicOperation::EBO_P;
-		op_3.m_lstQubits.AddItem(0);
 		SBasicOperationInGate op_4;
 		op_4.m_eOperation = EBasicOperation::EBO_X;
-		op_4.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_1);
 		m_lstOperations.AddItem(op_2);
 		m_lstOperations.AddItem(op_3);
@@ -77,19 +68,16 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 
 	case EBasicOperation::EBO_RX:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "rx";
 		break;
 	case EBasicOperation::EBO_RY:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "ry";
 		break;
 	case EBasicOperation::EBO_RZ:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "rz";
 		break;
@@ -97,24 +85,18 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 	case EBasicOperation::EBO_CX:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "CNOT";
 		break;
 	case EBasicOperation::EBO_CY:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "CY";
 		break;
 	case EBasicOperation::EBO_CZ:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "CZ";
 		break;
@@ -122,39 +104,30 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 	case EBasicOperation::EBO_CP:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "cp";
 		break;
 	case EBasicOperation::EBO_CRX:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 	case EBasicOperation::EBO_CRY:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 	case EBasicOperation::EBO_CRZ:
 		m_lstQubits.AddItem(0);
 		m_lstQubits.AddItem(1);
-		op_h.m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(1);
 		m_lstOperations.AddItem(op_h);
 		m_sName = "crx";
 		break;
 
 	case EBasicOperation::EBO_CC:
 		m_lstQubits.AddItem(0);
-		op_h.m_lstQubits.AddItem(0);
 		m_fClassicalParameter = m_fClassicalParameter + 0.00001; // to avoid 1.00000 been treated as 0.999999
 		m_lstOperations.AddItem(op_h);
 		m_sName = "collapse";
@@ -208,16 +181,15 @@ void QLGate::Dagger()
 
 QLGate QLGate::CreateControlled() const
 {
-	return Controlled(0, m_lstQubits);
-}
-
-QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQubits) const
-{
 	if (EBasicOperation::EBO_Composite != m_eOp)
 	{
 		TArray<BYTE> combinedQubits;
-		combinedQubits.AddItem(controlledQubit);
-		combinedQubits.Append(lstMappingQubits);
+		combinedQubits.AddItem(0);
+		for (INT i = 0; i < m_lstQubits.Num(); ++i)
+		{
+			combinedQubits.AddItem(m_lstQubits[i] + 1);
+		}
+		
 		switch (m_eOp)
 		{
 		case EBasicOperation::EBO_H:
@@ -229,13 +201,13 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 			return ret;
 		}
 		case EBasicOperation::EBO_X:
-			{
-				QLGate ret(EBasicOperation::EBO_CX);
-				ret.ApplyOnQubits(combinedQubits);
-				ret.m_sName = _T("c") + m_sName;
-				ret.m_bDagger = m_bDagger;
-				return ret;
-			}
+		{
+			QLGate ret(EBasicOperation::EBO_CX);
+			ret.ApplyOnQubits(combinedQubits);
+			ret.m_sName = _T("c") + m_sName;
+			ret.m_bDagger = m_bDagger;
+			return ret;
+		}
 		case EBasicOperation::EBO_Y:
 		{
 			QLGate ret(EBasicOperation::EBO_CY);
@@ -263,7 +235,7 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 		case EBasicOperation::EBO_Phase:
 		{
 			TArray<BYTE> combinedQubits2;
-			combinedQubits2.AddItem(controlledQubit);
+			combinedQubits2.AddItem(0);
 			QLGate ret(EBasicOperation::EBO_P, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits2);
 			ret.m_sName = _T("c") + m_sName;
@@ -359,19 +331,24 @@ QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQu
 	}
 
 	QLGate ret;
-	ret.m_lstQubits.AddItem(controlledQubit);
+	ret.m_lstQubits.AddItem(0);
 	for (INT i = 0; i < m_lstQubits.Num(); ++i)
 	{
-		ret.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[i]]);
+		ret.m_lstQubits.AddItem(m_lstQubits[i] + 1);
 	}
 
 	for (INT i = 0; i < m_lstSubGates.Num(); ++i)
 	{
-		ret.m_lstSubGates.AddItem(m_lstSubGates[i].Controlled(controlledQubit, lstMappingQubits));
+		ret.m_lstSubGates.AddItem(m_lstSubGates[i].CreateControlled());
 	}
 	ret.m_bDagger = m_bDagger;
 	ret.m_sName = _T("c") + m_sName;
 	return ret;
+}
+
+QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQubits) const
+{
+	return QLGate();
 }
 
 
@@ -398,10 +375,10 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 			INT opIndex = m_bDagger ? (opsize - i - 1)  : i;
 			SBasicOperation newone;
 			newone.m_eOperation = m_lstOperations[opIndex].m_eOperation;
-			INT qubitsize = m_lstOperations[opIndex].m_lstQubits.Num();
+			INT qubitsize = m_lstQubits.Num();
 			for (INT j = 0; j < qubitsize; ++j)
 			{
-				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[m_lstOperations[opIndex].m_lstQubits[j]]]);
+				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[j]]);
 			}
 			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
 			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
@@ -628,10 +605,10 @@ void QLGate::PrintOneGate(INT iDepth, BYTE qubitCount) const
 			INT opIndex = m_bDagger ? (opsize - i - 1) : i;
 			SBasicOperation newone;
 			newone.m_eOperation = m_lstOperations[opIndex].m_eOperation;
-			INT qubitsize = m_lstOperations[opIndex].m_lstQubits.Num();
+			INT qubitsize = m_lstQubits.Num();
 			for (INT j = 0; j < qubitsize; ++j)
 			{
-				newone.m_lstQubits.AddItem(m_lstQubits[m_lstOperations[opIndex].m_lstQubits[j]]);
+				newone.m_lstQubits.AddItem(m_lstQubits[j]);
 			}
 			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
 			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
@@ -1113,39 +1090,12 @@ void QLGate::PrintBasicTwo(BYTE ctr, BYTE target, BYTE qubitCount, const CCStrin
 
 void QLGate::PrintGateName(const CCString& sName)
 {
-	switch (sName.GetLength())
+	CCString sNameString = _T("%s");
+	for (INT i = 0; i < (_kPrintName - sName.GetLength()); ++i)
 	{
-	case 0:
-		appGeneral(_T("        "));
-		break;
-	case 1:
-		appGeneral(_T("%s       "), sName.c_str());
-		break;
-	case 2:
-		appGeneral(_T("%s      "), sName.c_str());
-		break;
-	case 3:
-		appGeneral(_T("%s     "), sName.c_str());
-		break;
-	case 4:
-		appGeneral(_T("%s    "), sName.c_str());
-		break;
-	case 5:
-		appGeneral(_T("%s   "), sName.c_str());
-		break;
-	case 6:
-		appGeneral(_T("%s  "), sName.c_str());
-		break;
-	case 7:
-		appGeneral(_T("%s "), sName.c_str());
-		break;
-	case 8:
-		appGeneral(_T("%s"), sName.c_str());
-		break;
-	default:
-		appGeneral(_T("%s"), sName.Left(8).c_str());
-		break;
+		sNameString = sNameString + _T(" ");
 	}
+	appGeneral(sNameString.c_str(), sName.c_str());
 }
 
 __END_NAMESPACE

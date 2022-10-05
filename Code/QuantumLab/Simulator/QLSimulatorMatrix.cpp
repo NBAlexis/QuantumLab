@@ -23,6 +23,8 @@ void QLSimulatorMatrix::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
     TArray<SBasicOperation> ops = param->m_MasterGate.GetOperation(qubits);
     SIZE_T opssize = ops.Num();
 
+    appGeneral(_T("%d gates to apply!!\n"), opssize);
+
     QuESTEnv evn = createQuESTEnv();
     Qureg vec = createQureg(param->m_byQubitCount, evn);
     

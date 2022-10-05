@@ -222,7 +222,6 @@ void TestFRy()
     //fry.DebugPrint(1);
 }
 
-
 void TestCSDGate()
 {
     QLMatrix m(32, 32);
@@ -293,10 +292,176 @@ void TestQFFT()
     sim.Simulate(&param);
 }
 
+void TestEVD()
+{
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    m.Print("m0");
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+
+
+    m.MatrixIExp(F(0.5));
+
+    m.Print("mexp");
+}
+
+void TestKron()
+{
+    QLComplex m1data[4] = { _mcr(1.0), _mcr(2.0), _mcr(3.0), _mcr(4.0) };
+    QLComplex m2data[9] = { _mcr(1.0), _mcr(2.0), _mcr(3.0), _mcr(4.0), _mcr(5.0), _mcr(6.0), _mcr(7.0), _mcr(8.0), _mcr(9.0) };
+
+    QLMatrix m1 = QLMatrix::CopyCreate(2, 2, m1data);
+    QLMatrix m2 = QLMatrix::CopyCreate(3, 3, m2data);
+
+    m1.Print("m1");
+    m2.Print("m2");
+
+    QLMatrix kron = m1.KroneckerProduct(m2);
+    kron.Print("kron");
+}
+
+void TestPauliSimulate()
+{
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+    PrintPauliDecompsedMatrix(DecomposePauliProducts(m)).Print("dec");
+
+    QLGate ch1 = PauliSimulateGate(m, F(0.5), 40);
+    QLGate ch2 = PauliSimulateGateLeapfrog(m, F(0.5), 10, F(0.03));
+
+    //TArray<BYTE> remap = ch.m_lstQubits;
+    //remap.Pop();
+    //remap.InsertAt(0, static_cast<BYTE>(remap.Num()));
+
+    //ch.ApplyOnQubits(remap);
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch1;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    QLMatrix p05 = output.m_OutputMatrix.GetBlock(0, 8, 0, 8);
+    QLMatrix m05 = output.m_OutputMatrix.GetBlock(8, 8, 8, 8);
+
+    appGeneral(_T("============= TROTTER ============\n"));
+    m05.Print("m05");
+
+    n = m;
+    m.MatrixIExp(-F(0.5));
+    m.Print("m05exp");
+
+    p05.Print("p05");
+    n.MatrixIExp(F(0.5));
+    n.Print("p05exp");
+
+    p05 = p05 - n;
+    Real deltap05 = p05.VectorDot(p05).x;
+    m05 = m05 - m;
+    Real deltam05 = m05.VectorDot(m05).x;
+
+    appGeneral(_T("============= TROTTER P05 delta = %f M05 delta = %f ============\n\n"), deltap05, deltam05);
+
+    param.m_MasterGate = ch2;
+    sim.Simulate(&param, &output);
+
+    p05 = output.m_OutputMatrix.GetBlock(0, 8, 0, 8);
+    m05 = output.m_OutputMatrix.GetBlock(8, 8, 8, 8);
+
+    appGeneral(_T("============= 2ND TROTTER ============\n"));
+    m05.Print("m05");
+
+    m.Print("m05exp");
+
+    p05.Print("p05");
+    n.Print("p05exp");
+
+    p05 = p05 - n;
+    deltap05 = p05.VectorDot(p05).x;
+    m05 = m05 - m;
+    deltam05 = m05.VectorDot(m05).x;
+
+    appGeneral(_T("============= 2ND TROTTER P05 delta = %f M05 delta = %f ============\n\n"), deltap05, deltam05);
+}
+
+void TestPhaseEstimate()
+{
+    BYTE phaseBit = 4;
+    Real t = F(1.0);
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+
+    QLMatrix v, w;
+    m.EVD(v, w);
+    Real eigenv[8];
+    for (INT i = 0; i < 8; ++i)
+    {
+        eigenv[i] = w.Get(i, 0).x;
+    }
+    appGeneral(_T("expected eigen values: %f %f %f %f %f %f %f %f \n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3], eigenv[4], eigenv[5], eigenv[6], eigenv[7]);
+    for (INT i = 0; i < 8; ++i)
+    {
+        eigenv[i] = eigenv[i] * t;
+        while (eigenv[i] > PI2)
+        {
+            eigenv[i] = eigenv[i] - PI2;
+        }
+        while (eigenv[i] < 0)
+        {
+            eigenv[i] = eigenv[i] + PI2;
+        }
+
+        eigenv[i] = eigenv[i] * (1U << phaseBit) / PI2;
+    }
+    for (INT i = 0; i < 8; ++i)
+    {
+        for (INT j = i + 1; j < 8; ++j)
+        {
+            if (eigenv[i] > eigenv[j])
+            {
+                Real temp = eigenv[i];
+                eigenv[i] = eigenv[j];
+                eigenv[j] = temp;
+            }
+        }
+    }
+    appGeneral(_T("expected peaks: %f %f %f %f %f %f %f %f \n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3], eigenv[4], eigenv[5], eigenv[6], eigenv[7]);
+
+    QLGate ch = QuantumPhaseEstimateWithHSimple(m, t, 10, phaseBit, F(0.03));
+
+    //ch.DebugPrint(1);
+
+    QLSimulatorParametersMeasure param;
+    param.m_byQubitCount = 4 + phaseBit;
+    param.m_MasterGate = ch;
+    for (BYTE p = 0; p < phaseBit; ++p)
+    {
+        param.m_lstMeasureBits.AddItem(4 + p);
+    }
+
+    QLSimulatorMeasure sim;
+    sim.Simulate(&param);
+}
+
 int main()
 {
     QLRandomInitializer random;
-    TestQFFT();
+    TestPhaseEstimate();
+
+
 
 
 

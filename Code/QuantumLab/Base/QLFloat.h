@@ -32,6 +32,9 @@
 
 #define _atan2 atan2
 #define _make_cuComplex make_cuDoubleComplex
+#define _mc(a, b) make_cuDoubleComplex(F(a), F(b))
+#define _mcr(a) make_cuDoubleComplex(F(a), F(0.0))
+#define _mci(a) make_cuDoubleComplex(F(0.0), F(a))
 #define _cuCaddf cuCadd
 #define _cuCmulf cuCmul
 #define _cuCsubf cuCsub

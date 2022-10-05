@@ -13,6 +13,23 @@
 
 __BEGIN_NAMESPACE
 
+static inline CCString Binary(UINT num, INT max)
+{
+    CCString sret;
+    for (INT i = max - 1; i >= 0; --i)
+    {
+        if (num & (1U << i))
+        {
+            sret = sret + _T("1");
+        }
+        else
+        {
+            sret = sret + _T("0");
+        }
+    }
+    return sret;
+}
+
 extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize = TRUE);
 
 extern QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize = TRUE);
