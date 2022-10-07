@@ -70,10 +70,6 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     }
 
     QLMatrix resmtr(static_cast<UINT>(veclen), 1, res);
-    if (param->m_bPrint)
-    {
-        resmtr.Print();
-    }
 
     QLSimulatorOutputMeasure* outputMatrix = dynamic_cast<QLSimulatorOutputMeasure*>(output);
     if (NULL != outputMatrix)

@@ -197,7 +197,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret = CreateControlledZYZGate(_hadamard, FALSE);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_X:
@@ -205,7 +208,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CX);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_Y:
@@ -213,7 +219,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CY);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_Z:
@@ -221,7 +230,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CZ);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_P:
@@ -229,7 +241,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CP, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_Phase:
@@ -237,9 +252,12 @@ QLGate QLGate::CreateControlled() const
 			TArray<BYTE> combinedQubits2;
 			combinedQubits2.AddItem(0);
 			QLGate ret(EBasicOperation::EBO_P, m_fClassicalParameter);
-			ret.ApplyOnQubits(combinedQubits2);
+			//ret.ApplyOnQubits(combinedQubits2);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 
@@ -248,7 +266,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CRX, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_RY:
@@ -256,7 +277,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CRY, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_RZ:
@@ -264,7 +288,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret(EBasicOperation::EBO_CRZ, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 
@@ -272,7 +299,10 @@ QLGate QLGate::CreateControlled() const
 		{
 			QLGate ret = CreateToffoliGate();
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CY:
@@ -280,7 +310,10 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret = CreateCnU(2, _PauliY);
 			ret.m_sName = _T("CCY");
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CZ:
@@ -288,35 +321,50 @@ QLGate QLGate::CreateControlled() const
 			QLGate ret = CreateCnU(2, _PauliZ);
 			ret.m_sName = _T("CCZ");
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CP:
 		{
 			QLGate ret = CreateCnP(2, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CRX:
 		{
 			QLGate ret = CreateCnRX(2, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CRY:
 		{
 			QLGate ret = CreateCnRY(2, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CRZ:
 		{
 			QLGate ret = CreateCnRZ(2, m_fClassicalParameter);
 			ret.ApplyOnQubits(combinedQubits);
-			ret.m_bDagger = m_bDagger;
+			if (m_bDagger)
+			{
+				ret.Dagger();
+			}
 			return ret;
 		}
 		case EBasicOperation::EBO_CC:
@@ -348,9 +396,13 @@ QLGate QLGate::CreateControlled() const
 
 QLGate QLGate::Controlled(BYTE controlledQubit, const TArray<BYTE>& lstMappingQubits) const
 {
-	return QLGate();
+	QLGate cg = CreateControlled();
+	TArray<BYTE> qubits;
+	qubits.AddItem(controlledQubit);
+	qubits.Append(lstMappingQubits);
+	cg.ApplyOnQubits(qubits);
+	return cg;
 }
-
 
 void QLGate::AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits)
 {

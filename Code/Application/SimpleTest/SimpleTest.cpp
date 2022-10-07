@@ -131,20 +131,249 @@ void TestMatrixSqrt()
     v.Print("v");
 }
 
-void TestCnU()
+UINT TestCnU()
 {
     QLMatrix m(2, 2);
     m.RandomUnitary();
 
-    m.Print("m");
+    /**
+    * ccm expect:
+    * 
+    * 1 0 0 0 0 0 0
+    * 0 1 0 0 0 0 0
+    * 0 0 1 0 0 0 0
+    * 0 0 0 a 0 0 b
+    * 0 0 0 0 1 0 0
+    * 0 0 0 0 0 1 0
+    * 0 0 0 c 0 0 d
+    */
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, m.Get(0, 0));
+    correct.Set(15, 7, m.Get(1, 0));
+    correct.Set(7, 15, m.Get(0, 1));
+    correct.Set(15, 15, m.Get(1, 1));
+
 
     QLGate ch = CreateCnU(3, m);
     QLSimulatorParametersMatrix param;
     param.m_byQubitCount = 4;
     param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
     QLSimulatorMatrix sim;
-    sim.Simulate(&param);
-    ch.DebugPrint(1);
+    sim.Simulate(&param, &output);
+
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnRX()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+    correct.Set(15, 7, _make_cuComplex(F(0.0), -_sin(F(0.1) / 2)));
+    correct.Set(7, 15, _make_cuComplex(F(0.0), -_sin(F(0.1) / 2)));
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+
+    QLGate ch = CreateCnRX(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnRY()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+    correct.Set(15, 7, _make_cuComplex(-_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(7, 15, _make_cuComplex(_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+
+    QLGate ch = CreateCnRY(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnRZ()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1) / 2), -_sin(F(0.1) / 2)));
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1) / 2), _sin(F(0.1) / 2)));
+
+    QLGate ch = CreateCnRZ(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnP()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1)), _sin(F(0.1))));
+
+    QLGate ch = CreateCnP(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnPh()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1)), _sin(F(0.1))));
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1)), _sin(F(0.1))));
+
+    QLGate ch = CreateCnPh(3, F(0.1));
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnU2()
+{
+    QLMatrix m(2, 2);
+    m.RandomUnitary();
+
+    /**
+    * ccm expect:
+    *
+    * 1 0 0 0 0 0 0
+    * 0 1 0 0 0 0 0
+    * 0 0 1 0 0 0 0
+    * 0 0 0 a 0 0 b
+    * 0 0 0 0 1 0 0
+    * 0 0 0 0 0 1 0
+    * 0 0 0 c 0 0 d
+    */
+    //QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    //correct.Set(7, 7, m.Get(0, 0));
+    //correct.Set(15, 7, m.Get(1, 0));
+    //correct.Set(7, 15, m.Get(0, 1));
+    //correct.Set(15, 15, m.Get(1, 1));
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, m.Get(0, 0));
+    correct.Set(15, 7, m.Get(1, 0));
+    correct.Set(7, 15, m.Get(0, 1));
+    correct.Set(15, 15, m.Get(1, 1));
+
+    QLGate ch = CreateZYZGate(m);
+    QLGate ch1 = ch.CreateControlled().CreateControlled().CreateControlled();
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch1;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    //correct.Print("c");
+    //output.m_OutputMatrix.Print("o");
+
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    appGeneral(_T("delta = %f\n"), fDelta);
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnRY2()
+{
+    QLMatrix correct = QLMatrix::CreateEye(16, 16);
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+    correct.Set(15, 7, _make_cuComplex(-_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(7, 15, _make_cuComplex(_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(15, 15, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+
+    QLGate ch0 = QLGate(EBasicOperation::EBO_RY, F(0.1)).CreateControlled().CreateControlled();
+    QLGate ch = ch0.CreateControlled();
+
+    //ch0.DebugPrint(1);
+    //ch.DebugPrint(1);
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
+}
+
+UINT TestCnRY3()
+{
+    QLMatrix correct = QLMatrix::CreateEye(8, 8);
+    correct.Set(3, 3, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+    correct.Set(7, 3, _make_cuComplex(_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(3, 7, _make_cuComplex(-_sin(F(0.1) / 2), F(0.0)));
+    correct.Set(7, 7, _make_cuComplex(_cos(F(0.1) / 2), F(0.0)));
+
+    QLGate ch0 = QLGate(EBasicOperation::EBO_RY, F(0.1)).CreateControlled();
+    //QLGate ch1 = ch0.CreateControlled();
+    ch0.Dagger();
+    QLGate ch = ch0.CreateControlled();
+
+    //ch0.DebugPrint(1);
+    //ch.DebugPrint(1);
+    //ch1.DebugPrint(1);
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+    correct = correct - output.m_OutputMatrix;
+    Real fDelta = abs(correct.VectorDot(correct).x);
+
+    return fDelta > F(0.0000001) ? 1 : 0;
 }
 
 void TestCP()
@@ -292,6 +521,17 @@ void TestQFFT()
     sim.Simulate(&param);
 }
 
+void TestQFFT2()
+{
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = QuantumFFTGate(3);
+    param.m_bPrint = TRUE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+}
+
 void TestEVD()
 {
     QLMatrix m(8, 8);
@@ -393,10 +633,42 @@ void TestPauliSimulate()
     appGeneral(_T("============= 2ND TROTTER P05 delta = %f M05 delta = %f ============\n\n"), deltap05, deltam05);
 }
 
+void TestPauliSimulateController()
+{
+    QLMatrix m(4, 4);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+    QLGate ch2 = PauliSimulateGateLeapfrog(m, F(0.5), 10, F(0.01));
+    //QLGate ch2 = PauliSimulateGateLeapfrog(m, F(0.5), 2, F(0.8));
+    QLGate cch2 = ch2.CreateControlled();
+
+    //ch2.DebugPrint(4);
+
+    //cch2.DebugPrint(3);
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 4;
+    param.m_MasterGate = cch2;
+    param.m_bPrint = TRUE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    n = m;
+    m.MatrixIExp(-F(0.5));
+    m.Print("m05exp");
+
+    n.MatrixIExp(F(0.5));
+    n.Print("p05exp");
+}
+
 void TestPhaseEstimate()
 {
-    BYTE phaseBit = 4;
-    Real t = F(1.0);
+    BYTE phaseBit = 5;
+    Real t = F(1.2);
     QLMatrix m(8, 8);
     m.RandomOne();
     QLMatrix n = m;
@@ -440,13 +712,149 @@ void TestPhaseEstimate()
     }
     appGeneral(_T("expected peaks: %f %f %f %f %f %f %f %f \n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3], eigenv[4], eigenv[5], eigenv[6], eigenv[7]);
 
-    QLGate ch = QuantumPhaseEstimateWithHSimple(m, t, 10, phaseBit, F(0.03));
+    QLGate ch = QuantumPhaseEstimateWithHSimple(m, t, 20, phaseBit, F(0.02));
 
     //ch.DebugPrint(1);
 
     QLSimulatorParametersMeasure param;
     param.m_byQubitCount = 4 + phaseBit;
     param.m_MasterGate = ch;
+    param.m_iRepeat = 10000;
+    for (BYTE p = 0; p < phaseBit; ++p)
+    {
+        param.m_lstMeasureBits.AddItem(4 + p);
+    }
+
+    QLSimulatorMeasure sim;
+    sim.Simulate(&param);
+}
+
+void TestConditionalHamitonianEvolution()
+{
+    Real t = F(1.0);
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+
+    QLGate ch = ConditionalHamiltonianEvolution(m, 3, t, 5, F(0.02));
+
+    // 0 is (1, 0), the smaller the index, the smaller the range, and the binary string is |54>
+    // |0><0| is 4=0, 5=0, act on (1, 0, 0, 0)
+    // |1><1| is 4=1, 5=0, act on (0, 1, 0, 0)
+    // |2><2| is 4=0, 5=1, act on (0, 0, 1, 0)
+    // |3><3| is 4=1, 5=1, act on (0, 0, 0, 1)
+    // So it should be
+    // exp(+-0)   0       0      0
+    //     0    exp(2/4)  0      0
+    //     0      0    exp(1/4)  0
+    //     0      0       0   exp(3/4)
+
+    QLMatrix correct = QLMatrix::CreateEye(128, 128);
+    for (INT i = 1; i < 8; ++i)
+    {
+        n = m;
+        n.MatrixIExp(F(0.125) * i);
+        correct.SetBlock(16 * i, 8, 16 * i, 8, n.HostBuffer());
+        n.Dagger();
+        correct.SetBlock(16 * i + 8, 8, 16 * i + 8, 8, n.HostBuffer());
+    }
+
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = 7;
+    param.m_MasterGate = ch;
+    param.m_bPrint = FALSE;
+    QLSimulatorOutputMatrix output;
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    correct = correct - output.m_OutputMatrix;
+    Real delta = correct.VectorDot(correct).x;
+    appGeneral(_T("delta = %f\n"), delta);
+}
+
+void TestImprovedQPEInitalState()
+{
+    QLGate ae = BuildImprovedQPEInitialState(3);
+
+    QLSimulatorParametersVector param;
+    param.m_byQubitCount = 3;
+    param.m_MasterGate = ae;
+
+    /**
+    * the tau is |210>
+    * so |0> = |000> = (1, 0, 0, 0, 0, 0, 0, 0)
+    * so |1> = |001> = (0, 1, 0, 0, 0, 0, 0, 0)
+    * so |2> = |010> = (0, 0, 1, 0, 0, 0, 0, 0)
+    * ...
+    */
+    QLSimulatorVector sim;
+    sim.Simulate(&param);
+
+    appGeneral(_T("expecting\n"));
+    for (INT i = 0; i < 8; ++i)
+    {
+        appGeneral(_T("%f\n"), _sqrt(2 / F(8.0)) * _sin(PI * (i + F(0.5)) / 8));
+    }
+}
+
+void TestPhaseEstimateImproved()
+{
+    BYTE phaseBit = 5;
+    Real t = F(1.5);
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+
+    QLMatrix v, w;
+    m.EVD(v, w);
+    Real eigenv[8];
+    for (INT i = 0; i < 8; ++i)
+    {
+        eigenv[i] = w.Get(i, 0).x;
+    }
+    appGeneral(_T("expected eigen values: %f %f %f %f %f %f %f %f \n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3], eigenv[4], eigenv[5], eigenv[6], eigenv[7]);
+    for (INT i = 0; i < 8; ++i)
+    {
+        eigenv[i] = eigenv[i] * t;
+        while (eigenv[i] > PI2)
+        {
+            eigenv[i] = eigenv[i] - PI2;
+        }
+        while (eigenv[i] < 0)
+        {
+            eigenv[i] = eigenv[i] + PI2;
+        }
+
+        eigenv[i] = eigenv[i] * (1U << phaseBit) / PI2;
+    }
+    for (INT i = 0; i < 8; ++i)
+    {
+        for (INT j = i + 1; j < 8; ++j)
+        {
+            if (eigenv[i] > eigenv[j])
+            {
+                Real temp = eigenv[i];
+                eigenv[i] = eigenv[j];
+                eigenv[j] = temp;
+            }
+        }
+    }
+    appGeneral(_T("expected peaks: %f %f %f %f %f %f %f %f \n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3], eigenv[4], eigenv[5], eigenv[6], eigenv[7]);
+
+    QLGate ch = QuantumPhaseEstimateWithHImproved(m, t * (1U << phaseBit), 20, phaseBit, F(0.02));
+
+    //ch.DebugPrint(2);
+
+    QLSimulatorParametersMeasure param;
+    param.m_byQubitCount = 4 + phaseBit;
+    param.m_MasterGate = ch;
+    param.m_iRepeat = 10000;
     for (BYTE p = 0; p < phaseBit; ++p)
     {
         param.m_lstMeasureBits.AddItem(4 + p);
@@ -459,11 +867,9 @@ void TestPhaseEstimate()
 int main()
 {
     QLRandomInitializer random;
-    TestPhaseEstimate();
 
-
-
-
+    //appGeneral(_T("%d"), TestCnU2());
+    TestPhaseEstimateImproved();
 
 
     //std::vector<QLComplex> l1;

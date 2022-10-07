@@ -48,6 +48,38 @@ TArray<QLComplex> QLAPI NormalizeV(const TArray<QLComplex>& v, UINT& lenPower)
     return ret;
 }
 
+TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower)
+{
+    TArray<Real> ret;
+    UINT vLength = static_cast<UINT>(v.Num());
+    UINT vLengthPower = MostSignificantPowerTwo(vLength);
+    if (vLengthPower < 1)
+    {
+        vLengthPower = 1;
+    }
+    UINT vLengthWanted = (1 << vLengthPower);
+
+    Real sum = F(0.0);
+    for (INT i = 0; i < v.Num(); ++i)
+    {
+        sum += v[i] * v[i];
+    }
+
+    if (sum < _QL_FLT_MIN_)
+    {
+        appCrucial(_T("vector length too small!\n"));
+        sum = _QL_FLT_MIN_;
+    }
+    sum = _sqrt(sum);
+    for (INT i = 0; i < v.Num(); ++i)
+    {
+        ret.AddItem(v[i] / sum);
+    }
+
+    lenPower = vLengthPower;
+    return ret;
+}
+
 TArray<Real> CalculateVectorAbsoluteRotations(TArray<QLComplex> v, UINT lengthPower)
 {
     TArray<Real> degreeList;
@@ -77,6 +109,42 @@ TArray<Real> CalculateVectorAbsoluteRotations(TArray<QLComplex> v, UINT lengthPo
                 for (UINT k = 0; k < skip; ++k)
                 {
                     v[j * stride + skip + k] = cuCdivf_cr_host(v[j * stride + skip + k], snd);
+                }
+            }
+        }
+    }
+    return degreeList;
+}
+
+TArray<Real> CalculateVectorAbsoluteRotationsReal(TArray<Real> v, UINT lengthPower)
+{
+    TArray<Real> degreeList;
+    for (UINT i = 0; i < lengthPower; ++i)
+    {
+        UINT degreeCount = 1U << (lengthPower - i - 1);
+        UINT skip = 1U << i;
+        UINT stride = 1U << (i + 1);
+        for (UINT j = 0; j < degreeCount; ++j)
+        {
+            Real cs = v[j * stride];
+            Real sn = v[j * stride + skip];
+            Real degree = _atan2(sn, cs);
+            degreeList.AddItem(degree);
+            Real csd = _cos(degree);
+            Real snd = _sin(degree);
+            if (csd > _QL_FLT_MIN_)
+            {
+                for (UINT k = 0; k < skip; ++k)
+                {
+                    v[j * stride + k] = v[j * stride + k] / csd;
+                }
+            }
+
+            if (snd > _QL_FLT_MIN_)
+            {
+                for (UINT k = 0; k < skip; ++k)
+                {
+                    v[j * stride + skip + k] = v[j * stride + skip + k] / snd;
                 }
             }
         }
@@ -155,6 +223,18 @@ QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v)
     ret.m_sName = _T("AmpEnc");
     MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotations(varray, vLengthPower), vLengthPower);
     ApplyPhase(ret, varray, vLengthPower);
+    return ret;
+}
+
+QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v)
+{
+    UINT vLengthPower = 0;
+    TArray<Real> varray = NormalizeVReal(v, vLengthPower);
+
+    QLGate ret;
+    ret.AddQubits(vLengthPower);
+    ret.m_sName = _T("AmpEnc");
+    MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotationsReal(varray, vLengthPower), vLengthPower);
     return ret;
 }
 

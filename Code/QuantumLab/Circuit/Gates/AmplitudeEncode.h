@@ -25,7 +25,11 @@ static inline UINT MostSignificantPowerTwo(UINT n)
 
 extern TArray<QLComplex> QLAPI NormalizeV(const TArray<QLComplex>& v, UINT& lenPower);
 
+extern TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower);
+
 extern QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v);
+
+extern QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v);
 
 __END_NAMESPACE
 

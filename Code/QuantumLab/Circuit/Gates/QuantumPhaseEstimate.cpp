@@ -110,6 +110,90 @@ QLGate QLAPI QuantumPhaseEstimateWithHSimple(const QLMatrix& h, Real t, UINT iTr
     return qpe;
 }
 
+
+QLGate QLAPI BuildImprovedQPEInitialState(BYTE byQubit)
+{
+    TArray<Real> coeffs;
+    Real T = static_cast<Real>(1U << byQubit);
+    for (UINT i = 0; i < (1U << byQubit); ++i)
+    {
+        coeffs.AddItem(_sqrt(2 / T) * _sin(PI * (i + F(0.5)) / T));
+    }
+
+    QLGate ret = AmplitudeEncodeReal(coeffs);
+    ret.m_sName = _T("IQPEInit");
+    return ret;
+}
+
+QLGate QLAPI ConditionalHamiltonianEvolution(const QLMatrix& h, BYTE phaseQubitNum, Real t, UINT shortestIntervalTrotter, Real fMinimalKept)
+{
+    BYTE uQubitLength = static_cast<BYTE>(Log2(h.X()) + 1);
+    TArray<Real> evaluationTimes;
+    TArray<BYTE> uqubits;
+    for (BYTE i = 0; i < uQubitLength; ++i)
+    {
+        uqubits.AddItem(i);
+    }
+
+    for (UINT i = 0; i < (1U << phaseQubitNum); ++i)
+    {
+        evaluationTimes.AddItem(static_cast<Real>(i));
+    }
+    Real fevaluationFactor = t / static_cast<Real>(1U << phaseQubitNum);
+    TArray<Real> theta = SpliteAngles(evaluationTimes, 1U << phaseQubitNum);
+
+    QLGate ret;
+    ret.AddQubits(uQubitLength + phaseQubitNum);
+    ret.m_sName = _T("CHE");
+
+    UINT degreeNumber = (1U << phaseQubitNum);
+    for (UINT i = 0; i < degreeNumber; ++i)
+    {
+        INT trotterStep = static_cast<INT>(round(abs(theta[i] / F(0.5))));
+        if (trotterStep > 0)
+        {
+            QLGate u = PauliSimulateGateLeapfrog(h, theta[i] * fevaluationFactor, trotterStep * shortestIntervalTrotter, fMinimalKept);
+            ret.AppendGate(u, uqubits);
+        }
+
+        UINT ctrIdx = GrayCodeDifferent(i, degreeNumber);
+        //ctrIdx = uQubitLength + (phaseQubitNum - 1 - ctrIdx);
+        ctrIdx = uQubitLength + ctrIdx;
+
+        TArray <BYTE> cnotbits;
+        cnotbits.AddItem(ctrIdx);
+        cnotbits.AddItem(uQubitLength - 1);
+        ret.AppendGate(QLGate(EBasicOperation::EBO_CX), cnotbits);
+    }
+    return ret;
+}
+
+QLGate QLAPI QuantumPhaseEstimateWithHImproved(const QLMatrix& h, Real t, UINT iTrotterStep, BYTE numberOfPhaseQubit, Real fMinimalKept)
+{
+    BYTE uQubitLength = static_cast<BYTE>(Log2(h.X()) + 1);
+
+    QLGate qpe;
+    qpe.AddQubits(uQubitLength + numberOfPhaseQubit);
+    qpe.m_sName = _T("QPE");
+
+    TArray<BYTE> phaseQubits;
+    for (BYTE i = 0; i < numberOfPhaseQubit; ++i)
+    {
+        phaseQubits.AddItem(i + uQubitLength);
+    }
+    QLGate preparestate = BuildImprovedQPEInitialState(numberOfPhaseQubit);
+    qpe.AppendGate(preparestate, phaseQubits);
+
+    QLGate che = ConditionalHamiltonianEvolution(h, numberOfPhaseQubit, t, iTrotterStep, fMinimalKept);
+    qpe.AppendGate(che, qpe.m_lstQubits);
+
+    QLGate qft_circuit = QuantumFFTGate(numberOfPhaseQubit);
+    qft_circuit.Dagger();
+    qpe.AppendGate(qft_circuit, phaseQubits);
+    
+    return qpe;
+}
+
 __END_NAMESPACE
 
 
