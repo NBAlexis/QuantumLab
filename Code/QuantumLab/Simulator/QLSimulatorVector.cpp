@@ -73,10 +73,10 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
         resmtr.Print();
     }
 
-    QLSimulatorOutputMatrix* outputMatrix = dynamic_cast<QLSimulatorOutputMatrix*>(output);
-    if (NULL != outputMatrix)
+    QLSimulatorOutputVector* outputVector= dynamic_cast<QLSimulatorOutputVector*>(output);
+    if (NULL != outputVector)
     {
-        outputMatrix->m_OutputMatrix = resmtr;
+        outputVector->m_OutputMatrix = resmtr;
     }
 }
 

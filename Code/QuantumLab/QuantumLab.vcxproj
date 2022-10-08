@@ -28,8 +28,10 @@
     <ClInclude Include="Circuit\Gates\QuantumPhaseEstimate.h" />
     <ClInclude Include="Circuit\Gates\SimpleGates.h" />
     <ClInclude Include="Circuit\QLGate.h" />
+    <ClInclude Include="Circuit\Subroutine\HHL.h" />
     <ClInclude Include="ClassicalTools\QLMatrix.h" />
     <ClInclude Include="ClassicalTools\QLRandom.h" />
+    <ClInclude Include="ClassicalTools\QuantumDataViewer.h" />
     <ClInclude Include="QuantumLab.h" />
     <ClInclude Include="QuantumLabPCH.h" />
     <ClInclude Include="Simulator\QLSimulator.h" />
@@ -56,6 +58,8 @@
     <ClCompile Include="Circuit\Gates\QuantumPhaseEstimate.cpp" />
     <ClCompile Include="Circuit\Gates\SimpleGates.cpp" />
     <ClCompile Include="Circuit\QLGate.cpp" />
+    <ClCompile Include="Circuit\Subroutine\HHL.cpp" />
+    <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />
     <ClCompile Include="Simulator\QLSimulator.cpp" />
     <ClCompile Include="Simulator\QLSimulatorMatrix.cpp" />

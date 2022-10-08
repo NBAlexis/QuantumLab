@@ -297,6 +297,11 @@ public:
 
     QLMatrix KroneckerProduct(const QLMatrix& m2) const;
 
+    /**
+    * solve Ax=y
+    */
+    QLMatrix GELS(const QLMatrix& y) const;
+
 protected:
 
     /**

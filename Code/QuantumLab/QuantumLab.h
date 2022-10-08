@@ -59,6 +59,7 @@
 
 #include "ClassicalTools/QLRandom.h"
 #include "ClassicalTools/QLMatrix.h"
+#include "ClassicalTools/QuantumDataViewer.h"
 
 #include "Circuit/QLGate.h"
 #include "Circuit/Gates/SimpleGates.h"
@@ -69,6 +70,8 @@
 #include "Circuit/Gates/QuantumFFT.h"
 #include "Circuit/Gates/QuantumPhaseEstimate.h"
 #include "Circuit/Gates/PauliSimulate.h"
+
+#include "Circuit/Subroutine/HHL.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

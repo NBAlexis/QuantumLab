@@ -170,6 +170,7 @@ QLGate QLAPI ConditionalHamiltonianEvolution(const QLMatrix& h, BYTE phaseQubitN
 
 QLGate QLAPI QuantumPhaseEstimateWithHImproved(const QLMatrix& h, Real t, UINT iTrotterStep, BYTE numberOfPhaseQubit, Real fMinimalKept)
 {
+    t = t * (1U << numberOfPhaseQubit);
     BYTE uQubitLength = static_cast<BYTE>(Log2(h.X()) + 1);
 
     QLGate qpe;

@@ -19,6 +19,9 @@
     <Filter Include="ToolClass">
       <UniqueIdentifier>{e2dfbce5-8fc4-4c27-a86e-d6b7de92474f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Circuit\Subroutine">
+      <UniqueIdentifier>{48b953e9-e635-44dd-9888-856bd0cefff1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -66,6 +69,12 @@
     </ClCompile>
     <ClCompile Include="Simulator\QLSimulatorMeasure.cpp">
       <Filter>Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Subroutine\HHL.cpp">
+      <Filter>Circuit\Subroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp">
+      <Filter>ClassicalTools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +175,12 @@
     </ClInclude>
     <ClInclude Include="Simulator\QLSimulatorMeasure.h">
       <Filter>Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Subroutine\HHL.h">
+      <Filter>Circuit\Subroutine</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\QuantumDataViewer.h">
+      <Filter>ClassicalTools</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

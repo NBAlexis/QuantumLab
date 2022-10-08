@@ -1815,6 +1815,86 @@ QLMatrix QLMatrix::KroneckerProduct(const QLMatrix& m2) const
     return QLMatrix(resX, resY, hostBuffer);
 }
 
+/**
+* 
+*/
+QLMatrix QLMatrix::GELS(const QLMatrix& y) const
+{
+    cusolverDnHandle_t cusolverH = NULL;
+    cudaStream_t stream = NULL;
+
+    const INT m = m_uiX;
+
+    INT info = 0;
+
+    QLComplex* d_A = NULL;
+    QLComplex* d_B = NULL;
+    QLComplex* d_X = NULL; 
+    INT* d_info = NULL; 
+
+    SIZE_T d_lwork = 0; 
+    QLComplex* d_work = NULL;
+
+    checkCudaErrors(cusolverDnCreate(&cusolverH));
+
+    checkCudaErrors(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+    checkCudaErrors(cusolverDnSetStream(cusolverH, stream));
+
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_A), sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_B), sizeof(QLComplex) * m_uiX));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_X), sizeof(QLComplex) * m_uiX));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_info), sizeof(INT)));
+
+    checkCudaErrors(cudaMemcpyAsync(d_A, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice, stream));
+    checkCudaErrors(cudaMemcpyAsync(d_B, y.HostBuffer(), sizeof(QLComplex) * m_uiX, cudaMemcpyHostToDevice, stream));
+
+#if _QL_DOUBLEFLOAT
+    checkCudaErrors(cusolverDnZZgels_bufferSize(cusolverH, m, m, 1, d_A, m, d_B, m, d_X, m, d_work, &d_lwork));
+#else
+    checkCudaErrors(cusolverDnCCgels_bufferSize(cusolverH, m, m, 1, d_A, m, d_B, m, d_X, m, d_work, &d_lwork));
+#endif
+
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void**>(&d_work), sizeof(QLComplex) * d_lwork));
+
+    INT niters;
+#if _QL_DOUBLEFLOAT
+    checkCudaErrors(cusolverDnZZgels(cusolverH, m, m, 1, d_A, m, d_B, m, d_X, m, d_work, d_lwork, &niters, d_info));
+#else
+    checkCudaErrors(cusolverDnCCgels(cusolverH, m, m, 1, d_A, m, d_B, m, d_X, m, d_work, d_lwork, &niters, d_info));
+#endif
+
+    checkCudaErrors(cudaMemcpyAsync(&info, d_info, sizeof(INT), cudaMemcpyDeviceToHost, stream));
+    checkCudaErrors(cudaStreamSynchronize(stream));
+
+    if (0 > info) 
+    {
+        appCrucial(_T("%d-th parameter is wrong \n"), -info);
+        return QLMatrix();
+    }
+
+    if (niters < 0)
+    {
+        appWarning(_T("iteration failed: %d\n"), niters);
+    }
+
+    QLComplex* hostX = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m_uiX));
+    checkCudaErrors(cudaMemcpyAsync(hostX, d_X, sizeof(QLComplex) * m_uiX, cudaMemcpyDeviceToHost, stream));
+    checkCudaErrors(cudaStreamSynchronize(stream));
+
+    checkCudaErrors(cudaFree(d_A));
+    checkCudaErrors(cudaFree(d_B));
+    checkCudaErrors(cudaFree(d_X));
+    checkCudaErrors(cudaFree(d_info));
+    checkCudaErrors(cudaFree(d_work));
+
+    checkCudaErrors(cusolverDnDestroy(cusolverH));
+
+    checkCudaErrors(cudaStreamDestroy(stream));
+
+
+    return QLMatrix(m_uiX, 1, hostX);
+}
+
 static QLComplex _hadamardmtr[4] = { 
     _make_cuComplex(InvSqrt2, F(0.0)), 
     _make_cuComplex(InvSqrt2, F(0.0)), 
