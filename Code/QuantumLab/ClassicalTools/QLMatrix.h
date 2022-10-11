@@ -195,7 +195,8 @@ public:
     //Note that, M = u.s.v^+ instead of u.s.v
     void SVDJ(QLMatrix& u, QLMatrix& s, QLMatrix& v) const;
 
-    void Dagger();
+    void Transpose(UBOOL bConjugate = FALSE);
+    void Dagger() { Transpose(TRUE); }
     void Opposite();
 
     void Add(const QLMatrix& other);

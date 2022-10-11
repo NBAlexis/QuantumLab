@@ -1027,7 +1027,7 @@ void TestHHL()
     aftermeasured.AddItem(0);
     aftermeasured.AddItem(1);
 
-    QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, FALSE);
+    QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, TRUE);
 
     res.Print("res");
 }
@@ -1114,9 +1114,185 @@ void TestHHLLarge()
     
     aftermeasured.AddItem(1);
 
-    QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, FALSE);
+    QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, TRUE);
 
     res.Print("res");
+}
+
+void TestMatrixMultiply()
+{
+    BYTE phaseBit = 4;
+    QLMatrix m(4, 4);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+
+    QLMatrix v, w;
+    m.EVD(v, w);
+    Real eigenv[4];
+    for (INT i = 0; i < 4; ++i)
+    {
+        eigenv[i] = w.Get(i, 0).x;
+    }
+    appGeneral(_T("expected eigen values: %f %f %f %f\n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3]);
+    Real maxAbsEigenValue = F(3.0);
+    Real t = PI / maxAbsEigenValue;
+    for (INT i = 0; i < 4; ++i)
+    {
+        eigenv[i] = eigenv[i] * t;
+        while (eigenv[i] > PI2)
+        {
+            eigenv[i] = eigenv[i] - PI2;
+        }
+        while (eigenv[i] < 0)
+        {
+            eigenv[i] = eigenv[i] + PI2;
+        }
+
+        eigenv[i] = eigenv[i] * (1U << phaseBit) / PI2;
+    }
+    for (INT i = 0; i < 4; ++i)
+    {
+        for (INT j = i + 1; j < 4; ++j)
+        {
+            if (eigenv[i] > eigenv[j])
+            {
+                Real temp = eigenv[i];
+                eigenv[i] = eigenv[j];
+                eigenv[j] = temp;
+            }
+        }
+    }
+    appGeneral(_T("expected peaks: %f %f %f %f\n"), eigenv[0], eigenv[1], eigenv[2], eigenv[3]);
+
+    QLMatrix y(4, 1);
+    y.RandomOne();
+    y = y / _sqrt(y.VectorDot(y).x);
+    y.Print("y");
+
+    y.ReShape(1, y.X());
+    QLMatrix x = m * y;
+    x = x / _sqrt(x.VectorDot(x).x);
+    x.ReShape(x.Y(), 1);
+    x.Print("x");
+
+    QLGate hhl = HermitianMatrixMultiply(m, y.ToVector(), 10, maxAbsEigenValue, phaseBit);
+    //hhl.DebugPrint(1);
+
+    QLSimulatorParametersVector param;
+    param.m_byQubitCount = 4 + phaseBit;
+    param.m_MasterGate = hhl;
+    param.m_bPrint = FALSE;
+
+    QLSimulatorOutputVector out;
+    QLSimulatorVector sim;
+    sim.Simulate(&param, &out);
+
+    TArray<BYTE> aftermeasured;
+    aftermeasured.AddItem(2);
+    aftermeasured.AddItem(2);
+    aftermeasured.AddItem(0);
+    aftermeasured.AddItem(0);
+    aftermeasured.AddItem(0);
+    aftermeasured.AddItem(0);
+    aftermeasured.AddItem(0);
+    aftermeasured.AddItem(1);
+
+    QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, TRUE);
+
+    res.Print("res");
+}
+
+void TestMatrixPower()
+{
+    BYTE phaseBit = 6;
+    QLMatrix m(8, 8);
+    m.RandomOne();
+    QLMatrix n = m;
+    n.Dagger();
+    m = m + n;
+    m.Print("m");
+    Real maxEigen = F(6.0);
+
+    QLMatrix y(8, 1);
+    y.RandomOne();
+    y = y / _sqrt(y.VectorDot(y).x);
+    y.Print("y");
+
+    QLGate y_gate = AmplitudeEncode(y.ToVector());
+
+    for (INT i = -2; i < 3; ++i)
+    {
+        if (0 == i)
+        {
+            continue;
+        }
+
+        QLGate toSim;
+        toSim.AddQubits(5 + phaseBit);
+        toSim.AppendGate(y_gate, y_gate.m_lstQubits);
+
+        QLMatrix x;
+        if (-2 == i)
+        {
+            x = m.GELS(y);
+            x = m.GELS(x);
+            x = x / _sqrt(x.VectorDot(x).x);
+        }
+        else if (-1 == i)
+        {
+            x = m.GELS(y);
+            x = x / _sqrt(x.VectorDot(x).x);
+        }
+        else if (1 == i)
+        {
+            y.ReShape(1, y.X());
+            x = m * y;
+            x = x / _sqrt(x.VectorDot(x).x);
+            x.ReShape(x.Y(), 1);
+        }
+        else if (2 == i)
+        {
+            y.ReShape(1, y.X());
+            x = m * y;
+            x = m * x;
+            x = x / _sqrt(x.VectorDot(x).x);
+            x.ReShape(x.Y(), 1);
+        }
+
+        appGeneral(_T("power: %d, correct res:\n"), i);
+        x.Print("x");
+
+        QLGate mtrpow = MatrixPowerGate(m, i, 10, maxEigen, phaseBit, F(0.01));
+        toSim.AppendGate(mtrpow, mtrpow.m_lstQubits);
+
+        QLSimulatorParametersVector param;
+        param.m_byQubitCount = 5 + phaseBit;
+        param.m_MasterGate = toSim;
+        param.m_bPrint = FALSE;
+
+        QLSimulatorOutputVector out;
+        QLSimulatorVector sim;
+        sim.Simulate(&param, &out);
+
+        TArray<BYTE> aftermeasured;
+        aftermeasured.AddItem(2);
+        aftermeasured.AddItem(2);
+        aftermeasured.AddItem(2);
+        aftermeasured.AddItem(0);
+
+        for (BYTE i = 0; i < phaseBit; ++i)
+        {
+            aftermeasured.AddItem(0);
+        }
+
+        aftermeasured.AddItem(1);
+
+        QLMatrix res = ShowStateVectorDetail(out.m_OutputMatrix.HostBuffer(), aftermeasured, TRUE);
+        res.Print("res");
+    }
 }
 
 int main()
@@ -1124,7 +1300,7 @@ int main()
     QLRandomInitializer random;
 
     //appGeneral(_T("%d"), TestCnRY4());
-    TestHHLLarge();
+    TestMatrixPower();
     //TestFRy2();
 
     //std::vector<QLComplex> l1;

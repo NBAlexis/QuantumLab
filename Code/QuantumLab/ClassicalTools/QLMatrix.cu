@@ -48,7 +48,7 @@ _kernelRandomOne(QLComplex* pDevicePtr, UINT perthread, UINT uiMax)
 }
 
 __global__ void _QL_LAUNCH_BOUND
-_kernelDagger(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT uiXLen, UINT uiYLen, UINT uiMax)
+_kernelTranspose(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UBOOL bConj, UINT uiXLen, UINT uiYLen, UINT uiMax)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
     const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
@@ -56,7 +56,7 @@ _kernelDagger(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT
     const UINT uiID2 = uiXLen * uiY + uiX;
     if (uiID1 < uiMax && uiID2 < uiMax)
     {
-        pDevicePtr[uiID2] = _cuConjf(pSource[uiID1]);
+        pDevicePtr[uiID2] = bConj ? _cuConjf(pSource[uiID1]) : pSource[uiID1];
     }
 }
 
@@ -865,7 +865,7 @@ void QLMatrix::RandomUnitary()
     *this = q;
 }
 
-void QLMatrix::Dagger()
+void QLMatrix::Transpose(UBOOL bConjugate)
 {
     dim3 blocks;
     dim3 threads;
@@ -875,7 +875,7 @@ void QLMatrix::Dagger()
     checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY));
     checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * m_uiX * m_uiY));
     checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
-    _kernelDagger<<<blocks, threads>>>(deviceBuffer2, deviceBuffer1, m_uiX, m_uiY, m_uiX * m_uiY);
+    _kernelTranspose << <blocks, threads >> > (deviceBuffer2, deviceBuffer1, bConjugate, m_uiX, m_uiY, m_uiX * m_uiY);
 
     OnChangeContent();
     UINT uiY = m_uiY;
@@ -887,6 +887,7 @@ void QLMatrix::Dagger()
     checkCudaErrors(cudaFree(deviceBuffer1));
     checkCudaErrors(cudaFree(deviceBuffer2));
 }
+
 
 QLMatrix QLMatrix::SquareMatrixByAddOne() const
 {

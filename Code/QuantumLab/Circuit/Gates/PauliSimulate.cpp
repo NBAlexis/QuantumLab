@@ -154,6 +154,7 @@ QLGate QLAPI PauliSimulateGateLeapfrog(const QLMatrix& h, Real t, UINT trotterSt
     ret.m_sName = _T("Exp(iHt)");
     Real fOneTrotterStep = t / trotterStep;
     TArray<PauliProduct> decomposed = DecomposePauliProducts(h, fMinimalKept);
+    //appGeneral(_T("Pauli decompose matrix count: %d\n"), decomposed.Num());
 
     for (INT i = 1; i < decomposed.Num(); ++i)
     {
@@ -167,6 +168,62 @@ QLGate QLAPI PauliSimulateGateLeapfrog(const QLMatrix& h, Real t, UINT trotterSt
             }
         }
     }
+
+    //first one is phase, just applied to the ancilla
+    QLGate rz(EBasicOperation::EBO_RZ, -F(2.0) * decomposed[0].m_fCoefficient * t);
+    TArray<BYTE> ancillabit;
+    ancillabit.AddItem(totalOrder);
+    ret.AppendGate(rz, ancillabit);
+
+    for (UINT i = 0; i < trotterStep; ++i)
+    {
+        for (INT j = 1; j < decomposed.Num(); ++j)
+        {
+            if (1 == j)
+            {
+                if (0 == i)
+                {
+                    ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep * F(0.5)), ret.m_lstQubits);
+                }
+                else
+                {
+                    ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep), ret.m_lstQubits);
+                }
+            }
+            else if (decomposed.Num() == (j + 1))
+            {
+                ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep), ret.m_lstQubits);
+            }
+            else
+            {
+                ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep * F(0.5)), ret.m_lstQubits);
+            }
+        }
+
+        for (INT j = decomposed.Num() - 1; j > 0; --j)
+        {
+            if (1 == j)
+            {
+                if (trotterStep == i + 1)
+                {
+                    ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep * F(0.5)), ret.m_lstQubits);
+                }
+            }
+            else
+            {
+                ret.AppendGate(decomposed[j].OneStepGate(fOneTrotterStep * F(0.5)), ret.m_lstQubits);
+            }
+        }
+    }
+    return ret;
+}
+
+QLGate QLAPI PauliSimulateGateLeapfrog(BYTE totalOrder, const TArray<PauliProduct>& decomposed, Real t, UINT trotterStep)
+{
+    QLGate ret;
+    ret.AddQubits(totalOrder + 1);
+    ret.m_sName = _T("Exp(iHt)");
+    Real fOneTrotterStep = t / trotterStep;
 
     //first one is phase, just applied to the ancilla
     QLGate rz(EBasicOperation::EBO_RZ, -F(2.0) * decomposed[0].m_fCoefficient * t);

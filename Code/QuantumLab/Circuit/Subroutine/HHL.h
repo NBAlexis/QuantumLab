@@ -15,6 +15,10 @@ __BEGIN_NAMESPACE
 
 extern QLGate QLAPI HHLGate(const QLMatrix& h, const TArray<QLComplex>& y, UINT trotterStep, Real maxAbsEigenValue, BYTE phaseQubitNum, Real small = F(0.00001));
 
+extern QLGate QLAPI HermitianMatrixMultiply(const QLMatrix& h, const TArray<QLComplex>& y, UINT trotterStep, Real maxAbsEigenValue, BYTE phaseQubitNum, Real small = F(0.00001));
+
+extern QLGate QLAPI MatrixPowerGate(const QLMatrix& h, INT iPower, UINT trotterStep, Real maxAbsEigenValue, BYTE phaseQubitNum, Real small = F(0.00001));
+
 __END_NAMESPACE
 
 

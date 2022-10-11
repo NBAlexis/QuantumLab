@@ -75,6 +75,8 @@ extern QLGate QLAPI PauliSimulateGate(const QLMatrix& h, Real t, UINT trotterSte
 */
 extern QLGate QLAPI PauliSimulateGateLeapfrog(const QLMatrix& h, Real t, UINT trotterStep, Real fMinimalKept = F(0.000001));
 
+extern QLGate QLAPI PauliSimulateGateLeapfrog(BYTE totalOrder, const TArray<PauliProduct>& h, Real t, UINT trotterStep);
+
 __END_NAMESPACE
 
 

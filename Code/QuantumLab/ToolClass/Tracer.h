@@ -295,6 +295,11 @@ inline void appSetTracer(EVerboseLevel eLevel, const CCString& filename, const C
     GTracer.SetFloatFormat(sFloatFormat);
 }
 
+inline void appSetFloatFormat(const CCString& sFloatFormat)
+{
+    GTracer.SetFloatFormat(sFloatFormat);
+}
+
 inline void appFlushLog()
 {
     GTracer.Flush();

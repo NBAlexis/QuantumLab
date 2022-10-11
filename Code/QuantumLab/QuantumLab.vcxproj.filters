@@ -76,6 +76,9 @@
     <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp">
       <Filter>ClassicalTools</Filter>
     </ClCompile>
+    <ClCompile Include="ToolClass\CSV.cpp">
+      <Filter>ToolClass</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="ClassicalTools\QuantumDataViewer.h">
       <Filter>ClassicalTools</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CSV.h">
+      <Filter>ToolClass</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

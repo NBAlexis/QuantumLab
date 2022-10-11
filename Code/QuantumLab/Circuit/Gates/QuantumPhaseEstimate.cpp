@@ -68,7 +68,21 @@ QLGate QLAPI QuantumPhaseEstimateWithHSimple(const QLMatrix& h, Real t, UINT iTr
     qpe.AddQubits(uQubitLength + numberOfPhaseQubit);
     qpe.m_sName = _T("QPE");
 
-    QLGate u= PauliSimulateGateLeapfrog(h, t, iTrotterStep, fMinimalKept);
+    TArray<PauliProduct> decomposed = DecomposePauliProducts(h, fMinimalKept);
+    for (INT i = 1; i < decomposed.Num(); ++i)
+    {
+        for (INT j = i + 1; j < decomposed.Num(); ++j)
+        {
+            if (abs(decomposed[i].m_fCoefficient) < abs(decomposed[j].m_fCoefficient))
+            {
+                PauliProduct temp = decomposed[i];
+                decomposed[i] = decomposed[j];
+                decomposed[j] = temp;
+            }
+        }
+    }
+
+    QLGate u= PauliSimulateGateLeapfrog(static_cast<BYTE>(uQubitLength - 1), decomposed, t, iTrotterStep);
     QLGate cu = u.CreateControlled();
 
     QLGate qft_circuit = QuantumFFTGate(numberOfPhaseQubit);
@@ -142,6 +156,21 @@ QLGate QLAPI ConditionalHamiltonianEvolution(const QLMatrix& h, BYTE phaseQubitN
     Real fevaluationFactor = t / static_cast<Real>(1U << phaseQubitNum);
     TArray<Real> theta = SpliteAngles(evaluationTimes, 1U << phaseQubitNum);
 
+    TArray<PauliProduct> decomposed = DecomposePauliProducts(h, fMinimalKept);
+    for (INT i = 1; i < decomposed.Num(); ++i)
+    {
+        for (INT j = i + 1; j < decomposed.Num(); ++j)
+        {
+            if (abs(decomposed[i].m_fCoefficient) < abs(decomposed[j].m_fCoefficient))
+            {
+                PauliProduct temp = decomposed[i];
+                decomposed[i] = decomposed[j];
+                decomposed[j] = temp;
+            }
+        }
+    }
+    appGeneral(_T("Pauli decompose %d matrix \n"), decomposed.Num());
+
     QLGate ret;
     ret.AddQubits(uQubitLength + phaseQubitNum);
     ret.m_sName = _T("CHE");
@@ -152,7 +181,7 @@ QLGate QLAPI ConditionalHamiltonianEvolution(const QLMatrix& h, BYTE phaseQubitN
         INT trotterStep = static_cast<INT>(round(abs(theta[i] / F(0.5))));
         if (trotterStep > 0)
         {
-            QLGate u = PauliSimulateGateLeapfrog(h, theta[i] * fevaluationFactor, trotterStep * shortestIntervalTrotter, fMinimalKept);
+            QLGate u = PauliSimulateGateLeapfrog(static_cast<BYTE>(uQubitLength - 1), decomposed, theta[i] * fevaluationFactor, trotterStep * shortestIntervalTrotter);
             ret.AppendGate(u, uqubits);
         }
 

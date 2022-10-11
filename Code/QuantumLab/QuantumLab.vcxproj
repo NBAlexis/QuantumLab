@@ -42,6 +42,7 @@
     <ClInclude Include="ToolClass\CCString.h" />
     <ClInclude Include="ToolClass\CLinkedList.h" />
     <ClInclude Include="ToolClass\CNMD5.h" />
+    <ClInclude Include="ToolClass\CSV.h" />
     <ClInclude Include="ToolClass\MemStack.h" />
     <ClInclude Include="ToolClass\STDStringFunctions.h" />
     <ClInclude Include="ToolClass\TArray.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="Simulator\QLSimulatorMeasure.cpp" />
     <ClCompile Include="Simulator\QLSimulatorVector.cpp" />
     <ClCompile Include="ToolClass\CCString.cpp" />
+    <ClCompile Include="ToolClass\CSV.cpp" />
     <ClCompile Include="ToolClass\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
