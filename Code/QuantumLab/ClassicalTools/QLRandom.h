@@ -180,7 +180,12 @@ public:
 
     __device__ __inline__ UINT _deviceRandomI(UINT uithreadIdx, UINT uiMax) const
     {
-        return static_cast<UINT>(uiMax * _deviceRandomF(uithreadIdx));
+        UINT toRet = static_cast<UINT>(uiMax * _deviceRandomF(uithreadIdx));
+        if (toRet >= uiMax)
+        {
+            toRet = uiMax - 1;
+        }
+        return toRet;
     }
 
     __device__ __inline__ Real _deviceRandomIF(UINT uithreadIdx, UINT uiMax) const
@@ -289,7 +294,7 @@ __device__ __inline__ static QLComplex _deviceRandomZN(UINT uiThreadIdx, UINT ui
 class QLAPI QLRandomInitializer
 {
 public:
-    QLRandomInitializer();
+    QLRandomInitializer(ERandom eRandom = ERandom::ER_Schrage, UINT uiSeed = 0);
     ~QLRandomInitializer();
 
     QLRandom* m_pRandom;

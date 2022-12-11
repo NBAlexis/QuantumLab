@@ -164,12 +164,14 @@ void QLRandom::InitialTableSchrage()
 }
 
 //to do add options to initialize the random
-QLRandomInitializer::QLRandomInitializer()
+QLRandomInitializer::QLRandomInitializer(ERandom eRandom, UINT uiSeed)
     : m_pRandom(NULL)
     , m_pDeviceRandom(NULL)
 {
-    ERandom eRandom = ERandom::ER_Schrage;
-    UINT uiSeed = 0;
+    if (0 == uiSeed)
+    {
+        uiSeed = appGetTimeStamp();
+    }
 
     m_pRandom = new QLRandom(uiSeed, _QL_LAUNCH_MAX_THREAD, eRandom);
     checkCudaErrors(cudaMalloc((void**)&m_pDeviceRandom, sizeof(QLRandom)));

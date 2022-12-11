@@ -22,6 +22,9 @@
     <Filter Include="Circuit\Subroutine">
       <UniqueIdentifier>{48b953e9-e635-44dd-9888-856bd0cefff1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ClassicalTools\GPUKmeans">
+      <UniqueIdentifier>{36fd58ee-a0bb-4d1e-bd72-2b1a4ba58a73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -77,6 +80,12 @@
       <Filter>ClassicalTools</Filter>
     </ClCompile>
     <ClCompile Include="ToolClass\CSV.cpp">
+      <Filter>ToolClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Gates\SwapTest.cpp">
+      <Filter>Circuit\Gates</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolClass\CYAMLParser.cpp">
       <Filter>ToolClass</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,6 +197,18 @@
     <ClInclude Include="ToolClass\CSV.h">
       <Filter>ToolClass</Filter>
     </ClInclude>
+    <ClInclude Include="Circuit\Gates\SwapTest.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\GPUKmeans\GPUKmeans.h">
+      <Filter>ClassicalTools\GPUKmeans</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\ReduceSum.h">
+      <Filter>ClassicalTools</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolClass\CYAMLParser.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">
@@ -196,5 +217,14 @@
     <CudaCompile Include="ClassicalTools\QLRandom.cu">
       <Filter>ClassicalTools</Filter>
     </CudaCompile>
+    <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu">
+      <Filter>ClassicalTools\GPUKmeans</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ClassicalTools\ReduceSum.cu">
+      <Filter>ClassicalTools</Filter>
+    </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

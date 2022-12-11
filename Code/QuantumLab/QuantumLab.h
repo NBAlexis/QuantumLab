@@ -56,11 +56,14 @@
 #include "ToolClass/MemStack.h"
 #include "ToolClass/THashMap.h"
 #include "ToolClass/Tracer.h"
+#include "ToolClass/CYAMLParser.h"
 
+#include "ClassicalTools/ReduceSum.h"
 #include "ClassicalTools/QLRandom.h"
 #include "ClassicalTools/QLMatrix.h"
 #include "ClassicalTools/QuantumDataViewer.h"
 #include "ToolClass/CSV.h"
+#include "ClassicalTools/GPUKmeans/GPUKmeans.h"
 
 #include "Circuit/QLGate.h"
 #include "Circuit/Gates/SimpleGates.h"
@@ -71,6 +74,7 @@
 #include "Circuit/Gates/QuantumFFT.h"
 #include "Circuit/Gates/QuantumPhaseEstimate.h"
 #include "Circuit/Gates/PauliSimulate.h"
+#include "Circuit/Gates/SwapTest.h"
 
 #include "Circuit/Subroutine/HHL.h"
 

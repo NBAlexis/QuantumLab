@@ -99,6 +99,9 @@ void QLAPI SaveCSV(const QLMatrix& m, const CCString& fileName)
             }
         }
     }
+
+    file.flush();
+    file.close();
 }
 
 QLMatrix QLAPI ReadCSVR(const CCString& fileName)
@@ -180,6 +183,207 @@ void QLAPI SaveCSVR(const QLMatrix& m, const CCString& fileName)
             }
         }
     }
+
+    file.flush();
+    file.close();
+}
+
+TArray<Real> QLAPI ReadCSVAR(const CCString& fileName, UINT& w, UINT& h)
+{
+    std::ifstream file(fileName);
+    if (!file.good())
+    {
+        appWarning(_T("file not exist: %s\n"), fileName.c_str());
+        w = 0;
+        h = 0;
+        return TArray<Real>();
+    }
+
+    const SIZE_T buf_size = 1U << 20;
+    static TCHAR buf[buf_size];
+    memset(buf, 0, sizeof(TCHAR) * buf_size);
+    INT leny = 0;
+    INT lenx = 0;
+    TArray<Real> all;
+    while (file.getline(buf, buf_size))
+    {
+        CCString sLine(buf);
+        TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
+
+        if (0 != lenx)
+        {
+            if (leny != sep.Num())
+            {
+                appCrucial(_T("CSV file format not good!\n"));
+                file.close();
+                w = 0;
+                h = 0;
+                return TArray<Real>();
+            }
+        }
+
+        if (0 == lenx)
+        {
+            leny = sep.Num();
+        }
+
+        TArray<Real> oneLine;
+        for (INT i = 0; i < leny; ++i)
+        {
+#if _QL_DOUBLEFLOAT
+            Real real = appStoD(sep[i]);
+#else
+            Real real = appStoF(sep[i]);
+#endif
+            all.AddItem(real);
+        }
+
+        ++lenx;
+        memset(buf, 0, sizeof(TCHAR) * buf_size);
+    }
+
+    file.close();
+
+    w = static_cast<UINT>(leny);
+    h = static_cast<UINT>(lenx);
+
+    return all;
+}
+
+TArray<FLOAT> QLAPI ReadCSVAF(const CCString& fileName, UINT& w, UINT& h)
+{
+    std::ifstream file(fileName);
+    if (!file.good())
+    {
+        appWarning(_T("file not exist: %s\n"), fileName.c_str());
+        w = 0;
+        h = 0;
+        return TArray<FLOAT>();
+    }
+
+    const SIZE_T buf_size = 1U << 20;
+    static TCHAR buf[buf_size];
+    memset(buf, 0, sizeof(TCHAR) * buf_size);
+    INT leny = 0;
+    INT lenx = 0;
+    TArray<FLOAT> all;
+    while (file.getline(buf, buf_size))
+    {
+        CCString sLine(buf);
+        TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
+
+        if (0 != lenx)
+        {
+            if (leny != sep.Num())
+            {
+                appCrucial(_T("CSV file format not good!\n"));
+                file.close();
+                w = 0;
+                h = 0;
+                return TArray<FLOAT>();
+            }
+        }
+
+        if (0 == lenx)
+        {
+            leny = sep.Num();
+        }
+
+        TArray<FLOAT> oneLine;
+        for (INT i = 0; i < leny; ++i)
+        {
+            FLOAT real = appStoF(sep[i]);
+            all.AddItem(real);
+        }
+
+        ++lenx;
+        memset(buf, 0, sizeof(TCHAR) * buf_size);
+    }
+
+    file.close();
+
+    w = static_cast<UINT>(leny);
+    h = static_cast<UINT>(lenx);
+
+    return all;
+}
+
+void QLAPI SaveCSVAR(const Real* m, UINT w, UINT h, const CCString& fileName)
+{
+    std::ofstream file(fileName);
+    CCString sOut;
+
+    for (UINT i = 0; i < h; ++i)
+    {
+        for (UINT j = 0; j < w; ++j)
+        {
+            sOut.Format(_T("%f"), m[i * w + j]);
+            file << sOut.c_str();
+            if (j != w - 1)
+            {
+                file << _T(",");
+            }
+            else
+            {
+                file << std::endl;
+            }
+        }
+    }
+
+    file.flush();
+    file.close();
+}
+
+void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName)
+{
+    std::ofstream file(fileName);
+    CCString sOut;
+
+    for (UINT i = 0; i < h; ++i)
+    {
+        for (UINT j = 0; j < w; ++j)
+        {
+            sOut.Format(_T("%d"), m[i * w + j]);
+            file << sOut.c_str();
+            if (j != w - 1)
+            {
+                file << _T(",");
+            }
+            else
+            {
+                file << std::endl;
+            }
+        }
+    }
+
+    file.flush();
+    file.close();
+}
+
+void QLAPI SaveCSVAB(const BYTE* m, UINT w, UINT h, const CCString& fileName)
+{
+    std::ofstream file(fileName);
+    CCString sOut;
+
+    for (UINT i = 0; i < h; ++i)
+    {
+        for (UINT j = 0; j < w; ++j)
+        {
+            sOut.Format(_T("%d"), m[i * w + j]);
+            file << sOut.c_str();
+            if (j != w - 1)
+            {
+                file << _T(",");
+            }
+            else
+            {
+                file << std::endl;
+            }
+        }
+    }
+
+    file.flush();
+    file.close();
 }
 
 __END_NAMESPACE
