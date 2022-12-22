@@ -1,0 +1,53 @@
+ZYZ 分解是用于分解$2\times 2$幺正矩阵的。~\cite{ZYZDecompose}
+
+任何一个$2\times 2$幺正矩阵可以写为：
+\begin{equation}
+\begin{split}
+&U=\begin{pmatrix}e^{i\delta} & 0 \\ 0 & e^{i\delta} \end{pmatrix}\cdot 
+\begin{pmatrix}e^{i\frac{\alpha}{2}} & 0 \\ 0 & e^{-i\frac{\alpha}{2}} \end{pmatrix}\cdot 
+\begin{pmatrix}\cos(\frac{\theta}{2}) & \sin(\frac{\theta}{2}) \\ -\sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2}) \end{pmatrix}\cdot 
+\begin{pmatrix}e^{i\frac{\beta}{2}} & 0 \\ 0 & e^{-i\frac{\beta}{2}} \end{pmatrix}\\
+&=\begin{pmatrix}e^{i(\delta+\frac{\alpha}{2}+\frac{\beta}{2})}\cos(\frac{\theta}{2}) & e^{i(\delta+\frac{\alpha}{2}-\frac{\beta}{2})}\sin(\frac{\theta}{2}) \\ -e^{i(\delta-\frac{\alpha}{2}+\frac{\beta}{2})}\sin(\frac{\theta}{2}) & e^{i\delta-\frac{\alpha}{2}-\frac{\beta}{2}}\cos(\frac{\theta}{2}) \end{pmatrix}
+\end{split}
+\end{equation}
+
+可以看出来，如果
+\begin{equation}
+\begin{split}
+&U=\begin{pmatrix}U_{11} & U_{12} \\ U_{21} & U_{22} \end{pmatrix}
+\end{split}
+\end{equation}
+
+那么：
+\begin{equation}
+\begin{split}
+&\theta = 2 \arccos(|U_{11}|),\\
+&\beta = \arg (U_{11}) - \arg (U_{12}),\\
+&\alpha = \arg (U_{12}) - \arg (U_{22}),\\
+&\delta = \arg(U_{11})-\frac{\alpha}{2}-\frac{\beta}{2}.\\
+&U=Ph(\delta) R_z(\alpha) R_y(\theta) R_z(\beta).\\
+\end{split}
+\end{equation}
+称为ZYZ分解。
+
+为了避免误差，最好在进行ZYZ之前进行一下重新归一化。
+另
+\begin{equation}
+\begin{split}
+&v_a = (U_{11},U_{12}),\\
+&v_b = (U_{21},U_{22}),\\
+\end{split}
+\end{equation}
+计算：
+\begin{equation}
+\begin{split}
+&v_c = v_b - \frac{v_a^{\dagger} v_b}{v_a^{\dagger} v_a}v_a,\\
+\end{split}
+\end{equation}
+于是
+\begin{equation}
+\begin{split}
+&U_{11}=\frac{1}{|v_a|}v_{a,1},\;\;U_{12}=\frac{1}{|v_a|}v_{a,2},\\
+&U_{21}=\frac{1}{|v_c|}v_{c,1},\;\;U_{22}=\frac{1}{|v_c|}v_{c,2},\\
+\end{split}
+\end{equation}

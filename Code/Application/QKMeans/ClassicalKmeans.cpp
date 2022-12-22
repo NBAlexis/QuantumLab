@@ -1,21 +1,19 @@
 //=============================================================================
-// FILENAME : QKMeans.cpp
+// FILENAME : ClassicalKmeans.cpp
 // 
 // DESCRIPTION:
-// This is the file for building options
+// 
 //
 // REVISION: [dd/mm/yy]
-//  [09/12/2022 nbale]
+//  [21/12/2022 nbale]
 //=============================================================================
 
 #include "QKMeans.h"
 
-int main()
+void ClassicalKMeans(const CCString& yamlFile)
 {
-#if 0
-
     CParameters params;
-    CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
+    CYAMLParser::ParseFile(yamlFile, params);
 
     params.Dump();
 
@@ -88,11 +86,6 @@ int main()
             }
         }
     }
-#endif
-
-    QuantumKMeans(_T(""));
-
-    return 0;
 }
 
 

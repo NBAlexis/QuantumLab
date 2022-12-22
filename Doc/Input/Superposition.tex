@@ -1,0 +1,71 @@
+\subsection{\label{sec:LanczosSVD}Matrix SVD using Lanczos}
+
+The matrix SVD is to decompose
+\begin{equation}
+\begin{split}
+&t_{i_1,i_2,\ldots,i_m,j_1,j_2,\ldots,j_n} = \sum _{k_l,k_r} V_{i_1,i_2,\ldots,i_m,k_l}S_{k_l,k_r} U_{k_r,j_1,j_2,\ldots,j_n},\\
+\end{split}
+\end{equation}
+where
+\begin{equation}
+\begin{split}
+&\sum _{k_l} V^*_{I_1,I_2,\ldots,I_m,k_l}V_{i_1,i_2,\ldots,i_m,k_l}=\delta _{(i_m)=(I_m)},\\
+&\sum _{k_r} U^*_{J_1,J_2,\ldots,J_n,k_r}U_{j_1,j_2,\ldots,j_m,k_l}=\delta _{(J_n)=(j_n)},\\
+&S_{k_l\neq k_r}=0,
+\end{split}
+\end{equation}
+
+One can imagine that, $\{i_n\}$ is ONE combined index of a matrix.
+Then, it is the normal SVD.
+Usually, $dim(k)$ is small.
+
+\subsubsection{\label{sec:LanczosBidiagonalization}Lanczos bidiagonalization}
+
+Lanczos bidiagonalization is for such task:
+
+For $A=C^{m\times n}$, find $A\approx UB V^{\dagger}$ such that $B$ is a bidiagonal matrix
+\begin{equation}
+\begin{split}
+&B=\begin{pmatrix}
+\alpha _1 & \beta_1 & 0 & 0 & 0 \\
+ 0 & \alpha_2 & \beta_2 & 0 & 0 \\
+ & \ldots &  &  &  \\
+ 0 & 0 & 0 & \alpha _{k-1}  &  \beta _ {k-1}\\
+ 0 & 0 & 0 & 0 & \alpha _k \\
+\end{pmatrix}
+\end{split}
+\end{equation}
+
+Note here $||v|| = \sqrt{\sum _i |v_i|^2}$.
+
+\begin{algorithm}[H]
+\begin{algorithmic}
+\State $A=C^{m\times n}$
+\State ${\bf v}_1$ is an n-vectors satisfying $||{\bf v} _1|| =1$.
+\For{$i=1$ to $k$}
+    \If {$i>1$}
+        \State ${\bf v}_i ={\bf p }/\beta _{i-1}$.
+    \EndIf
+    \State ${\bf r}=A{\bf v}_i - \beta _{i-1}{\bf u}_{i - 1}$.
+    \Comment $\beta _0 = 0$ and ${\bf u}_0=0$.
+    \State ${\bf r}={\bf r} - U_i (U_i^{\dagger}{\bf r})$.
+    \Comment Re-orthogonal. $U_i$ means the part of $U$ matrix from $1$ to $i$.
+    \State $\alpha _i = ||{\bf r}||$.
+    \State ${\bf u}_i = {\bf r}/\alpha _i$.
+    \If {$i < k$}
+        \State ${\bf p} =A^{\dagger}{\bf u}_i - \alpha _i {\bf v}_i$
+        \State ${\bf p} ={\bf p} - V_i(V_i^{\dagger}{\bf p})$
+        \Comment Re-orthogonal. $V_i$ means the part of $V$ matrix from $1$ to $i$.
+        \State $\beta _i = ||{\bf p}||$
+    \EndIf
+\EndFor
+\end{algorithmic}
+\caption{\label{alg.LanczosBiorthogonalization1}Lanczos bidiagonalization}
+\end{algorithm}
+
+It is expected that $\beta$ approaches zero, if $\beta = 0$, than $A= UT V^{\dagger}$.
+
+\textbf{\textcolor{red}{Although the $B$ obtained is not a diagonal matrix, the goal has been archived, and we do not further diagonalize it.}}
+
+Typically, for a large matrix especially, a complex matrix, the above procedure fails to converge because of the loss of orthogonal.
+Therefore, a re-orthogonal procedure is applied.

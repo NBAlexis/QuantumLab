@@ -362,6 +362,15 @@ public:
         return nOldSize;
     }
 
+    inline INT Append(const TYPE* src, UINT uiSize)
+    {
+        //assert(this != &src);   // cannot append to itself (but why?)
+        INT nOldSize = m_nSize;
+        SetSize(m_nSize + uiSize);
+        appCopyElements<TYPE>(m_pData + nOldSize, src, uiSize);
+        return nOldSize;
+    }
+
     inline void Copy(const TArray& src)
     {
         //assert(this != &src);   // cannot append to itself (but why?)

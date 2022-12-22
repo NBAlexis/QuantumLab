@@ -1,0 +1,162 @@
+\documentclass[a4paper,twoside,openany,CJK]{ctexbook}
+\usepackage{geometry}
+
+\newcommand{\citeu}[1]{$^{\mbox{\protect \scriptsize \cite{#1}}}$}
+%\usepackage{amssymb}
+%\usepackage{amsmath}
+\usepackage{graphicx}
+%\usepackage{bm}
+\usepackage{epsf}
+\usepackage{ifxetex}
+\usepackage[numbers,sort&compress]{natbib}% 此命令要放在设置hyperref的命令之前
+\usepackage{graphicx}  % needed for figures
+\usepackage{float}
+\usepackage{dcolumn}   % needed for some tables
+\usepackage{bm}        % for math
+\usepackage{amssymb}   % for math - conflict with stix
+\usepackage{slashed}   % for Dirac Slash
+\usepackage{amsmath}   % for mutiline eqn
+\usepackage{simplewick} % for contraction
+\usepackage{verbatim}  % for multi-line comment
+\usepackage{color} % for textcolor
+\usepackage{appendix} % for appendix
+\usepackage{subfig}
+\usepackage{makeidx}
+\usepackage{mathrsfs}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% special symbols
+\usepackage{manfnt}
+%\usepackage{cypriot}
+%\usepackage{stix}
+
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{ctex}  %就是在这里引入了ctex宏包，下面就可以直接输入中文编译之后就可以正常输出啦
+
+\usepackage{algorithm,algpseudocode}
+
+\hyphenation{ALPGEN}
+\hyphenation{EVTGEN}
+\hyphenation{PYTHIA}
+
+\usepackage[bookmarks=true,colorlinks=true,linkcolor=blue,unicode=true]{hyperref}
+
+\usepackage{titlesec}
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} % optional; useful if paragraphs are to be numbered
+
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\zihao{4}
+\title{Learning Panda Quantum toolkit}
+\author{Ji-Chong Yang}
+\date{}
+
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\clearpage
+
+\tableofcontents
+
+\clearpage
+
+\lstset{
+    numbers=left,
+    numberstyle= \tiny,
+    keywordstyle= \color{ blue!70},
+    commentstyle= \color{red!50!green!50!blue!50},
+    frame=single,
+    rulesepcolor= \color{ red!20!green!20!blue!20} ,
+    escapeinside=``,
+    xleftmargin=2em,xrightmargin=2em, aboveskip=1em,
+    framexleftmargin=2em,
+    language=c++,
+    breaklines=true,
+    columns=fullflexible,
+    captionpos=b,
+    basicstyle=\footnotesize\ttfamily,
+}
+
+由于对本领域并不熟悉，本文档会夹杂中文。
+
+\chapter{\label{sec:BasicTopics}Basic Topics}
+
+\section{\label{sec:BuildingBlocks}Building blocks}
+
+\subsection{\label{sec:PhaseKickback}Phase kickback}
+
+\input{BasicTopics/PhaseKickback.tex}
+
+\chapter{\label{sec:Input}Input}
+
+这一章专注于如何将经典数据翻译到量子线路中。
+
+这一章分为两个部分，一部分是怎么把一个经典的矩阵变成量子线路。一部分是怎么把经典的矢量变成量子态。
+
+\section{\label{sec:ZYZ}ZYZ decompose}
+
+\input "Input/ZYZDecompose.tex"
+
+\section{\label{sec:CSD}Cosine Sine decompose}
+
+\input "Input/CSDecompose.tex"
+
+\section{\label{sec:SuperpositionDecompose}Superposition matrix decompose}
+
+\section{\label{sec:AmplitudeEncode}Amplitude Encode}
+
+\input "Input/AmplitudeEncode.tex"
+
+\chapter{\label{sec:Algorithm}Algorithm}
+
+\section{\label{sec:hhl}HHL Algorithm}
+
+\input "Algorithm/hhl.tex"
+
+\section{\label{sec:swap}Swap test}
+
+\input "Algorithm/swap.tex"
+
+\clearpage
+
+\printindex
+
+\bibliography{detail}
+\bibliographystyle{hunsrt}
+
+\end{document}
+%
+% ****** End of file template.aps ******

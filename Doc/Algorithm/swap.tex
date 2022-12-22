@@ -1,0 +1,16 @@
+SWAP门的作用是，把$|1\rangle |\phi\rangle |\psi\rangle$变成$|1\rangle |\psi\rangle |\phi\rangle$，因此
+\begin{equation}
+\begin{split}
+&SWAP \frac{1}{\sqrt{2}}\left(|0\rangle + |1\rangle\right)|\phi\rangle |\psi\rangle \\
+&=\frac{1}{\sqrt{2}}\left(|0\rangle |\phi\rangle |\psi\rangle + |1\rangle |\psi\rangle |\phi\rangle\right)
+\end{split}
+\end{equation}
+再加一个Hardamad门，
+\begin{equation}
+\begin{split}
+&H\frac{1}{\sqrt{2}}\left(|0\rangle |\phi\rangle |\psi\rangle + |1\rangle |\psi\rangle |\phi\rangle\right)\\
+&=\frac{1}{2}\left(\left(|0\rangle + |1\rangle\right) |\phi\rangle |\psi\rangle + \left(|0\rangle - |1\rangle\right) |\psi\rangle |\phi\rangle\right)\\
+&=\frac{1}{2}\left(|0\rangle\left(|\phi\rangle |\psi\rangle+|\psi\rangle |\phi\rangle\right) + |1\rangle\left(|\phi\rangle |\psi\rangle-|\psi\rangle |\phi\rangle\right)\right)\\
+\end{split}
+\end{equation}
+可以验证，（我用1,2qubit的验证了），测到0的概率是$\frac{1}{2}(1+|\langle \phi|\psi\rangle|^2)$。

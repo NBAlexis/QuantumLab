@@ -1,0 +1,110 @@
+因为我们面对的刚好是$2^n \times 2^n$矩阵，cosine-sine decompose 十分适合。
+
+由文献，可以看到~\cite{compareIsometries}，对于方阵，CSD也是较优的分解方式。
+
+\subsection{\label{sec:ucrgate}Uniform controlled rotation gate}
+
+所谓``Uniform controlled rotation gate''，就是
+\begin{equation}
+\begin{split}
+&F_m^k({\bf a},\{\theta _i\}) \sum _{i}^k|i\rangle \otimes \begin{pmatrix} \uparrow \\ \downarrow \end{pmatrix}_m =\sum _{i}^k |i\rangle \otimes R_{\bf a}(\theta _i)\begin{pmatrix} \uparrow \\ \downarrow \end{pmatrix}_m
+\end{split}
+\end{equation}
+也就是，对于$m$的qubit，根据它前面的控制$i$的qubit施加不同的转动。${\bf a}=y,z$，通常不做$R_x$旋转。
+
+\subsection{\label{sec:CSD}Cosine-sine decompose 的原理}
+
+CSD的原理是
+\begin{equation}
+\begin{split}
+&U=\begin{pmatrix}U^1_{11} & 0 \\ 0 & U^1_{12} \\ \end{pmatrix}\cdot\begin{pmatrix}C^1_{11} & S^1_{11} \\ -S^1_{11} & C^1_{11} \\ \end{pmatrix}\cdot\begin{pmatrix}U^1_{21} & 0 \\ 0 & U^1_{22} \\ \end{pmatrix}
+\end{split}
+\end{equation}
+其中
+$C$，$S$是$2^{n-1}\times 2^{n-1}$的diagnal matrix。
+这其中，$C$，$S$还可以写为
+\begin{equation}
+\begin{split}
+&C={\rm diag}\left\{\cos (\theta _1), \cos (\theta _2),\ldots \right\}\\
+&S={\rm diag}\left\{\sin (\theta _1), \sin (\theta _2),\ldots \right\}\\
+\end{split}
+\end{equation}
+$U^i_{mn}$表示第$i$次分解的，位于第$m$个$U$的第$n$个对角线位置的幺正矩阵。
+
+因为
+\begin{equation}
+\begin{split}
+&\begin{pmatrix}A_1 & 0 \\ 0 & B_1 \\ \end{pmatrix}\cdot \begin{pmatrix}A_2 & 0 \\ 0 & B_2 \\ \end{pmatrix}\cdot \begin{pmatrix}A_3 & 0 \\ 0 & B_3 \\ \end{pmatrix}= \begin{pmatrix}A_1\cdot A_2\cdot A_3 & 0 \\ 0 & B_1\cdot B_2 \cdot B_3\\ \end{pmatrix}
+\end{split}
+\end{equation}
+
+上面的分解可以进一步写为
+\begin{equation}
+\begin{split}
+&U=\begin{pmatrix}U^2_{11} & 0 & 0 & 0\\ 0 & U^2_{12} & 0 & 0 \\ 0 & 0 & U^2_{13} & 0 \\ 0 & 0 & 0 & U^2_{14} \end{pmatrix} 
+  \cdot\begin{pmatrix}C^2_{11} & S^2_{11} & 0 & 0\\ -S^2_{11} & C^2_{11} & 0 & 0 \\ 0 & 0 & C^2_{12} & S^2_{12} \\ 0 & 0 & -S^2_{12} & C^2_{12} \end{pmatrix}
+  \cdot \begin{pmatrix}U^2_{21} & 0 & 0 & 0\\ 0 & U^2_{22} & 0 & 0 \\ 0 & 0 & U^2_{23} & 0 \\ 0 & 0 & 0 & U^2_{24} \end{pmatrix} \\
+& \cdot \begin{pmatrix}C^1_{11} & S^1_{11} \\ -S^1_{11} & C^1_{11} \\ \end{pmatrix} \\
+& \begin{pmatrix}U^2_{31} & 0 & 0 & 0\\ 0 & U^2_{32} & 0 & 0 \\ 0 & 0 & U^2_{33} & 0 \\ 0 & 0 & 0 & U^2_{34} \end{pmatrix} 
+\cdot\begin{pmatrix}C^2_{21} & S^2_{21} & 0 & 0\\ -S^2_{21} & C^2_{21} & 0 & 0 \\ 0 & 0 & C^2_{22} & S^2_{22} \\ 0 & 0 & -S^2_{22} & C^2_{22} \end{pmatrix}
+\cdot \begin{pmatrix}U^2_{41} & 0 & 0 & 0\\ 0 & U^2_{42} & 0 & 0 \\ 0 & 0 & U^2_{43} & 0 \\ 0 & 0 & 0 & U^2_{44} \end{pmatrix} \\
+\end{split}
+\end{equation}
+
+进一步的：
+\begin{equation}
+\begin{split}
+&U=U^3_1 A^3_1 U^3_2 \cdot A^2_1 \cdot U^3_3 A^3_2 U^3_4 \cdot A^1_1 \cdot U^3_5  A^3_3 U^3_6 \cdot A^2_2 \cdot U^3_7 A^3_4 U^3_8\\
+\end{split}
+\end{equation}
+
+接下来，我们在每个$A^i_j$右侧插入能与$A$对易，且对角的，幺正的矩阵，$P^i_j$，同时，要求$A$左侧的$U$被转换成``uniform controlled rotation z''。
+
+这件事总是能做到的。首先，对于$A^i_j$，它是一个``uniform controlled rotation y''。
+
+然后，我们可以选择$P$为，对旋转的那个qubit加一个整体相位。这样就是与$A$对易的。具体来说：
+\begin{equation}
+\begin{split}
+&A=\begin{pmatrix} c_1 & 0 & s_1 & 0 \\ 0 & c_2 & 0 & s_2 \\ -s_1 & 0 & c_1 & 0 \\ 0 & -s_2 & 0 & c_2\end{pmatrix} 
+\to P= \begin{pmatrix} d_1 & 0 & 0 & 0 \\ 0 & d_2 & 0 & 0 \\ 0 & 0 & d_1 & 0 \\ 0 & 0 & 0 & d_2 \end{pmatrix}\\
+&A=\begin{pmatrix} c_1 & s_1 & 0 & 0 \\ -s_1 & c_1 & 0 & 0 \\ 0 & 0 & c_2 & s_2 \\ 0 & 0 & -s_2 & c_2\end{pmatrix} 
+\to P= \begin{pmatrix} d_1 & 0 & 0 & 0 \\ 0 & d_1 & 0 & 0 \\ 0 & 0 & d_2 & 0 \\ 0 & 0 & 0 & d_2 \end{pmatrix}\\
+\end{split}
+\end{equation}
+
+我们可以选择合适的$d_1,d_2$，把$A^i_j$左边的矩阵变成和$A$相同对象的``uniform controlled rotation z''。
+
+这一步可以一直递归直到最后一个矩阵。也就是
+\begin{equation}
+\begin{split}
+&U=U^3_1 A^3_1 U^3_2 \cdot A^2_1 \cdot U^3_3 A^3_2 U^3_4 \cdot A^1_1 \cdot U^3_5  A^3_3 U^3_6 \cdot A^2_2 \cdot U^3_7 A^3_4 U^3_8\\
+&=U^3_1 F_3(R_y) U^3_2 \cdot F_2(R_y) \cdot U^3_3 F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=U^3_1 F_3(R_y) P_1 P_1^{\dagger}U^3_2 \cdot F_2(R_y) \cdot U^3_3 F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=U^3_1 P_1 F_3(R_y) (P_1^{\dagger}U^3_2) \cdot F_2(R_y) \cdot U^3_3 F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=F_3(R_z) F_3(R_y) (P_1^{\dagger}U^3_2) \cdot F_2(R_y) \cdot U^3_3 F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=F_3(R_z) F_3(R_y) (P_1^{\dagger}U^3_2) \cdot F_2(R_y) P_2 P_2^{\dagger}\cdot U^3_3 F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=F_3(R_z) F_3(R_y) F_2(R_z) \cdot F_2(R_y) (P_2^{\dagger}\cdot U^3_3) F_3(R_y) U^3_4 \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&=F_3(R_z) F_3(R_y) F_2(R_z) \cdot F_2(R_y) F_3(R_z) F_3(R_y) (P_3^{\dagger}U^3_4) \cdot F_1(R_y) \cdot U^3_5  F_3(R_y) U^3_6 \cdot F_2(R_y) \cdot U^3_7 F_3(R_y) U^3_8\\
+&\ldots\\
+&=\prod \left(F(R_z) F(R_y)\right) P_8^{\dagger}U^3_8\\
+\end{split}
+\end{equation}
+最后的$P_8^{\dagger}U^3_8$只能用$1$个$R_z$加$2$个uniform controlled $R_z$实现。具体实现方案考虑3个qubit的情况，对全部的qubit转$a_0$，对一个qubit转$R_z(a_1)$，对二个qubit转$FR_z(a_{21}， a_{22})$，对三个qubit转$FR_z(a_{31}， a_{32}, a_{33}, a_{34})$
+\begin{equation}
+\begin{split}
+&a_0+a_1+a_{21}+a_{31}=b_1\\
+&a_0+a_1+a_{21}-a_{31}=b_2\\
+&a_0+a_1-a_{21}+a_{32}=b_3\\
+&a_0+a_1-a_{21}-a_{32}=b_4\\
+&a_0-a_1+a_{22}+a_{33}=b_5\\
+&a_0-a_1+a_{22}-a_{33}=b_6\\
+&a_0-a_1-a_{22}+a_{34}=b_7\\
+&a_0-a_1-a_{22}-a_{34}=b_8\\
+\end{split}
+\end{equation}
+
+这就是文献~\cite{CSDecompose}的方案。
+
+
+
+

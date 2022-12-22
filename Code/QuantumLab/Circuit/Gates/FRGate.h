@@ -59,6 +59,7 @@ inline UINT BitWiseInnerProduct(UINT a, UINT b)
 }
 
 extern TArray<Real> QLAPI SpliteAngles(const TArray<Real>& angles, UINT length);
+extern TArray<Real> QLAPI SpliteAngles(const Real* angles, UINT length);
 
 /**
 * Uniform controlled rotation in 10.1103/PhysRevLett.93.130502
@@ -71,6 +72,8 @@ extern QLGate QLAPI FRz(const TArray<Real>& angles, UINT numberOfQubits);
 * Used in Cosin-Sine decomposition, when FRz-dagger is appended after FRy, two CNots can be removed
 */
 extern QLGate QLAPI FRyz(const TArray<Real>& anglesY, const TArray<Real>& anglesZ, UINT numberOfQubits);
+
+extern QLGate QLAPI FRyz(const Real* anglesY, const Real* anglesZ, UINT numberOfQubits);
 
 extern QLGate QLAPI FRp(const TArray<Real>& angles, UINT numberOfQubits);
 

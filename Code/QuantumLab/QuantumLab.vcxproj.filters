@@ -209,6 +209,9 @@
     <ClInclude Include="ToolClass\CYAMLParser.h">
       <Filter>ToolClass</Filter>
     </ClInclude>
+    <ClInclude Include="Circuit\Subroutine\QRamSubroutine.h">
+      <Filter>Circuit\Subroutine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">
@@ -222,6 +225,9 @@
     </CudaCompile>
     <CudaCompile Include="ClassicalTools\ReduceSum.cu">
       <Filter>ClassicalTools</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Circuit\Subroutine\QRamSubroutine.cu">
+      <Filter>Circuit\Subroutine</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

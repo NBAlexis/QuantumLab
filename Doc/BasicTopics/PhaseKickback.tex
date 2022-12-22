@@ -1,0 +1,58 @@
+Phase kickback是很多算法中用到的一个技术。比如QFT, QPE，以及一些量子模拟算法。
+
+首先举两个例子。一个是CNOT。
+
+\begin{equation}
+\begin{split}
+&CNOT|00\rangle = |00\rangle, CNOT|01\rangle = |01\rangle, CNOT|10\rangle = |11\rangle, CNOT|11\rangle = |10\rangle
+\end{split}
+\end{equation}
+因此
+\begin{equation}
+\begin{split}
+&CNOT\left(|i0\rangle - |i1\rangle\right)=(-1)^i \left(|i0\rangle - |i1\rangle\right)
+\end{split}
+\end{equation}
+
+也就是对第二个qubit的操作其实并没有做任何事情，只是把第一个qubit放到了相位上。
+
+类似的$C-U$，其中$U$是作用到第二个qubit上的，并且假定第二个qubit是$U$的本征态，结果是
+\begin{equation}
+\begin{split}
+&C-U\left(|0\rangle + |1\rangle\right)|u\rangle =\left(|0u\rangle + u|1u\rangle\right)=(|0\rangle+u|1\rangle)|u\rangle
+\end{split}
+\end{equation}
+
+这件事可以用来做量子模拟，为了方便讨论$\sigma _z$
+
+首先注意到
+\begin{equation}
+\begin{split}
+&e^{ia_0\sigma _{z_1}} \cdot e^{ib_0\sigma _{z_2}}=e^{ia_0\sigma _{z_1} \otimes b_0\sigma _{z_2}}\\
+&e^{ia_0\sigma _{z_1} \otimes b_0\sigma _{z_2}} = e^{ia_0 b_0 \sigma _{z_1} \otimes \sigma _{z_2}}\\
+\end{split}
+\end{equation}
+所以我们可以专注于$e^{ic\sigma _{z_1}\otimes \sigma _{z_2}}$
+
+
+\begin{equation}
+\begin{split}
+&e^{ic\sigma _{z1}\otimes \sigma _{z2}}\left(a_1|0\rangle + b_1|1\rangle\right)\left(a_2|0\rangle + b_2|1\rangle\right)|0\rangle \\
+&=e^{ic\sigma _{z1}\otimes \sigma _{z2}}\left(a_1 a_2|00\rangle + b_1 a_2|10\rangle + a_1b_2|01\rangle + b_1b_2|11\rangle\right)|0\rangle \\
+&=\left(e^{ic 1 \times 1}a_1 a_2 |00\rangle + e^{ic (-1)\times 1}b_1 a_2|10\rangle + e^{ic 1 \times (-1)}a_1b_2|01\rangle + e^{ic (-1)\times (-1)}b_1b_2|11\rangle\right)|0\rangle \\
+\end{split}
+\end{equation}
+
+所以
+\begin{equation}
+\begin{split}
+&CNOT_1 CNOT_2 e^{ic\sigma _{z3}}  CNOT_2 CNOT_1 \left(a_1 a_2|00\rangle + b_1 a_2|10\rangle + a_1b_2|01\rangle + b_1b_2|11\rangle\right)|0\rangle \\
+&= CNOT_1 CNOT_2 e^{ic\sigma _{z3}}  CNOT_2 \left(a_1 a_2|000\rangle + b_1 a_2|101\rangle + a_1b_2|010\rangle + b_1b_2|111\rangle\right)\\
+&= CNOT_1 CNOT_2 e^{ic\sigma _{z3}}  \left(a_1 a_2|000\rangle + b_1 a_2|101\rangle + a_1b_2|011\rangle + b_1b_2|110\rangle\right)\\
+&= CNOT_1 CNOT_2  \left(e^{ic}a_1 a_2|000\rangle + e^{-ic}b_1 a_2|101\rangle + e^{-ic}a_1b_2|011\rangle + e^{ic}b_1b_2|110\rangle\right)\\
+&= \left(e^{ic}a_1 a_2|00\rangle + e^{-ic}b_1 a_2|10\rangle + e^{-ic}a_1b_2|01\rangle + e^{ic}b_1b_2|11\rangle\right)|0\rangle\\
+\end{split}
+\end{equation}
+
+
+怎么做一个$\sigma _{x,y}$的模拟呢？注意到$\sigma _x = H\cdot \sigma _z \cdot H$和，$\sigma _y = p(\frac{\pi}{2})\cdot H\cdot \sigma _z \cdot H \cdot p(-\frac{\pi}{2})$。

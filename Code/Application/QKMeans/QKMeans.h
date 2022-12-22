@@ -13,6 +13,8 @@
 
 #include "QuantumLab.h"
 
+extern void ClassicalKMeans(const CCString& yamlFile);
+extern void QuantumKMeans(const CCString& yamlFile);
 
 #endif //#ifndef _QKMEANS_H_
 

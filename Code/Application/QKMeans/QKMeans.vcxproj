@@ -19,13 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClassicalKmeans.cpp" />
     <ClCompile Include="QKMeans.cpp" />
+    <ClCompile Include="QuantumKmeans.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QKMeans.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Bin\QKMeans.yaml" />
+    <None Include="..\..\..\Bin\QunatumKMeans.yaml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

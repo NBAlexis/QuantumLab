@@ -77,6 +77,7 @@
 #include "Circuit/Gates/SwapTest.h"
 
 #include "Circuit/Subroutine/HHL.h"
+#include "Circuit/Subroutine/QRamSubroutine.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

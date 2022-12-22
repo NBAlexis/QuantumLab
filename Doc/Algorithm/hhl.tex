@@ -1,0 +1,82 @@
+hhl是用来解方程的。其简要步骤如下：
+
+首先我们要求的是方程
+\begin{equation}
+\begin{split}
+&Ax=b\\
+\end{split}
+\end{equation}
+
+我们要算的就是$x=A^{-1}b$。
+
+由于
+\begin{equation}
+\begin{split}
+&A=\sum _i\lambda _i |\psi _i \rangle \langle \psi _i |\\
+&A^{-1}=\sum _i\lambda _i^{-1} |\psi _i \rangle \langle \psi _i |\\
+\end{split}
+\end{equation}
+我们要算的实际上是
+\begin{equation}
+\begin{split}
+&x=\sum _i\lambda _i^{-1} |\psi _i \rangle \langle \psi _i |b\rangle\\
+\end{split}
+\end{equation}
+这里$\langle \psi _i |b\rangle$就是$b$用$\psi _i$展开的展开系数，记为$b_i=\langle \psi _i |b\rangle$，$|b\rangle = \sum _i b_i |\psi _i\rangle$。
+
+具体方法要用到QPE，精确的QPE的效果是，对于态$|0 \rangle$
+\begin{equation}
+\begin{split}
+&QPE(H,t) |b\rangle \otimes |0 \rangle = QPE(H) \sum _i b_i |\psi _i\rangle \otimes |0 \rangle \\
+&=\sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \\
+\end{split}
+\end{equation}
+
+不精确的QPE，那么假定$t\lambda _i$缩放到$0 - 2\pi$之间，假定$n$个qubit的QPE，那么$t\lambda _i$对应着距离$2^n \times t\lambda _i / 2\pi$最近的那个整数。
+
+举个例子，比如$H$的本征值有4个，分别是$0.1, 0.3, 0.5, 0.9$，然后$t=2\pi$，$n=5$，那么$ |t\lambda _i \rangle$对应着4个态$\lambda _1 =|3\rangle= |00011\rangle$，$\lambda _2 = |10\rangle=|01010\rangle$，$\lambda _3 =|16\rangle= |10000\rangle$，$\lambda _4 = |29\rangle = |11101\rangle$。
+
+最后，再对每个可能的QPE的量子比特对应的值做旋转，转一个辅助比特：
+\begin{equation}
+\begin{split}
+&EIV \sum _k  | k \rangle |0\rangle = \sum _k  | k \rangle \otimes \left(\sqrt{1-\frac{C^2}{k^2}}|0\rangle + \frac{C}{k}|1\rangle\right)\\
+\end{split}
+\end{equation}
+
+如果QPE成功的话，只剩下了$\lambda _i$对应的态，那么应当有
+\begin{equation}
+\begin{split}
+&EIV \sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \otimes |0\rangle = \sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \otimes \left(\sqrt{1-\frac{C^2}{t^2\lambda _i^2}}|0\rangle + \frac{C}{t\lambda _i}|1\rangle\right)\\
+\end{split}
+\end{equation}
+
+最后对辅助比特做测量，如果测到$1$，那么
+\begin{equation}
+\begin{split}
+&\sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \otimes \left(\sqrt{1-\frac{C^2}{t^2\lambda _i^2}}|0\rangle + \frac{C}{t\lambda _i}|1\rangle\right)\\
+&\to \frac{C}{t\lambda _i}\sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \otimes |1\rangle \\
+\end{split}
+\end{equation}
+
+可以看到这时原来$|b\rangle$的qubit对应的正好是想要的，但是还有$|t\lambda _i\rangle$线性组合，我们可以把它们转回来
+\begin{equation}
+\begin{split}
+&QPE^{\dagger} \frac{C}{t\lambda _i}\sum _i b_i |\psi _i\rangle \otimes | t\lambda _i \rangle \otimes |1\rangle \\
+&=\frac{C}{t\lambda _i}\sum _i b_i |\psi _i\rangle \otimes | 0 \rangle \otimes |1\rangle \\
+\end{split}
+\end{equation}
+
+这样，原来的$|b\rangle$的qubit上就得到了结果。
+
+需要注意的是，为了用到$1/\lambda$的旋转，我们只能允许$0<t\lambda<2\pi$。
+此外，为了允许$\lambda <0$，我们实际上要求$t\lambda<\pi$，这样，对于$t\lambda > \pi$的eigen value，直接当成负数即可。
+
+\subsection{\label{sec:hhl.opqpe}QPE optimize}
+
+对QPE的优化。
+
+\subsection{\label{sec:hhl.opqpe}Rotation optimize}
+
+对受控旋转的优化。
+
+
