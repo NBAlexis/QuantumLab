@@ -129,6 +129,22 @@ T ReduceSumT(T* value, UINT count)
 }
 
 template<class T>
+void ReduceSumT(T* res, T* value, UINT count)
+{
+    const UINT iRequiredDim = (count + 1) >> 1;
+    const UINT iPower = GetReduceDim(iRequiredDim);
+    for (UINT i = 0; i <= iPower; ++i)
+    {
+        UINT iJump = 1 << i;
+        const UINT iThreadNeeded = 1 << (iPower - i);
+        UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+        UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+        _kernelReduceReal << <iBlock, iThread >> > (value, iJump, count);
+    }
+    cudaMemcpy(res, value, sizeof(T), cudaMemcpyDeviceToDevice);
+}
+
+template<class T>
 UINT ReduceMaxT(const T* value, UINT* idxBuffer, UINT count)
 {
     const UINT iRequiredDim = (count + 1) >> 1;
@@ -166,6 +182,11 @@ extern QLAPI FLOAT ReduceSum(FLOAT* value, UINT count)
     return ReduceSumT(value, count);
 }
 
+extern QLAPI void ReduceSum(Real* res, Real* value, UINT count)
+{
+    ReduceSumT(res, value, count);
+}
+
 /**
 * reduce sum
 * 'value' will be changed, the first element is the result
@@ -200,6 +221,17 @@ FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE*
     _kernelConditionalReduceReal << <iBlock, iThread >> > (value, workSpace, byStride, offset, count, condition, conditionEqual);
 
     return ReduceSum(workSpace, iThreadNeeded);
+}
+
+void ConditionalSum(Real* pDeviceRes, const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace)
+{
+    UINT iThreadNeeded = Ceil(count, 2);
+    UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+
+    _kernelConditionalReduceReal << <iBlock, iThread >> > (value, workSpace, byStride, offset, count, condition, conditionEqual);
+
+    ReduceSum(pDeviceRes, workSpace, iThreadNeeded);
 }
 
 /**

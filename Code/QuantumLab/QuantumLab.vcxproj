@@ -30,7 +30,7 @@
     <ClInclude Include="Circuit\Gates\SwapTest.h" />
     <ClInclude Include="Circuit\QLGate.h" />
     <ClInclude Include="Circuit\Subroutine\HHL.h" />
-    <ClInclude Include="Circuit\Subroutine\QRamSubroutine.h" />
+    <ClInclude Include="Circuit\Subroutine\QKMeans.h" />
     <ClInclude Include="ClassicalTools\GPUKmeans\GPUKmeans.h" />
     <ClInclude Include="ClassicalTools\QLMatrix.h" />
     <ClInclude Include="ClassicalTools\QLRandom.h" />
@@ -78,7 +78,7 @@
     <ClCompile Include="ToolClass\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Circuit\Subroutine\QRamSubroutine.cu" />
+    <CudaCompile Include="Circuit\Subroutine\QKMeans.cu" />
     <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu" />
     <CudaCompile Include="ClassicalTools\QLMatrix.cu" />
     <CudaCompile Include="ClassicalTools\QLRandom.cu" />

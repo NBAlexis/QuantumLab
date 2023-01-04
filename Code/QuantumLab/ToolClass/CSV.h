@@ -29,6 +29,8 @@ extern void QLAPI SaveCSVAR(const Real* m, UINT w, UINT h, const CCString& fileN
 
 extern void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName);
 
+extern void QLAPI SaveCSVAUI(const UINT* m, UINT w, UINT h, const CCString& fileName);
+
 extern void QLAPI SaveCSVAB(const BYTE* m, UINT w, UINT h, const CCString& fileName);
 
 __END_NAMESPACE

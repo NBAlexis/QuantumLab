@@ -334,7 +334,8 @@ void QLAPI SaveCSVAR(const Real* m, UINT w, UINT h, const CCString& fileName)
     file.close();
 }
 
-void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName)
+template<class T>
+void _SaveCSVAI(const T* m, UINT w, UINT h, const CCString& fileName)
 {
     std::ofstream file(fileName);
     CCString sOut;
@@ -360,30 +361,19 @@ void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName)
     file.close();
 }
 
+void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName)
+{
+    _SaveCSVAI(m, w, h, fileName);
+}
+
+void QLAPI SaveCSVAUI(const UINT* m, UINT w, UINT h, const CCString& fileName)
+{
+    _SaveCSVAI(m, w, h, fileName);
+}
+
 void QLAPI SaveCSVAB(const BYTE* m, UINT w, UINT h, const CCString& fileName)
 {
-    std::ofstream file(fileName);
-    CCString sOut;
-
-    for (UINT i = 0; i < h; ++i)
-    {
-        for (UINT j = 0; j < w; ++j)
-        {
-            sOut.Format(_T("%d"), m[i * w + j]);
-            file << sOut.c_str();
-            if (j != w - 1)
-            {
-                file << _T(",");
-            }
-            else
-            {
-                file << std::endl;
-            }
-        }
-    }
-
-    file.flush();
-    file.close();
+    _SaveCSVAI(m, w, h, fileName);
 }
 
 __END_NAMESPACE

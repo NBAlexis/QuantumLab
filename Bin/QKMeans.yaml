@@ -1,12 +1,22 @@
-DebugChange : 0
+#########################
+# GPU Kmeans
+#########################
+# DebugChange : 0
+# K : 50
+# Start : 201
+# End : 205
+# FileName : FT0
+# Energy : [1500]
+# Stop : 300
 
-K : 50
-Start : 201
-End : 205
-FileName : FT0
-Energy : [1500]
-Stop : 300
+# HasCoefficientIdx : 1
+# CoefficientIdxStart : 0
+# CoefficientIdxEnd : 20
 
-HasCoefficientIdx : 1
-CoefficientIdxStart : 0
-CoefficientIdxEnd : 20
+#########################
+# Quantum Kmeans
+#########################
+K : 4
+Count : 1000
+Measure : 3
+FileName : FT0-1500-5

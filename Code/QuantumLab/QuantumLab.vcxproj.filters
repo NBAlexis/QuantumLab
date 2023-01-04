@@ -209,7 +209,7 @@
     <ClInclude Include="ToolClass\CYAMLParser.h">
       <Filter>ToolClass</Filter>
     </ClInclude>
-    <ClInclude Include="Circuit\Subroutine\QRamSubroutine.h">
+    <ClInclude Include="Circuit\Subroutine\QKMeans.h">
       <Filter>Circuit\Subroutine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -226,7 +226,7 @@
     <CudaCompile Include="ClassicalTools\ReduceSum.cu">
       <Filter>ClassicalTools</Filter>
     </CudaCompile>
-    <CudaCompile Include="Circuit\Subroutine\QRamSubroutine.cu">
+    <CudaCompile Include="Circuit\Subroutine\QKMeans.cu">
       <Filter>Circuit\Subroutine</Filter>
     </CudaCompile>
   </ItemGroup>

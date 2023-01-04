@@ -66,7 +66,7 @@ void ClassicalKMeans(const CCString& yamlFile)
                     sFileToSave.Format(_T("%s-%d-%d-%d-%d.csv"), sFileHead.c_str(), energy[i], k, c, j);
                     kmeans.Build(uiStop);
                     kmeans.Save(sFileToSave);
-                    appGeneral(_T("%s saved.\n"), sFileToSave);
+                    appGeneral(_T("%s saved.\n"), sFileToSave.c_str());
                 }
             }
         }
@@ -82,7 +82,7 @@ void ClassicalKMeans(const CCString& yamlFile)
                 sFileToSave.Format(_T("%s-%d-%d-%d.csv"), sFileHead.c_str(), energy[i], k, j);
                 kmeans.Build(uiStop);
                 kmeans.Save(sFileToSave);
-                appGeneral(_T("%s saved.\n"), sFileToSave);
+                appGeneral(_T("%s saved.\n"), sFileToSave.c_str());
             }
         }
     }

@@ -35,6 +35,8 @@ extern QLAPI UINT ReduceSum(UINT* value, UINT count);
 
 extern QLAPI FLOAT ReduceSum(FLOAT* value, UINT count);
 
+extern QLAPI void ReduceSum(Real* deviceRes, Real* value, UINT count);
+
 /**
 * reduce sum
 * 'value' will be changed, the first element is the result
@@ -46,6 +48,8 @@ extern QLAPI QLComplex ReduceSum(QLComplex* value, UINT count);
 * work space must has length >= (len(v) + 1) / 2
 */
 extern QLAPI FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace);
+
+extern QLAPI void ConditionalSum(Real* deviceRes, const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace);
 
 /**
 * sum _{if cndition[n] = conditionEqual} 1
