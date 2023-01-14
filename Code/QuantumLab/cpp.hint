@@ -1,3 +1,2 @@
-#define __launch_bounds__(a, b) 
-
-
+#define __launch_bounds__
+#define blockIdx blockDim

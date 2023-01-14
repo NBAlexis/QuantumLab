@@ -36,8 +36,8 @@ public:
     QLQuantumKmeans(BYTE maxK);
     ~QLQuantumKmeans();
 
-    void Prepare(const CCString& fileName, UINT n = 0);
-    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UBOOL bDebug = FALSE);
+    void Prepare(const CCString& fileName, const CCString& sStartCenterFile = _T(""), UINT n = 0);
+    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep = 0, UBOOL bDebug = FALSE);
 
     void TestCircuit(const Real* hostVectors);
 
@@ -55,6 +55,7 @@ protected:
     BYTE Reclassify(UINT uiIdx, UINT* measurecount);
     UINT Reclassify(UBOOL bDebug);
     void InitialK(UBOOL bDebug);
+    void InitialWithCenterFile();
     void ExportDebugInfo();
     
     BYTE m_byMaxK;
@@ -103,6 +104,9 @@ protected:
     UINT m_uiStep;
     UINT* m_pMeasureCounts;
     CCString m_sSaveNameHead;
+
+    //========= continue ==========
+    CCString m_sStartCenterFile;
 };
 
 

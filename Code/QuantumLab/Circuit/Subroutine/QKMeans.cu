@@ -312,8 +312,10 @@ QLQuantumKmeans::~QLQuantumKmeans()
 }
 
 
-void QLQuantumKmeans::Prepare(const CCString& fileName, UINT n)
+void QLQuantumKmeans::Prepare(const CCString& fileName, const CCString& sStartCenterFile, UINT n)
 {
+    m_sStartCenterFile = sStartCenterFile;
+
     UINT w, h;
     TArray<Real> data = ReadCSVAR(fileName, w, h);
 
@@ -716,14 +718,29 @@ void QLQuantumKmeans::InitialK(UBOOL bDebug)
     CalculateDegreesOnlyCenters();
 }
 
-void QLQuantumKmeans::KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UBOOL bDebug)
+void QLQuantumKmeans::InitialWithCenterFile()
+{
+    UINT w, h;
+    TArray<Real> data = ReadCSVAR(m_sStartCenterFile, w, h);
+    checkCudaErrors(cudaMemcpy(m_pDeviceVBuffer, data.GetData(), sizeof(Real) * 7 * m_byMaxK, cudaMemcpyHostToDevice));
+    CalculateDegreesOnlyCenters();
+}
+
+void QLQuantumKmeans::KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep, UBOOL bDebug)
 {
     m_sSaveNameHead = sResultFileName;
-    m_uiStep = 0;
+    m_uiStep = uiStep;
     m_uiRepeat = uiRepeat;
 
     //========== step1: initial =============
-    InitialK(bDebug);
+    if (m_sStartCenterFile.IsEmpty())
+    {
+        InitialK(bDebug);
+    }
+    else
+    {
+        InitialWithCenterFile();
+    }
     
     //========== step2: calculate cetners =============
     //========== step3: reclassify =============

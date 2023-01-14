@@ -20,3 +20,5 @@ K : 4
 Count : 1000
 Measure : 3
 FileName : FT0-1500-5
+# Continue : 1
+# StartCenter: FT0-1500-20_c_27.csv
