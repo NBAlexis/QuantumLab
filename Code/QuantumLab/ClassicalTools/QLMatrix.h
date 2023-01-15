@@ -95,7 +95,7 @@ public:
 
     static QLMatrix CopyCreate(UINT uiX, UINT uiY, QLComplex* buffer);
 
-    const QLMatrix& QLMatrix::operator=(const QLMatrix& other)
+    const QLMatrix& operator=(const QLMatrix& other)
     {
         if (m_uiX * m_uiY != other.m_uiX * other.m_uiY)
         {
