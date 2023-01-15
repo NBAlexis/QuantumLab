@@ -219,6 +219,13 @@ target_compile_features({0} PUBLIC cxx_std_14)
 # could be called by other libraries and executables
 set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
 
+                //Add include path here
+                sContent += string.Format("\ntarget_include_directories({0} PRIVATE {1})\n\n", m_sName, "${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include");
+                if (m_sName.Equals("QuEST"))
+                {
+                    sContent += string.Format("\ntarget_include_directories({0} PRIVATE {1})\n\n", m_sName, "${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/src");
+                }
+
                 //Add links here
                 sContent += string.Format("\n\ntarget_link_libraries({0} -lcurand)\n", m_sName);
                 sContent += string.Format("target_link_libraries({0} -lcufft)\n", m_sName);
@@ -252,9 +259,9 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             sContent += "if (DEFINED CUDASM)\n";
             sContent += "    set(CUDA_CMP \"compute_${CUDASM}\")\n";
             sContent += "    set(CUDA_SM \"sm_${CUDASM}\")\n";
-            sContent += "    if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)";
-            sContent += "        set (CMAKE_CUDA_ARCHITECTURES ${CUDASM})";
-            sContent += "    endif(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)\n\n";
+            sContent += "    if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)\n";
+            sContent += "        set (CMAKE_CUDA_ARCHITECTURES ${CUDASM})\n";
+            sContent += "    endif(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)\n";
             sContent += "endif()\n\n";
             sContent += "MESSAGE(\"Note: arch is ${CUDA_CMP} and ${CUDA_SM}.\")\n";
             sContent += "MESSAGE(\"52 for 970, 61 for GTX10, 70 for V100, 75 for RTX20, RTX16, 86 for RTX30\")\n";

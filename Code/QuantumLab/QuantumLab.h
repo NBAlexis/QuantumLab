@@ -37,7 +37,7 @@
 #       endif
 #   endif
 #else
-#    define QLGAPI  
+#    define QLAPI  
 #endif
 
 #include "Base/STLExport.h"

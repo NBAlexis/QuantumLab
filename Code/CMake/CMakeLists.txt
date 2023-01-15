@@ -10,8 +10,9 @@ set(CUDA_SM "sm_61")
 if (DEFINED CUDASM)
     set(CUDA_CMP "compute_${CUDASM}")
     set(CUDA_SM "sm_${CUDASM}")
-    if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)        set (CMAKE_CUDA_ARCHITECTURES ${CUDASM})    endif(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
-
+    if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+        set (CMAKE_CUDA_ARCHITECTURES ${CUDASM})
+    endif(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
 endif()
 
 MESSAGE("Note: arch is ${CUDA_CMP} and ${CUDA_SM}.")
@@ -67,6 +68,12 @@ target_compile_features(QuEST PUBLIC cxx_std_14)
 # QuEST library to be built with -dc as the member functions 
 # could be called by other libraries and executables
 set_target_properties(QuEST PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_include_directories(QuEST PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
+
+
+target_include_directories(QuEST PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/src)
+
+
 
 target_link_libraries(QuEST -lcurand)
 target_link_libraries(QuEST -lcufft)
@@ -158,6 +165,9 @@ target_compile_features(QuantumLab PUBLIC cxx_std_14)
 # QuantumLab library to be built with -dc as the member functions 
 # could be called by other libraries and executables
 set_target_properties(QuantumLab PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+target_include_directories(QuantumLab PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
+
+
 
 target_link_libraries(QuantumLab -lcurand)
 target_link_libraries(QuantumLab -lcufft)
