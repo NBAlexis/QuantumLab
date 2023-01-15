@@ -70,7 +70,7 @@ extern "C" {
 
 //===============================
     typedef void (*pfinvalidQuESTInputError)(const char* errMsg, const char* errFunc);
-    pfinvalidQuESTInputError QUESTAPI __other_input_error;
+    extern pfinvalidQuESTInputError QUESTAPI __other_input_error;
 
 /*
  * private structures

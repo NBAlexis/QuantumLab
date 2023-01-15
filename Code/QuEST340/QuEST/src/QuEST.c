@@ -31,6 +31,8 @@ extern "C" {
 
 #include "PlatformFunctions.h"
 
+pfinvalidQuESTInputError QUESTAPI __other_input_error;
+
 /*
  * state-vector management
  */

@@ -364,7 +364,6 @@ void QLQuantumKmeans::Prepare(const CCString& fileName, const CCString& sStartCe
     checkCudaErrors(cudaFree(pTempY2));
     checkCudaErrors(cudaFree(pTempZ1));
     checkCudaErrors(cudaFree(pTempZ2));
-
     m_pMeasureCounts = (UINT*)malloc(sizeof(UINT) * m_uiN);
 
     appGeneral(_T("Buffer prepared.\n"));

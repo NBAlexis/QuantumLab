@@ -51,9 +51,9 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
     }
     copyStateToGPU(vec);
 
-    for (INT i = 0; i < opssize; ++i)
+    for (SIZE_T i = 0; i < opssize; ++i)
     {
-        QLGate::PerformBasicOperation(vec, ops[i]);
+        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
     }
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);
