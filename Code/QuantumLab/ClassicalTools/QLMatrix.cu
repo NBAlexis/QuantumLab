@@ -324,7 +324,7 @@ void QLMatrix::Print(const CCString& sName) const
     appPushLogDate(FALSE);
     if (!sName.IsEmpty())
     {
-        appGeneral("%s=", sName);
+        appGeneral("%s=", sName.c_str());
     }
     appGeneral("{");
     for (UINT y = 0; y < m_uiY; ++y)

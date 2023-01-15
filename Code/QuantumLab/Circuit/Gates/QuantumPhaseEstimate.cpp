@@ -190,8 +190,8 @@ QLGate QLAPI ConditionalHamiltonianEvolution(const QLMatrix& h, BYTE phaseQubitN
         ctrIdx = uQubitLength + ctrIdx;
 
         TArray <BYTE> cnotbits;
-        cnotbits.AddItem(ctrIdx);
-        cnotbits.AddItem(uQubitLength - 1);
+        cnotbits.AddItem(static_cast<BYTE>(ctrIdx));
+        cnotbits.AddItem(static_cast<BYTE>(uQubitLength - 1));
         ret.AppendGate(QLGate(EBasicOperation::EBO_CX), cnotbits);
     }
     return ret;

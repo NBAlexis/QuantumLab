@@ -30,7 +30,7 @@ PauliProduct::PauliProduct(const TArray<BYTE>& pauliType, Real fCoefficient)
 QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
 {
     QLGate ret;
-    ret.AddQubits(m_iOrder + 1);
+    ret.AddQubits(static_cast<BYTE>(m_iOrder + 1));
     ret.m_sName = _T("Trotter");
 
     BYTE byAncilla = static_cast<BYTE>(m_iOrder);
@@ -38,7 +38,7 @@ QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
     abit.AddItem(byAncilla);
 
     QLGate prepare;
-    prepare.AddQubits(m_iOrder + 1);
+    prepare.AddQubits(static_cast<BYTE>(m_iOrder + 1));
     prepare.m_sName = _T("Prepare");
 
     for (INT i = 0; i < m_lstPauliType.Num(); ++i)

@@ -942,6 +942,8 @@ static const char* _cudaGetErrorEnum(cusolverStatus_t error) {
         return "CUSOLVER_STATUS_ZERO_PIVOT";
     case CUSOLVER_STATUS_INVALID_LICENSE:
         return "CUSOLVER_STATUS_INVALID_LICENSE";
+    default:
+        break;
     }
 
     return "<unknown>";

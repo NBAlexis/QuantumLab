@@ -271,7 +271,7 @@ QLQuantumKmeans::QLQuantumKmeans(BYTE maxK)
     , m_pHostCenters(NULL)
     , m_uiStep(0)
 {
-    m_byQubit = 2 + MostSignificantPowerTwo(maxK);
+    m_byQubit = 2 + static_cast<BYTE>(MostSignificantPowerTwo(maxK));
 
     m_uiBlock = m_byVectorCount > _QL_LAUNCH_MAX_THREAD ? Ceil(m_byVectorCount, _QL_LAUNCH_MAX_THREAD) : 1;
     m_uiThread = m_byVectorCount > _QL_LAUNCH_MAX_THREAD ? Ceil(m_byVectorCount, m_uiBlock) : m_byVectorCount;

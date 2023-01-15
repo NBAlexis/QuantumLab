@@ -167,7 +167,7 @@ INT CYAMLParser::ParseStream(std::istream& iss, CParameters& params)
             if (value[0] == _T('['))
             {
                 memset(buf, _T('\0'), buf_size);
-                appStrcpy(buf, buf_size, value);
+                appStrcpy(buf, buf_size - 1, value);
                 //value.copy(buf, buf_size);  // reuse buffer
 
                 TArray<CCString> v;

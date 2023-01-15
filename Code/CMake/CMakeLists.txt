@@ -174,7 +174,7 @@ target_link_libraries(QuantumLab -lcufft)
 target_link_libraries(QuantumLab -lcusolver)
 target_link_libraries(QuantumLab -lcublas)
 target_link_libraries(QuantumLab -lcuadvert)
-target_link_libraries(QuantumLab -QuEST)
+target_link_libraries(QuantumLab QuEST)
 
 # To enable the double, the minimum arch is 6.0
 target_compile_options(QuantumLab PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode arch=${CUDA_CMP},code=${CUDA_SM}>)
@@ -192,7 +192,7 @@ add_executable(SimpleTest
     )
 
 target_compile_features(SimpleTest PUBLIC cxx_std_14)
-target_link_libraries(SimpleTest -QuantumLab)
+target_link_libraries(SimpleTest QuantumLab)
 
 
 
@@ -209,4 +209,4 @@ add_executable(QKMeans
     )
 
 target_compile_features(QKMeans PUBLIC cxx_std_14)
-target_link_libraries(QKMeans -QuantumLab)
+target_link_libraries(QKMeans QuantumLab)

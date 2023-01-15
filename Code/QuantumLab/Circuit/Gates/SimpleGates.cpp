@@ -57,7 +57,7 @@ TArray<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
         QLComplex dotAB = _cuCaddf(_cuCmulf(_cuConjf(u11), u21), _cuCmulf(_cuConjf(u12), u22));
         u21 = _cuCsubf(u21, cuCdivf_cr(_cuCmulf(u11, dotAB), fNormA));
         u22 = _cuCsubf(u22, cuCdivf_cr(_cuCmulf(u12, dotAB), fNormA));
-        Real fNormC = _sqrt(__cuCabsSqf(u21) + __cuCabsSqf(u22));
+        //Real fNormC = _sqrt(__cuCabsSqf(u21) + __cuCabsSqf(u22));
         fNormA = _sqrt(fNormA);
 
         u11 = cuCdivf_cr(u11, fNormA);

@@ -57,7 +57,7 @@ TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower)
     {
         vLengthPower = 1;
     }
-    UINT vLengthWanted = (1 << vLengthPower);
+    //UINT vLengthWanted = (1 << vLengthPower);
 
     Real sum = F(0.0);
     for (INT i = 0; i < v.Num(); ++i)
@@ -172,7 +172,7 @@ void MakeCircuitWithRotations(QLGate& gate, const TArray<Real>& degreeArray, UIN
 
             QLGate ry(EBasicOperation::EBO_RY, degree * F(2.0));
             TArray<BYTE> bit;
-            bit.AddItem(vLengthPower - 1);
+            bit.AddItem(static_cast<BYTE>(vLengthPower - 1));
             gate.AppendGate(ry, bit);
         }
         else
@@ -188,9 +188,9 @@ void MakeCircuitWithRotations(QLGate& gate, const TArray<Real>& degreeArray, UIN
 
             for (UINT k = 0; k < i; ++k)
             {
-                controller.AddItem(vLengthPower - 1 - k);
+                controller.AddItem(static_cast<BYTE>(vLengthPower - 1 - k));
             }
-            controller.AddItem(vLengthPower - 1 - i);
+            controller.AddItem(static_cast<BYTE>(vLengthPower - 1 - i));
             QLGate fry = FRy(degrees, static_cast<UINT>(controller.Num()));
             gate.AppendGate(fry, controller);
         }
@@ -219,7 +219,7 @@ QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v)
     TArray<QLComplex> varray = NormalizeV(v, vLengthPower);
 
     QLGate ret;
-    ret.AddQubits(vLengthPower);
+    ret.AddQubits(static_cast<BYTE>(vLengthPower));
     ret.m_sName = _T("AmpEnc");
     MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotations(varray, vLengthPower), vLengthPower);
     ApplyPhase(ret, varray, vLengthPower);
@@ -232,7 +232,7 @@ QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v)
     TArray<Real> varray = NormalizeVReal(v, vLengthPower);
 
     QLGate ret;
-    ret.AddQubits(vLengthPower);
+    ret.AddQubits(static_cast<BYTE>(vLengthPower));
     ret.m_sName = _T("AmpEnc");
     MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotationsReal(varray, vLengthPower), vLengthPower);
     return ret;

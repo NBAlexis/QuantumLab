@@ -71,9 +71,9 @@ QLGate QLAPI HHLGate(const QLMatrix& h, const TArray<QLComplex>& y, UINT trotter
     TArray<BYTE> rotationBits;
     for (BYTE i = 0; i < phaseQubitNum; ++i)
     {
-        rotationBits.AddItem(len + phaseQubitNum - i);
+        rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum - i));
     }
-    rotationBits.AddItem(len + phaseQubitNum + 1);
+    rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum + 1));
     QLGate fry = FRy(degreesToRot, phaseQubitNum + 1);
     hhlGate.AppendGate(fry, rotationBits);
 
@@ -150,9 +150,9 @@ QLGate QLAPI HermitianMatrixMultiply(const QLMatrix& h, const TArray<QLComplex>&
     TArray<BYTE> rotationBits;
     for (BYTE i = 0; i < phaseQubitNum; ++i)
     {
-        rotationBits.AddItem(len + phaseQubitNum - i);
+        rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum - i));
     }
-    rotationBits.AddItem(len + phaseQubitNum + 1);
+    rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum + 1));
     QLGate fry = FRy(degreesToRot, phaseQubitNum + 1);
     hhlGate.AppendGate(fry, rotationBits);
 
@@ -227,7 +227,7 @@ QLGate QLAPI MatrixPowerGate(const QLMatrix& h, INT iPower, UINT trotterStep, Re
         //-1 to 1
         lambdaToInverse = lambdaToInverse * F(2.0);
         Real lambdaToInversePower = lambdaToInverse;
-        for (INT i = 1; i < abs(iPower); ++i)
+        for (INT j = 1; j < abs(iPower); ++j)
         {
             lambdaToInversePower = lambdaToInversePower * lambdaToInverse;
         }
@@ -244,9 +244,9 @@ QLGate QLAPI MatrixPowerGate(const QLMatrix& h, INT iPower, UINT trotterStep, Re
     TArray<BYTE> rotationBits;
     for (BYTE i = 0; i < phaseQubitNum; ++i)
     {
-        rotationBits.AddItem(len + phaseQubitNum - i);
+        rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum - i));
     }
-    rotationBits.AddItem(len + phaseQubitNum + 1);
+    rotationBits.AddItem(static_cast<BYTE>(len + phaseQubitNum + 1));
     QLGate fry = FRy(degreesToRot, phaseQubitNum + 1);
     hhlGate.AppendGate(fry, rotationBits);
 

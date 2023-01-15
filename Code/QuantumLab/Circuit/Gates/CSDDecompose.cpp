@@ -15,14 +15,14 @@ __BEGIN_NAMESPACE
 void DebugGate(const CSDMatrix& m, INT iLevel)
 {
     QLGate ch;
-    ch.AddQubits(iLevel);
+    ch.AddQubits(static_cast<BYTE>(iLevel));
     ch.m_sName = _T("CSD");
 
     m.Gate(ch);
 
     appGeneral(_T("matrix type: %d\n"), m.m_eType);
     QLSimulatorParametersMatrix param;
-    param.m_byQubitCount = iLevel;
+    param.m_byQubitCount = static_cast<BYTE>(iLevel);
     param.m_MasterGate = ch;
     QLSimulatorMatrix sim;
     sim.Simulate(&param);
@@ -33,14 +33,14 @@ void DebugGate(const CSDMatrix& m, INT iLevel)
 void DebugGate(const CSDMatrix& m1, const CSDMatrix& m2, INT iLevel)
 {
     QLGate ch;
-    ch.AddQubits(iLevel);
+    ch.AddQubits(static_cast<BYTE>(iLevel));
     ch.m_sName = _T("CSD");
 
     m1.CombinedYZGate(ch, m2.m_lstDegreeContent);
 
     appGeneral(_T("matrix type: %d\n"), m1.m_eType);
     QLSimulatorParametersMatrix param;
-    param.m_byQubitCount = iLevel;
+    param.m_byQubitCount = static_cast<BYTE>(iLevel);
     param.m_MasterGate = ch;
     QLSimulatorMatrix sim;
     sim.Simulate(&param);
@@ -71,8 +71,8 @@ void CSDMatrix::SetAsUMatrix(INT level, INT totLevel, const TArray<QLMatrix>& u)
     }
 
     m_eType = ECSDMatrix::BlockedUMatrix;
-    UINT halfMatrixSize = 1U << (totLevel - level);
-    UINT totalMatrixSize = halfMatrixSize << 1;
+    //UINT halfMatrixSize = 1U << (totLevel - level);
+    //UINT totalMatrixSize = halfMatrixSize << 1U;
     m_lstSubMatrix.RemoveAll();
     for (UINT i = 0; i < halfSize; ++i)
     {
@@ -342,7 +342,7 @@ void CSDMatrix::GateAsPartialFRZMatrix(QLGate& gate) const
     {
         QLGate rz(EBasicOperation::EBO_RZ, -m_lstDegreeContent[0] * F(2.0));
         TArray <BYTE> bit;
-        bit.AddItem(m_iTotLevel - 1);
+        bit.AddItem(static_cast<BYTE>(m_iTotLevel - 1));
         gate.AppendGate(rz, bit);
     }
     else
@@ -678,7 +678,7 @@ QLGate QLAPI CSDDecompose(const QLMatrix& u, INT iLevel)
     assert(u.Y() >= (1U << iLevel));
 
     QLGate ret;
-    ret.AddQubits(iLevel);
+    ret.AddQubits(static_cast<BYTE>(iLevel));
     ret.m_sName = _T("CSD");
     TArray<CSDMatrix> decompose = CSDMatrix::CSDecomposeMatrix(u, iLevel);
     for (INT i = 0; i < decompose.Num(); ++i)

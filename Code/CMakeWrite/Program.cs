@@ -178,7 +178,7 @@ namespace CMakeWrite
                 sRet += string.Format("target_compile_features({0} PUBLIC cxx_std_14)\n", sAppName);
                 foreach (string linkWithName in linkWith)
                 {
-                    sRet += string.Format("target_link_libraries({0} -{1})\n", sAppName, linkWithName);
+                    sRet += string.Format("target_link_libraries({0} {1})\n", sAppName, linkWithName);
                 }
                 return sRet;
             }
@@ -234,7 +234,7 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
                 sContent += string.Format("target_link_libraries({0} -lcuadvert)\n", m_sName);
                 foreach (string linkWithName in linkWith)
                 {
-                    sContent += string.Format("target_link_libraries({0} -{1})\n", m_sName, linkWithName);
+                    sContent += string.Format("target_link_libraries({0} {1})\n", m_sName, linkWithName);
                 }
 
                 sContent += "\n# To enable the double, the minimum arch is 6.0\n";

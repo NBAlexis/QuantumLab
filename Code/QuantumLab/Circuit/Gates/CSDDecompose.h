@@ -81,6 +81,8 @@ public:
             return PrintAsPartialFRZMatrix();
         case ECSDMatrix::GlobalPhase:
             return PrintAsGlobalPhase();
+        default:
+            break;
         }
         appCrucial(_T("something wrong! PrintMe\n"));
         return QLMatrix();
@@ -100,6 +102,8 @@ public:
             return GateAsPartialFRZMatrix(gate);
         case ECSDMatrix::GlobalPhase:
             return GateAsGlobalPhase(gate);
+        default:
+            break;
         }
         appCrucial(_T("something wrong! Gate\n"));
     }

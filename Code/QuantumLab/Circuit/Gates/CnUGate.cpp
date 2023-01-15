@@ -56,7 +56,7 @@ void CNOTStep(QLGate& gate, const TArray<BYTE>& controller, BYTE target, UINT st
     BYTE lastController = newController.Pop();
     AppendCNOTSqrt(gate, lastController, target, step + 1, FALSE);
 
-    QLGate subCnNot = CreateCnNot(newController.Num());
+    QLGate subCnNot = CreateCnNot(static_cast<BYTE>(newController.Num()));
 
     gate.AppendGate(subCnNot, controller);
 

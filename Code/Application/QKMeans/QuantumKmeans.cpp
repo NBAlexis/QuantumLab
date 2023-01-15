@@ -80,7 +80,7 @@ void QuantumKMeans(const CCString& yamlFile)
     //qkmeans.TestCircuit(reinterpret_cast<Real*>(testvectorlist));
 
     CCString sLoadFileName;
-    sLoadFileName.Format(_T("%s.csv"), sFileHead);
+    sLoadFileName.Format(_T("%s.csv"), sFileHead.c_str());
     qkmeans.Prepare(sLoadFileName, sStartCenter, uiCount);
     qkmeans.KMeans(sFileHead, 1, uiMeasure, uiContinue, TRUE);
     //QLGate gate = qkmeans.CompareCircuit((Real*)testvectorlist);

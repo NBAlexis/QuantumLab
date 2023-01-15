@@ -59,9 +59,9 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     copyStateToGPU(vec);
     syncQuESTEnv(evn);
 
-    for (INT i = 0; i < opssize; ++i)
+    for (SIZE_T i = 0; i < opssize; ++i)
     {
-        QLGate::PerformBasicOperation(vec, ops[i]);
+        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
     }
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);
@@ -121,7 +121,7 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
             lstCount[measureRes] = lstCount[measureRes] + 1;
             lstHist.AddItem(measureRes);
 
-            if (lstCount[measureRes] >= param->m_iMeasureUntil)
+            if (static_cast<INT>(lstCount[measureRes]) >= param->m_iMeasureUntil)
             {
                 if (NULL != outputMatrix)
                 {
@@ -172,7 +172,7 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     {
         for (INT i = 0; i < lstCount.Num(); ++i)
         {
-            appGeneral(_T("%s(%d): %f\n"), Binary(i, param->m_lstMeasureBits.Num()), i, static_cast<Real>(lstCount[i]) / param->m_iRepeat);
+            appGeneral(_T("%s(%d): %f\n"), Binary(i, param->m_lstMeasureBits.Num()).c_str(), i, static_cast<Real>(lstCount[i]) / param->m_iRepeat);
         }
     }
 
