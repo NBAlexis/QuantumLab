@@ -10,6 +10,8 @@ set(CUDA_SM "sm_61")
 if (DEFINED CUDASM)
     set(CUDA_CMP "compute_${CUDASM}")
     set(CUDA_SM "sm_${CUDASM}")
+    if (NOT DEFINED CMAKE_CUDA_ARCHITECTURES)        set (CMAKE_CUDA_ARCHITECTURES ${CUDASM})    endif(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+
 endif()
 
 MESSAGE("Note: arch is ${CUDA_CMP} and ${CUDA_SM}.")
