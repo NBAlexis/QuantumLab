@@ -34,6 +34,13 @@ add_definitions(-D_UBUNTU)
 MESSAGE("CMAKE_CUDA_FLAGS flag = ${CMAKE_CUDA_FLAGS}")
 MESSAGE("CMAKE_CXX_FLAGS flag = ${CMAKE_CXX_FLAGS}")
 
+
+
+
+# ==================== 
+# QuEST 
+# =================
+
 include_directories(${PROJECT_SOURCE_DIR}/QuEST)
 add_library(QuEST STATIC
     ${PROJECT_SOURCE_DIR}/QuEST340/QuEST/include/PlatformFunctions.h
@@ -79,10 +86,16 @@ target_link_libraries(QuEST -lcurand)
 target_link_libraries(QuEST -lcufft)
 target_link_libraries(QuEST -lcusolver)
 target_link_libraries(QuEST -lcublas)
-target_link_libraries(QuEST -lcuadvert)
 
 # To enable the double, the minimum arch is 6.0
 target_compile_options(QuEST PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode arch=${CUDA_CMP},code=${CUDA_SM}>)
+
+
+
+
+# ==================== 
+# QuantumLab 
+# =================
 
 include_directories(${PROJECT_SOURCE_DIR}/QuantumLab)
 add_library(QuantumLab STATIC
@@ -173,7 +186,6 @@ target_link_libraries(QuantumLab -lcurand)
 target_link_libraries(QuantumLab -lcufft)
 target_link_libraries(QuantumLab -lcusolver)
 target_link_libraries(QuantumLab -lcublas)
-target_link_libraries(QuantumLab -lcuadvert)
 target_link_libraries(QuantumLab QuEST)
 
 # To enable the double, the minimum arch is 6.0

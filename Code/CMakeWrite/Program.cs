@@ -191,7 +191,7 @@ namespace CMakeWrite
                 }
                 string sProjFolder = m_sProjectDir.Replace("\\", "/").Substring(0, m_sProjectDir.Length - 1);
                 sProjFolder = Regex.Replace(sProjFolder, "([\\s\\S]*)Code/([\\s\\S]*)", "$2");
-                string sContent = "";
+                string sContent = string.Format("\n\n\n# ==================== \n# {0} \n# =================\n\n", m_sName);
                 sContent += string.Format("include_directories(${1}/{0})\n", m_sName, "{PROJECT_SOURCE_DIR}");
 
                 sContent += string.Format("add_library({0} STATIC\n    ", m_sName);
@@ -231,7 +231,7 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
                 sContent += string.Format("target_link_libraries({0} -lcufft)\n", m_sName);
                 sContent += string.Format("target_link_libraries({0} -lcusolver)\n", m_sName);
                 sContent += string.Format("target_link_libraries({0} -lcublas)\n", m_sName);
-                sContent += string.Format("target_link_libraries({0} -lcuadvert)\n", m_sName);
+                //sContent += string.Format("target_link_libraries({0} -lcudadevrt)\n", m_sName);
                 foreach (string linkWithName in linkWith)
                 {
                     sContent += string.Format("target_link_libraries({0} {1})\n", m_sName, linkWithName);
