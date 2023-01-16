@@ -19,6 +19,8 @@
  */
 QuESTEnv QUEST_ENV;
 
+#if _WIN64
+
 /** Redefinition of QuEST_validation's invalidQuESTInputError function, called when a 
  * user passes an incorrect parameter (e.g. an negative qubit index). This is 
  * redefined here to, in lieu of printing and exiting, throw a C++ exception
@@ -28,13 +30,31 @@ QuESTEnv QUEST_ENV;
      throw errMsg;
  }
  
+#else
+
+/** Redefinition of QuEST_validation's invalidQuESTInputError function, called when a
+ * user passes an incorrect parameter (e.g. an negative qubit index). This is
+ * redefined here to, in lieu of printing and exiting, throw a C++ exception
+ * which can be caught (and hence unit tested for) by Catch2
+ */
+extern "C" void invalidQuESTInputError(const char* errMsg, const char* errFunc) {
+    throw errMsg;
+}
+
+#endif
+
 /** Explicit declaration of main to create (destroy) the QuESTEnv before (after)
  * invoking the Catch unit tests 
  */
-int main( int argc, char* argv[] ) {
+int main( int argc, char* argv[] ) 
+{
+
+#if _WIN64
     __other_input_error = invalidQuESTInputError__;
-  QUEST_ENV = createQuESTEnv();
-  int result = Catch::Session().run( argc, argv );
-  destroyQuESTEnv(QUEST_ENV);
-  return result;
+#endif
+
+    QUEST_ENV = createQuESTEnv();
+    int result = Catch::Session().run(argc, argv);
+    destroyQuESTEnv(QUEST_ENV);
+    return result;
 }

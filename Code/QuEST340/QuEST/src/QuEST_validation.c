@@ -214,7 +214,7 @@ static const char* errorMessages[] = {
 };
 
 void default_invalidQuESTInputError(const char* errMsg, const char* errFunc) {
-
+#if _WIN64
     if (__other_input_error)
     {
         (*__other_input_error)(errMsg, errFunc);
@@ -227,6 +227,13 @@ void default_invalidQuESTInputError(const char* errMsg, const char* errFunc) {
         printf("exiting..\n");
         exit(EXIT_FAILURE);
     }
+#else
+    printf("!!!\n");
+    printf("QuEST Error in function %s: %s\n", errFunc, errMsg);
+    printf("!!!\n");
+    printf("exiting..\n");
+    exit(EXIT_FAILURE);
+#endif
 }
 
 #ifndef _WIN32

@@ -280,7 +280,7 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             sContent += "MESSAGE(\"Note: arch is ${CUDA_CMP} and ${CUDA_SM}.\")\n";
             sContent += "MESSAGE(\"52 for 970, 61 for GTX10, 70 for V100, 75 for RTX20, RTX16, 86 for RTX30\")\n";
 
-            sContent += "project(ColorNetwork LANGUAGES CXX CUDA)\n\n";
+            sContent += "project(ColorNetwork LANGUAGES C CXX CUDA)\n\n";
             sContent += "set(CMAKE_GENERATOR_PLATFORM x64)\n\n";
 
             sContent += "# We start from CMAKE_SOURCE_DIR which should be /Code/CMake\n";
@@ -309,8 +309,8 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             string[][] sLibLinkWith = { new string[]{ }, new []{ "QuEST" } };
             string[] sLibNames = { "QuEST", "QuantumLab" };
 
-            string[][] sAppLinkWith = { new[] { "QuEST" }, new[] { "QuEST", "QuantumLab" } };
-            string[] sApplicationName = { "tests", "SimpleTest" };
+            string[][] sAppLinkWith = { new[] { "QuantumLab" }, new[] { "QuantumLab" } };
+            string[] sApplicationName = { "SimpleTest", "QKMeans" };
             EArch eDefaultArch = EArch.EArcSM61;
 
             string sContent = MakeCMake(eDefaultArch);

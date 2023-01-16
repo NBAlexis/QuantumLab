@@ -17,7 +17,7 @@ endif()
 
 MESSAGE("Note: arch is ${CUDA_CMP} and ${CUDA_SM}.")
 MESSAGE("52 for 970, 61 for GTX10, 70 for V100, 75 for RTX20, RTX16, 86 for RTX30")
-project(ColorNetwork LANGUAGES CXX CUDA)
+project(ColorNetwork LANGUAGES C CXX CUDA)
 
 set(CMAKE_GENERATOR_PLATFORM x64)
 
@@ -195,36 +195,6 @@ target_compile_options(QuantumLab PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode ar
 
 
 # ==================== 
-# tests 
-# =================
-
-include_directories(${PROJECT_SOURCE_DIR}/QuEST340/tests)
-add_executable(tests 
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/catch/catch.hpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/utilities.hpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/main.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_calculations.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_data_structures.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_decoherence.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_gates.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_operators.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_state_initialisations.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_unitaries.cpp
-    ${PROJECT_SOURCE_DIR}/QuEST340/tests/utilities.cpp
-    )
-
-
-target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
-
-
-target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/tests/catch)
-
-target_compile_features(tests PUBLIC cxx_std_14)
-target_link_libraries(tests QuEST)
-
-
-
-# ==================== 
 # SimpleTest 
 # =================
 
@@ -234,5 +204,21 @@ add_executable(SimpleTest
     )
 
 target_compile_features(SimpleTest PUBLIC cxx_std_14)
-target_link_libraries(SimpleTest QuEST)
 target_link_libraries(SimpleTest QuantumLab)
+
+
+
+# ==================== 
+# QKMeans 
+# =================
+
+include_directories(${PROJECT_SOURCE_DIR}/Application/QKMeans)
+add_executable(QKMeans 
+    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.h
+    ${PROJECT_SOURCE_DIR}/Application/QKMeans/ClassicalKmeans.cpp
+    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.cpp
+    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QuantumKmeans.cpp
+    )
+
+target_compile_features(QKMeans PUBLIC cxx_std_14)
+target_link_libraries(QKMeans QuantumLab)

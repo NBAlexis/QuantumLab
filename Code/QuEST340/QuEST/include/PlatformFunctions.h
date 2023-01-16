@@ -17,6 +17,10 @@
 #define FOPEN fopen
 #define STRCPY(dest, length, source) strcpy(dest, source)
 #define STRCAT(dest, length, source) strcat(dest, source)
-#define SPRINTF(dest, length, format, ...) sprintf(dest, format, __VA_ARGS__)
+#define SPRINTF(dest, length, format, a) sprintf(dest, format, a)
+#define SPRINTF(dest, length, format, a, b) sprintf(dest, format, a, b)
+#define SPRINTF(dest, length, format, a, b, c) sprintf(dest, format, a, b, c)
+#define SPRINTF(dest, length, format, a, b, c, d) sprintf(dest, format, a, b, c, d)
+#define SPRINTF(dest, length, format, a, b, c, d, e) sprintf(dest, format, a, b, c, d, e)
 #define FSCANF fscanf
 #endif
