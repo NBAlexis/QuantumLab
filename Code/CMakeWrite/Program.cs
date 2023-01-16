@@ -175,9 +175,10 @@ namespace CMakeWrite
 
                 sRet += ")\n\n";
 
-                if (m_sName.Equals("QuESTtest"))
+                if (m_sName.Equals("tests"))
                 {
                     sRet += string.Format("\ntarget_include_directories({0} PRIVATE {1})\n\n", m_sName, "${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include");
+                    sRet += string.Format("\ntarget_include_directories({0} PRIVATE {1})\n\n", m_sName, "${CMAKE_SOURCE_DIR}/../QuEST340/tests/Catch");
                 }
 
                 sRet += string.Format("target_compile_features({0} PUBLIC cxx_std_14)\n", sAppName);
