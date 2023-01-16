@@ -67,7 +67,7 @@ namespace CMakeWrite
 
                 if (!bProjFound)
                 {
-                    Console.WriteLine(string.Format("Project %s not found!\n", sName));
+                    Console.WriteLine(string.Format("Project {0} not found!\n", sName));
                     m_bExist = false;
                     return;
                 }
@@ -301,7 +301,7 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             string[] sLibNames = { "QuEST", "QuantumLab" };
 
             string[][] sAppLinkWith = { new[] { "QuEST" }, new[] { "QuEST", "QuantumLab" } };
-            string[] sApplicationName = { "QuESTtests", "SimpleTest" };
+            string[] sApplicationName = { "tests", "SimpleTest" };
             EArch eDefaultArch = EArch.EArcSM61;
 
             string sContent = MakeCMake(eDefaultArch);

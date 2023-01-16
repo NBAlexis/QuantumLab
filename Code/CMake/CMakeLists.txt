@@ -195,6 +195,30 @@ target_compile_options(QuantumLab PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode ar
 
 
 # ==================== 
+# tests 
+# =================
+
+include_directories(${PROJECT_SOURCE_DIR}/QuEST340)
+add_executable(tests 
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/catch/catch.hpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/utilities.hpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/main.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_calculations.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_data_structures.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_decoherence.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_gates.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_operators.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_state_initialisations.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/test_unitaries.cpp
+    ${PROJECT_SOURCE_DIR}/QuEST340/tests/utilities.cpp
+    )
+
+target_compile_features(tests PUBLIC cxx_std_14)
+target_link_libraries(tests QuEST)
+
+
+
+# ==================== 
 # SimpleTest 
 # =================
 
