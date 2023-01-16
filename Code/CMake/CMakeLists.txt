@@ -205,20 +205,3 @@ add_executable(SimpleTest
 
 target_compile_features(SimpleTest PUBLIC cxx_std_14)
 target_link_libraries(SimpleTest QuantumLab)
-
-
-
-# ==================== 
-# QKMeans 
-# =================
-
-include_directories(${PROJECT_SOURCE_DIR}/Application/QKMeans)
-add_executable(QKMeans 
-    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.h
-    ${PROJECT_SOURCE_DIR}/Application/QKMeans/ClassicalKmeans.cpp
-    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.cpp
-    ${PROJECT_SOURCE_DIR}/Application/QKMeans/QuantumKmeans.cpp
-    )
-
-target_compile_features(QKMeans PUBLIC cxx_std_14)
-target_link_libraries(QKMeans QuantumLab)

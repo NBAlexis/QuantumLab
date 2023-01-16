@@ -56,7 +56,7 @@ namespace CMakeWrite
                 FileInfo[] allProjects = codeFolder.GetFiles("*.vcxproj", SearchOption.AllDirectories);
                 foreach (FileInfo projFiles in allProjects)
                 {
-                    //Console.WriteLine(projFiles.Name);
+                    Console.WriteLine(projFiles.Name);
                     if (projFiles.Name == sName + ".vcxproj")
                     {
                         bProjFound = true;
@@ -174,6 +174,11 @@ namespace CMakeWrite
                 }
 
                 sRet += ")\n\n";
+
+                if (m_sName.Equals("QuESTtest"))
+                {
+                    sRet += string.Format("\ntarget_include_directories({0} PRIVATE {1})\n\n", m_sName, "${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include");
+                }
 
                 sRet += string.Format("target_compile_features({0} PUBLIC cxx_std_14)\n", sAppName);
                 foreach (string linkWithName in linkWith)
@@ -295,8 +300,8 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             string[][] sLibLinkWith = { new string[]{ }, new []{ "QuEST" } };
             string[] sLibNames = { "QuEST", "QuantumLab" };
 
-            string[][] sAppLinkWith = { new[] { "QuantumLab" }, new[] { "QuantumLab" } };
-            string[] sApplicationName = { "SimpleTest", "QKMeans" };
+            string[][] sAppLinkWith = { new[] { "QuEST" }, new[] { "QuantumLab" } };
+            string[] sApplicationName = { "QuESTtests", "SimpleTest" };
             EArch eDefaultArch = EArch.EArcSM61;
 
             string sContent = MakeCMake(eDefaultArch);
