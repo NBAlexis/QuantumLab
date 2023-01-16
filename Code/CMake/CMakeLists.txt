@@ -217,7 +217,7 @@ add_executable(tests
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
 
 
-target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/tests/Catch)
+target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/tests/catch)
 
 target_compile_features(tests PUBLIC cxx_std_14)
 target_link_libraries(tests QuEST)
