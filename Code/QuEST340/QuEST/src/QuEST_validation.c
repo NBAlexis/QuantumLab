@@ -585,8 +585,11 @@ void validateSecondQuregStateVec(Qureg qureg2, const char *caller) {
 
 void validateFileOpened(int opened, char* fn, const char* caller) {
     if (!opened) {
-        
-        SPRINTF(errMsgBuffer, 1024, errorMessages[E_CANNOT_OPEN_FILE], fn);
+#if _WIN64        
+        sprintf_s(errMsgBuffer, 1024, errorMessages[E_CANNOT_OPEN_FILE], fn);
+#else
+        sprintf(errMsgBuffer, errorMessages[E_CANNOT_OPEN_FILE], fn);
+#endif
         invalidQuESTInputError(errMsgBuffer, caller);
     }
 }
@@ -713,8 +716,11 @@ void validateMatchingQuregPauliHamilDims(Qureg qureg, PauliHamil hamil, const ch
 void validateHamilFileParams(int numQubits, int numTerms, FILE* file, char* fn, const char* caller) {
     if (!(numQubits > 0 && numTerms > 0)) {
         fclose(file);
-
-        SPRINTF(errMsgBuffer, 1024, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PARAMS], fn);
+#if _WIN64
+        sprintf_s(errMsgBuffer, 1024, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PARAMS], fn);
+#else
+        sprintf(errMsgBuffer, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PARAMS], fn);
+#endif
         invalidQuESTInputError(errMsgBuffer, caller);
     }
 }
@@ -723,8 +729,11 @@ void validateHamilFileCoeffParsed(int parsed, PauliHamil h, FILE* file, char* fn
     if (!parsed) {
         destroyPauliHamil(h);
         fclose(file);
-        
-        SPRINTF(errMsgBuffer, 1024, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_COEFF], fn);
+#if _WIN64        
+        sprintf_s(errMsgBuffer, 1024, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_COEFF], fn);
+#else
+        sprintf(errMsgBuffer, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_COEFF], fn);
+#endif
         invalidQuESTInputError(errMsgBuffer, caller);
     }
 }
@@ -733,8 +742,11 @@ void validateHamilFilePauliParsed(int parsed, PauliHamil h, FILE* file, char* fn
     if (!parsed) {
         destroyPauliHamil(h);
         fclose(file);
-        
-        SPRINTF(errMsgBuffer, 1024, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_PAULI], fn);
+#if _WIN64            
+        sprintf_s(errMsgBuffer, 1024, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_PAULI], fn);
+#else
+        sprintf(errMsgBuffer, errorMessages[E_CANNOT_PARSE_PAULI_HAMIL_FILE_PAULI], fn);
+#endif
         invalidQuESTInputError(errMsgBuffer, caller);
     }
 }
@@ -743,8 +755,11 @@ void validateHamilFilePauliCode(enum pauliOpType code, PauliHamil h, FILE* file,
     if (!isValidPauliCode(code)) {
         destroyPauliHamil(h);
         fclose(file);
-        
-        SPRINTF(errMsgBuffer, 1024, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PAULI_CODE], fn, code);
+#if _WIN64
+        sprintf_s(errMsgBuffer, 1024, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PAULI_CODE], fn, code);
+#else
+        sprintf(errMsgBuffer, errorMessages[E_INVALID_PAULI_HAMIL_FILE_PAULI_CODE], fn, code);
+#endif
         invalidQuESTInputError(errMsgBuffer, caller);
     }
 }

@@ -106,7 +106,11 @@ void addStringToQASM(Qureg qureg, char line[], int lineLen) {
             raiseQASMBufferOverflow(__func__);
         
         char* newBuffer = malloc(newBufSize * sizeof *newBuffer);
-        SPRINTF(newBuffer, newBufSize * sizeof * newBuffer, "%s", buf);
+#if _WIN64
+        sprintf_s(newBuffer, newBufSize * sizeof * newBuffer, "%s", buf);
+#else
+        sprintf(newBuffer, "%s", buf);
+#endif
         free(buf);
         
         qureg.qasmLog->bufferSize = newBufSize;
@@ -449,7 +453,11 @@ void qasm_recordInitPlus(Qureg qureg) {
     
     // add an explanatory comment
     char buf[MAX_LINE_LEN+1];
-    SPRINTF(buf, MAX_LINE_LEN + 1, "Initialising state |+>");
+#if _WIN64
+    sprintf_s(buf, MAX_LINE_LEN + 1, "Initialising state |+>");
+#else
+    sprintf(buf, "Initialising state |+>");
+#endif
     qasm_recordComment(qureg, buf);
     
     // it's valid QASM to h the register (I think)
@@ -477,7 +485,11 @@ void qasm_recordInitClassical(Qureg qureg, long long int stateInd) {
     
     // add an explanatory comment
     char cmt[MAX_LINE_LEN+1];
-    SPRINTF(cmt, MAX_LINE_LEN + 1, "Initialising state |%lld>", stateInd);
+#if _WIN64
+    sprintf_s(cmt, MAX_LINE_LEN + 1, "Initialising state |%lld>", stateInd);
+#else
+    sprintf(cmt, "Initialising state |%lld>", stateInd);
+#endif
     qasm_recordComment(qureg, cmt);
     
     // start in |0>
@@ -519,8 +531,13 @@ void qasm_recordPhaseFunc(Qureg qureg, int* qubits, int numQubits, enum bitEncod
     addStringToQASM(qureg, line, len);
 
     char encBuf[MAX_LINE_LEN];
-    if (encoding == UNSIGNED)           SPRINTF(encBuf, MAX_LINE_LEN, "an unsigned");
-    if (encoding == TWOS_COMPLEMENT)    SPRINTF(encBuf, MAX_LINE_LEN, "a two's complement");
+#if _WIN64
+    if (encoding == UNSIGNED)           sprintf_s(encBuf, MAX_LINE_LEN, "an unsigned");
+    if (encoding == TWOS_COMPLEMENT)    sprintf_s(encBuf, MAX_LINE_LEN, "a two's complement");
+#else
+    if (encoding == UNSIGNED)           sprintf(encBuf, "an unsigned");
+    if (encoding == TWOS_COMPLEMENT)    sprintf(encBuf, "a two's complement");
+#endif
     qasm_recordComment(qureg, "  upon every substate |x>, informed by qubits (under %s binary encoding)", encBuf);
 
     // record like:
@@ -573,8 +590,13 @@ char getPhaseFuncSymbol(int numSymbs, int ind) {
 void addMultiVarRegsToQASM(Qureg qureg, int* qubits, int* numQubitsPerReg, int numRegs, enum bitEncoding encoding) {
 
     char encBuf[MAX_LINE_LEN];
-    if (encoding == UNSIGNED)           SPRINTF(encBuf, MAX_LINE_LEN, "an unsigned");
-    if (encoding == TWOS_COMPLEMENT)    SPRINTF(encBuf, MAX_LINE_LEN, "a two's complement");
+#if _WIN64
+    if (encoding == UNSIGNED)           sprintf_s(encBuf, MAX_LINE_LEN, "an unsigned");
+    if (encoding == TWOS_COMPLEMENT)    sprintf_s(encBuf, MAX_LINE_LEN, "a two's complement");
+#else
+    if (encoding == UNSIGNED)           sprintf(encBuf, "an unsigned");
+    if (encoding == TWOS_COMPLEMENT)    sprintf(encBuf, "a two's complement");
+#endif
     qasm_recordComment(qureg, "  upon substates informed by qubits (under %s binary encoding)", encBuf);
 
     char line[MAX_LINE_LEN+1];

@@ -217,7 +217,11 @@ void reportState(Qureg qureg){
     FILE *state;
     char filename[100];
     long long int index;
-    SPRINTF(filename, 100, "state_rank_%d.csv", qureg.chunkId);
+#if _WIN64
+    sprintf_s(filename, 100, "state_rank_%d.csv", qureg.chunkId);
+#else
+    sprintf(filename, "state_rank_%d.csv", qureg.chunkId);
+#endif
     state = FOPEN(filename, "w");
     if (qureg.chunkId==0) fprintf(state, "real, imag\n");
 
