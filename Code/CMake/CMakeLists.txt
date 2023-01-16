@@ -204,4 +204,5 @@ add_executable(SimpleTest
     )
 
 target_compile_features(SimpleTest PUBLIC cxx_std_14)
+target_link_libraries(SimpleTest QuEST)
 target_link_libraries(SimpleTest QuantumLab)

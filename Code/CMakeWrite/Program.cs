@@ -300,7 +300,7 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             string[][] sLibLinkWith = { new string[]{ }, new []{ "QuEST" } };
             string[] sLibNames = { "QuEST", "QuantumLab" };
 
-            string[][] sAppLinkWith = { new[] { "QuEST" }, new[] { "QuantumLab" } };
+            string[][] sAppLinkWith = { new[] { "QuEST" }, new[] { "QuEST", "QuantumLab" } };
             string[] sApplicationName = { "QuESTtests", "SimpleTest" };
             EArch eDefaultArch = EArch.EArcSM61;
 
