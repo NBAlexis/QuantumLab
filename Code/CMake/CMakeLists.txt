@@ -198,7 +198,7 @@ target_compile_options(QuantumLab PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode ar
 # tests 
 # =================
 
-include_directories(${PROJECT_SOURCE_DIR}/QuEST340)
+include_directories(${PROJECT_SOURCE_DIR}/QuEST340/tests)
 add_executable(tests 
     ${PROJECT_SOURCE_DIR}/QuEST340/tests/catch/catch.hpp
     ${PROJECT_SOURCE_DIR}/QuEST340/tests/utilities.hpp

@@ -161,7 +161,15 @@ namespace CMakeWrite
                 sProjFolder = Regex.Replace(sProjFolder, "([\\s\\S]*)Code/([\\s\\S]*)", "$2");
 
                 var sRet = string.Format("\n\n\n# ==================== \n# {0} \n# =================\n\n", sAppName);
-                sRet += string.Format("include_directories({1}/{0})\n", sProjFolder, "${PROJECT_SOURCE_DIR}");
+                if (m_sName.Equals("tests"))
+                {
+                    sRet += string.Format("include_directories({1}/{0}/tests)\n", sProjFolder, "${PROJECT_SOURCE_DIR}");
+                }
+                else
+                {
+                    sRet += string.Format("include_directories({1}/{0})\n", sProjFolder, "${PROJECT_SOURCE_DIR}");
+                }
+                    
                 sRet += string.Format("add_executable({0} \n    ", sAppName);
                 foreach (string sFileName in m_lstAllHeaderFiles)
                 {
