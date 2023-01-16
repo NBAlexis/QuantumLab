@@ -90,7 +90,7 @@ int main()
     }
 #endif
 
-    QuantumKMeans(_T("../QKmeans.yaml"));
+    QuantumKMeans(_T("../QKMeans.yaml"));
 
     return 0;
 }
