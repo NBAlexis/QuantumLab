@@ -810,11 +810,12 @@ UINT QLQuantumKmeans::Reclassify(UBOOL bDebug)
             if (rate > uiLastProgress)
             {
                 appGeneral(_T("="));
+                if (50 == rate || 100 == rate)
+                {
+                    appGeneral(_T("\n"));
+                }
             }
-            if (50 == rate || 100 == rate)
-            {
-                appGeneral(_T("\n"));
-            }
+
             appPopLogDate();
             uiLastProgress = rate;
         }

@@ -128,7 +128,7 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 
 	case EBasicOperation::EBO_CC:
 		m_lstQubits.AddItem(0);
-		m_fClassicalParameter = m_fClassicalParameter + 0.00001; // to avoid 1.00000 been treated as 0.999999
+		m_fClassicalParameter = m_fClassicalParameter + F(0.00001); // to avoid 1.00000 been treated as 0.999999
 		m_lstOperations.AddItem(op_h);
 		m_sName = "collapse";
 		break;

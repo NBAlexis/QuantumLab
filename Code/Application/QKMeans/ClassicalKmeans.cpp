@@ -21,7 +21,7 @@ void ClassicalKMeans(const CCString& yamlFile)
     __FetchIntWithDefault(_T("DebugChange"), 0);
     UBOOL bDebugChange = (iVaules != 0);
 
-    __FetchIntWithDefault(_T("K"), 0);
+    __FetchIntWithDefault(_T("CK"), 0);
     BYTE k = static_cast<BYTE>(iVaules);
 
     __FetchIntWithDefault(_T("Start"), 0);
@@ -46,7 +46,7 @@ void ClassicalKMeans(const CCString& yamlFile)
     params.FetchValueArrayINT(_T("Energy"), energy);
 
     CCString sFileHead;
-    params.FetchStringValue(_T("FileName"), sFileHead);
+    params.FetchStringValue(_T("CFileName"), sFileHead);
 
     QLRandomInitializer random;
 
