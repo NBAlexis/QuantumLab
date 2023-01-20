@@ -21,7 +21,7 @@
 #endif
 
 #include "QuEST_precision.h"
-#ifndef QuEST_PREC == 1
+#if QuEST_PREC == 1
 #define _QL_DOUBLEFLOAT 0
 #else
 #define _QL_DOUBLEFLOAT 1
