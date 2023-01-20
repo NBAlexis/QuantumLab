@@ -20,8 +20,7 @@
 #define _QL_WIN 1
 #endif
 
-#include "QuEST_precision.h"
-#if QuEST_PREC == 1
+#ifndef _QL_DOUBLEFLOAT
 #define _QL_DOUBLEFLOAT 0
 #else
 #define _QL_DOUBLEFLOAT 1

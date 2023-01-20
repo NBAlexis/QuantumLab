@@ -203,9 +203,6 @@ add_executable(SimpleTest
     ${PROJECT_SOURCE_DIR}/Application/SimpleTest/SimpleTest.cpp
     )
 
-
-target_include_directories(SimpleTest PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
-
 target_compile_features(SimpleTest PUBLIC cxx_std_14)
 target_link_libraries(SimpleTest QuantumLab)
 
@@ -222,9 +219,6 @@ add_executable(QKMeans
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.cpp
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/QuantumKmeans.cpp
     )
-
-
-target_include_directories(QKMeans PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
 
 target_compile_features(QKMeans PUBLIC cxx_std_14)
 target_link_libraries(QKMeans QuantumLab)
