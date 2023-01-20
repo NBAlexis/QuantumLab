@@ -33,11 +33,11 @@ public:
     /**
     * pData is not freed in QLQuantumKmeans
     */
-    QLQuantumKmeans(BYTE maxK);
+    QLQuantumKmeans(UINT maxK);
     ~QLQuantumKmeans();
 
     void Prepare(const CCString& fileName, const CCString& sStartCenterFile = _T(""), UINT n = 0);
-    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep = 0, UBOOL bDebug = FALSE);
+    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UBOOL bUseCC, UINT uiStep = 0, UBOOL bDebug = FALSE);
 
     void TestCircuit(const Real* hostVectors);
 
@@ -46,22 +46,24 @@ protected:
     void CalculateDegreesOnlyCenters();
     void CalculateDegrees();
     QLGate ApplyInitialState() const;
-    void ApplyInverseVector(QLGate& gate) const;
+    void ApplyInverseVector(QLGate& gate, UBOOL bControlledCollpase) const;
     QLGate CompareCircuit(UINT uiIdx);
     QLGate CompareCircuit();
-    BYTE Measure(const QLGate& gate, UINT uiRepeat, UINT* count = NULL, UINT* measureCount = NULL) const;
+    UINT Measure(const QLGate& gate, UINT uiRepeat, UINT* count = NULL, UINT* measureCount = NULL, Real* measureProb = NULL) const;
+    UINT MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, UINT* count = NULL, UINT* measureCount = NULL) const;
 
     UBOOL CalculateCenters(UBOOL bDebug);
-    BYTE Reclassify(UINT uiIdx, UINT* measurecount);
+    UINT Reclassify(UINT uiIdx, UINT* measurecount);
     UINT Reclassify(UBOOL bDebug);
     void InitialK(UBOOL bDebug);
     void InitialWithCenterFile();
     void ExportDebugInfo();
     
-    BYTE m_byMaxK;
+    UINT m_byMaxK;
     BYTE m_byQubit;
-    BYTE m_byVectorCount;
+    UINT m_byVectorCount;
     UINT m_uiRepeat;
+    UINT m_bControlledCollapse;
 
     UINT m_uiN;
 
@@ -76,7 +78,7 @@ protected:
     QLComplex* m_pDeviceCVBuffer;
     UINT* m_pDeviceKCounts; //How many points are there in one cluster
     UINT* m_pHostKCounts;
-    BYTE* m_pDeviceTempKBuffer; //used for split
+    UINT* m_pDeviceTempKBuffer; //used for split
 
     Real* m_pDeviceY1Buffer;
     Real* m_pDeviceY2Buffer;
@@ -93,14 +95,19 @@ protected:
     Real* m_pHostDataY2Buffer;
     Real* m_pHostDataZ1Buffer;
     Real* m_pHostDataZ2Buffer;
-    BYTE* m_pHostKValues; //used for count how many point changes
-    BYTE* m_pDeviceKValues; //save the k-values
+    UINT* m_pHostKValues; //used for count how many point changes
+    UINT* m_pDeviceKValues; //save the k-values
     
     Real* m_pDeviceRealWorkingBuffer; //used for reduce
     UINT* m_pDeviceUIntWorkingBuffer;
 
+    BYTE* m_pHostVectorReal;
+    BYTE* m_pHostVectorImag;
+    LONGLONG m_llVeclen;
+
     //========= debug use ==========
     Real* m_pHostCenters;
+    Real* m_pHostMeasureProbability;
     UINT m_uiStep;
     UINT* m_pMeasureCounts;
     CCString m_sSaveNameHead;

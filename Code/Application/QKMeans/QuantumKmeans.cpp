@@ -19,7 +19,7 @@ void QuantumKMeans(const CCString& yamlFile)
 
     INT iVaules;
     __FetchIntWithDefault(_T("K"), 0);
-    BYTE k = static_cast<BYTE>(iVaules);
+    UINT k = static_cast<UINT>(iVaules);
 
     __FetchIntWithDefault(_T("Count"), 0);
     UINT uiCount = static_cast<UINT>(iVaules);
@@ -82,7 +82,7 @@ void QuantumKMeans(const CCString& yamlFile)
     CCString sLoadFileName;
     sLoadFileName.Format(_T("%s.csv"), sFileHead.c_str());
     qkmeans.Prepare(sLoadFileName, sStartCenter, uiCount);
-    qkmeans.KMeans(sFileHead, 1, uiMeasure, uiContinue, TRUE);
+    qkmeans.KMeans(sFileHead, 1, uiMeasure, TRUE, uiContinue, TRUE);
     //QLGate gate = qkmeans.CompareCircuit((Real*)testvectorlist);
 
     //QLSimulatorParametersVector param;

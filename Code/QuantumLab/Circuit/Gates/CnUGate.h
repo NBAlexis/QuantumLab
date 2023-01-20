@@ -21,8 +21,8 @@ inline QLMatrix Sqrt2by2(const QLMatrix& m)
     const QLComplex u01 = m.Get(0, 1);
     const QLComplex tau = _cuCaddf(u00, u11);
     const QLComplex delta = _cuCsubf(_cuCmulf(u00, u11), _cuCmulf(u10, u01));
-    const QLComplex s = __cuCsqrtf(delta);
-    const QLComplex t = __cuCsqrtf(_cuCaddf(tau, cuCmulf_cr(s, F(2.0))));
+    const QLComplex s = __cuCsqrtf_host(delta);
+    const QLComplex t = __cuCsqrtf_host(_cuCaddf(tau, cuCmulf_cr(s, F(2.0))));
 
     QLComplex v[] = { _cuCdivf(_cuCaddf(u00, s), t), _cuCdivf(u01, t),  _cuCdivf(u10, t),  _cuCdivf(_cuCaddf(u11, s), t) };
     return QLMatrix::CopyCreate(2, 2, v);

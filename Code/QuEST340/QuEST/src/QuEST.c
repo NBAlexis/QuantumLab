@@ -1473,13 +1473,13 @@ PauliHamil createPauliHamilFromFile(char* fn) {
 	
 	// count the number of qubits (ignore trailing whitespace)
 	int numQubits = -1; // to exclude coeff at start
-	char ch = getc(file);
+	char ch = (char)getc(file);
     char prev = '0'; // anything not space
 	while (ch != '\n' && ch != EOF) {
 		if (ch == ' ' && prev != ' ') // skip multiple spaces
 			numQubits++;
         prev = ch;
-        ch = getc(file);
+        ch = (char)getc(file);
     }
     // edge-case: if we hit EOF/newline without a space
     if (prev != ' ')
@@ -1493,7 +1493,7 @@ PauliHamil createPauliHamilFromFile(char* fn) {
     int numTerms = 0;
     prev = '\n';
     rewind(file);
-	while ((ch=getc(file)) != EOF) {
+	while ((ch=(char)getc(file)) != EOF) {
 		if (ch == '\n' && prev != '\n')
 			numTerms++;
         prev = ch;

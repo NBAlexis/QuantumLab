@@ -74,6 +74,8 @@
 #define _pow powf
 #define _sin sinf
 #define _cos cosf
+#define _asin asinf
+#define _acos acosf
 #define __div(a, b) ((a) / (b))
 #define __rcp(a) (F(1.0) / (a))
 #endif

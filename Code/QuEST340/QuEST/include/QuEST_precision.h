@@ -18,7 +18,7 @@
 
 // set default double precision if not set during compilation
 # ifndef QuEST_PREC
-# define QuEST_PREC 2
+# define QuEST_PREC 1
 # endif
 
 

@@ -33,7 +33,11 @@ extern QLAPI INT ReduceSum(INT* value, UINT count);
 
 extern QLAPI UINT ReduceSum(UINT* value, UINT count);
 
+#if _QL_DOUBLEFLOAT
 extern QLAPI FLOAT ReduceSum(FLOAT* value, UINT count);
+#else
+extern QLAPI DOUBLE ReduceSum(DOUBLE* value, UINT count);
+#endif
 
 extern QLAPI void ReduceSum(Real* deviceRes, Real* value, UINT count);
 

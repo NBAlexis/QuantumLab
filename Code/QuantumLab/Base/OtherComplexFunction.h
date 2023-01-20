@@ -76,13 +76,29 @@ extern "C" {
     /**
     * _sqrt(c)
     */
-    __device__ __host__ static __inline__ QLComplex __cuCsqrtf(const QLComplex& c)
+    __device__ static __inline__ QLComplex __cuCsqrtf(const QLComplex& c)
     {
         const Real fRadius = _cuCabsf(c);
         const Real fCosA = __div(c.x, fRadius);
         QLComplex out;
         out.x = _sqrt(F(0.5) * fRadius * (fCosA + F(1.0)));
         out.y = _sqrt(F(0.5) * fRadius * (F(1.0) - fCosA));
+        // signbit should be false if x.y is negative
+        //if (signbit(c.y))
+        //    out.y *= -F(1.0);
+        if (c.y < F(0.0)) //same as Mathematica
+            out.y *= -F(1.0);
+
+        return out;
+    }
+
+    __host__ static __inline__ QLComplex __cuCsqrtf_host(const QLComplex& c)
+    {
+        const Real fRadius = _cuCabsf(c);
+        const Real fCosA = c.x / fRadius;
+        QLComplex out;
+        out.x = sqrt(F(0.5) * fRadius * (fCosA + F(1.0)));
+        out.y = sqrt(F(0.5) * fRadius * (F(1.0) - fCosA));
         // signbit should be false if x.y is negative
         //if (signbit(c.y))
         //    out.y *= -F(1.0);

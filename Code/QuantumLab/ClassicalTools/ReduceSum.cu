@@ -177,10 +177,17 @@ extern QLAPI UINT ReduceSum(UINT* value, UINT count)
     return ReduceSumT(value, count);
 }
 
+#if _QL_DOUBLEFLOAT
 extern QLAPI FLOAT ReduceSum(FLOAT* value, UINT count)
 {
     return ReduceSumT(value, count);
 }
+#else
+extern QLAPI DOUBLE ReduceSum(DOUBLE* value, UINT count)
+{
+    return ReduceSumT(value, count);
+}
+#endif
 
 extern QLAPI void ReduceSum(Real* res, Real* value, UINT count)
 {
@@ -203,7 +210,7 @@ QLComplex ReduceSum(QLComplex* value, UINT count)
         UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
         _kernelReduceComp << <iBlock, iThread >> > (value, iJump, count);
     }
-    cuDoubleComplex result[1];
+    QLComplex result[1];
     cudaMemcpy(result, value, sizeof(QLComplex), cudaMemcpyDeviceToHost);
     return result[0];
 }
