@@ -651,7 +651,7 @@ UINT QLQuantumKmeans::MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, 
     UINT uiCount = 0;
     while (bContinue)
     {
-        if (m_iTotalMeasure > 0 && m_iTotalMeasure == static_cast<INT>(uiCount))
+        if (m_iTotalMeasure > 0 && m_iTotalMeasure < static_cast<INT>(uiCount))
         {
             if (NULL != count)
             {
@@ -665,7 +665,7 @@ UINT QLQuantumKmeans::MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, 
 
             destroyQureg(vec, evn);
             destroyQuESTEnv(evn);
-            return 255;
+            return m_byMaxK;
         }
 
         if (0 != uiCount)
