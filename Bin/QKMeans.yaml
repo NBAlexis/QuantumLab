@@ -22,5 +22,7 @@ K : 64
 Count : 10000
 Measure : 10
 FileName : SM-1500
+UseCC : 0
+TotalMeasure : 300
 # Continue : 1
 # StartCenter: FT0-1500-20_c_27.csv

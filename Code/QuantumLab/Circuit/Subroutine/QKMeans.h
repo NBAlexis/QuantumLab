@@ -37,7 +37,12 @@ public:
     ~QLQuantumKmeans();
 
     void Prepare(const CCString& fileName, const CCString& sStartCenterFile = _T(""), UINT n = 0);
-    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UBOOL bUseCC, UINT uiStep = 0, UBOOL bDebug = FALSE);
+    void SetOtherParams(UBOOL bUseCC, INT iTotalMeasure)
+    {
+        m_bControlledCollapse = bUseCC;
+        m_iTotalMeasure = iTotalMeasure;
+    }
+    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep = 0, UBOOL bDebug = FALSE);
 
     void TestCircuit(const Real* hostVectors);
 
@@ -63,7 +68,8 @@ protected:
     BYTE m_byQubit;
     UINT m_byVectorCount;
     UINT m_uiRepeat;
-    UINT m_bControlledCollapse;
+    UBOOL m_bControlledCollapse;
+    INT m_iTotalMeasure;
 
     UINT m_uiN;
 

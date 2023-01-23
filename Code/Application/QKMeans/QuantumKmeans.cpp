@@ -31,6 +31,12 @@ void QuantumKMeans(const CCString& yamlFile)
     params.FetchValueUINT(_T("Continue"), uiContinue);
     UBOOL bContinue = uiContinue > 0;
 
+    __FetchIntWithDefault(_T("UseCC"), 1);
+    UBOOL bUseCC = (iVaules != 0);
+
+    __FetchIntWithDefault(_T("TotalMeasure"), -1);
+    INT iTotalMeasure = iVaules;
+
     CCString sStartCenter = _T("");
     if (bContinue)
     {
@@ -82,7 +88,11 @@ void QuantumKMeans(const CCString& yamlFile)
     CCString sLoadFileName;
     sLoadFileName.Format(_T("%s.csv"), sFileHead.c_str());
     qkmeans.Prepare(sLoadFileName, sStartCenter, uiCount);
-    qkmeans.KMeans(sFileHead, 1, uiMeasure, TRUE, uiContinue, TRUE);
+    if (!bUseCC)
+    {
+        qkmeans.SetOtherParams(bUseCC, iTotalMeasure);
+    }
+    qkmeans.KMeans(sFileHead, 1, uiMeasure, uiContinue, TRUE);
     //QLGate gate = qkmeans.CompareCircuit((Real*)testvectorlist);
 
     //QLSimulatorParametersVector param;

@@ -235,6 +235,7 @@ QLQuantumKmeans::QLQuantumKmeans(UINT maxK)
     , m_byVectorCount(maxK + 1)
     , m_uiRepeat(1)
     , m_bControlledCollapse(TRUE)
+    , m_iTotalMeasure(-1)
     , m_uiN(0)
     , m_uiBlock(1)
     , m_uiThread(1)
@@ -627,19 +628,7 @@ UINT QLQuantumKmeans::MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, 
         QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
     }
     syncQuESTEnv(evn);
-
-    INT out0 = measure(vec, 0);
-    INT out1 = measure(vec, 1);
-
-    if (0 != out0 || 0 != out1)
-    {
-        destroyQureg(vec, evn);
-        destroyQuESTEnv(evn);
-        return 255;
-    }
-
     copyStateFromGPU(vec);
-
     memcpy(m_pHostVectorReal, vec.stateVec.real, sizeof(qreal) * m_llVeclen);
     memcpy(m_pHostVectorImag, vec.stateVec.imag, sizeof(qreal) * m_llVeclen);
 
@@ -662,6 +651,23 @@ UINT QLQuantumKmeans::MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, 
     UINT uiCount = 0;
     while (bContinue)
     {
+        if (m_iTotalMeasure > 0 && m_iTotalMeasure == static_cast<INT>(uiCount))
+        {
+            if (NULL != count)
+            {
+                memcpy(count, lstCount.GetData(), sizeof(UINT) * m_byMaxK);
+            }
+
+            if (NULL != measureCount)
+            {
+                measureCount[0] = uiCount;
+            }
+
+            destroyQureg(vec, evn);
+            destroyQuESTEnv(evn);
+            return 255;
+        }
+
         if (0 != uiCount)
         {
             memcpy(vec.stateVec.real, m_pHostVectorReal, sizeof(qreal) * m_llVeclen);
@@ -671,6 +677,13 @@ UINT QLQuantumKmeans::MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, 
         }
 
         ++uiCount;
+
+        INT out0 = measure(vec, 0);
+        INT out1 = measure(vec, 1);
+        if (0 != out0 || 0 != out1)
+        {
+            continue;
+        }
 
         UINT measureRes = 0;
         for (INT j = 0; j < lstMeasureBits.Num(); ++j)
@@ -832,7 +845,6 @@ UINT QLQuantumKmeans::Reclassify(UBOOL bDebug)
     return uiChanged;
 }
 
-
 void QLQuantumKmeans::TestCircuit(const Real* hostVectors)
 {
     //========== put vectors to m_pDeviceVBuffer =============
@@ -882,12 +894,11 @@ void QLQuantumKmeans::InitialWithCenterFile()
     CalculateDegreesOnlyCenters();
 }
 
-void QLQuantumKmeans::KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UBOOL bUseCC, UINT uiStep, UBOOL bDebug)
+void QLQuantumKmeans::KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep, UBOOL bDebug)
 {
     m_sSaveNameHead = sResultFileName;
     m_uiStep = uiStep;
     m_uiRepeat = uiRepeat;
-    m_bControlledCollapse = bUseCC;
 
     //========== step1: initial =============
     if (m_sStartCenterFile.IsEmpty())
