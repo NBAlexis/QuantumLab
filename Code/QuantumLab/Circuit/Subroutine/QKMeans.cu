@@ -207,27 +207,31 @@ _kernelQKMeansSpliteK(UINT* kBuffer, UINT uiMax, UINT kToSplit, UINT* splitTo, U
     }
 }
 
+__global__ void
+_QL_LAUNCH_BOUND
+_kernelQKMeansCalcDist(
+    const UINT * __restrict__ kBuffer, 
+    const QLComplex* __restrict__ points, 
+    const QLComplex* __restrict__ centers,
+    Real* res, UINT uiMax)
+{
+    UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
+
+    if (idx < uiMax)
+    {
+        const UINT pidx = kBuffer[idx];
+
+        QLComplex resc = _cuCmulf(points[4 * idx], centers[4 * pidx]);
+        resc = _cuCaddf(resc, _cuCmulf(_cuConjf(points[4 * idx + 1]), centers[4 * pidx + 1]));
+        resc = _cuCaddf(resc, _cuCmulf(_cuConjf(points[4 * idx + 2]), centers[4 * pidx + 2]));
+        resc = _cuCaddf(resc, _cuCmulf(_cuConjf(points[4 * idx + 3]), centers[4 * pidx + 3]));
+
+        res[idx] = _cuCabsf(resc);
+    }
+}
+
+
 #pragma endregion
-
-/**
-* 
-def ApplyVectorList(vv, circuit: QuantumCircuit, qubits: list):
-    retlsty1, retlsty2, retlstz1, retlstz2 = Calculate4DegreeList(vv)
-    qubits1 = qubits[2:len(qubits)]
-    [5,4,3,2,1]
-    [5,4,3,2,1,0]
-    qubits2 = qubits[1:len(qubits)]
-    for q in qubits1:
-        circuit.h(q)
-    qubits1.reverse()
-    qubits2.reverse()
-    FRy(np.array(retlsty1) * 2, circuit, qubits[1], qubits1)
-    FRy(np.array(retlsty2) * 2, circuit, qubits[0], qubits2)
-    FRz(np.array(retlstz1) * 2, circuit, qubits[0], qubits2)
-    FRz(np.array(retlstz2) * 2, circuit, qubits[1], qubits1)
-
-*/
-
 
 QLQuantumKmeans::QLQuantumKmeans(UINT maxK)
     : m_byMaxK(maxK)
@@ -260,6 +264,7 @@ QLQuantumKmeans::QLQuantumKmeans(UINT maxK)
     , m_pHostZ2Buffer(NULL)
 
     , m_pDeviceData(NULL)
+    , m_pDeviceDataCV(NULL)
     , m_pHostDataY1Buffer(NULL)
     , m_pHostDataY2Buffer(NULL)
     , m_pHostDataZ1Buffer(NULL)
@@ -277,6 +282,18 @@ QLQuantumKmeans::QLQuantumKmeans(UINT maxK)
     , m_pHostCenters(NULL)
     , m_pHostMeasureProbability(NULL)
     , m_uiStep(0)
+
+    , m_bDistanceMode(FALSE)
+    , m_uiDistIterations(0)
+    , m_uiDistIterationStart(0)
+    , m_pDeviceCentroids(NULL)
+    , m_pDeviceDistances(NULL)
+    , m_pHostDistances(NULL)
+    , m_pDevicePreserveCVBuffer(NULL)
+    , m_pHostDataY1BufferCenteroids(NULL)
+    , m_pHostDataY2BufferCenteroids(NULL)
+    , m_pHostDataZ1BufferCenteroids(NULL)
+    , m_pHostDataZ2BufferCenteroids(NULL)
 {
     m_byQubit = static_cast<BYTE>(2 + MostSignificantPowerTwo(maxK));
     m_llVeclen = 1LL << m_byQubit;
@@ -337,46 +354,57 @@ void QLQuantumKmeans::Prepare(const CCString& fileName, const CCString& sStartCe
     m_uiBlockN = m_uiN > _QL_LAUNCH_MAX_THREAD ? Ceil(m_uiN, _QL_LAUNCH_MAX_THREAD) : 1;
     m_uiThreadN = m_uiN > _QL_LAUNCH_MAX_THREAD ? Ceil(m_uiN, m_uiBlockN) : m_uiN;
 
-    checkCudaErrors(cudaMalloc((void**)&m_pDeviceData, sizeof(Real) * 7 * m_uiN));
+    if (NULL == m_pDeviceData)
+    {
+        checkCudaErrors(cudaMalloc((void**)&m_pDeviceData, sizeof(Real) * 7 * m_uiN));
+    }
     checkCudaErrors(cudaMemcpy(m_pDeviceData, data.GetData(), sizeof(Real) * 7 * m_uiN, cudaMemcpyHostToDevice));
 
-    m_pHostKValues = (UINT*)malloc(sizeof(UINT) * m_uiN);
-    checkCudaErrors(cudaMalloc((void**)&m_pDeviceKValues, sizeof(UINT) * m_uiN));
+    if (NULL == m_pHostKValues)
+    {
+        m_pHostKValues = (UINT*)malloc(sizeof(UINT) * m_uiN);
+        checkCudaErrors(cudaMalloc((void**)&m_pDeviceKValues, sizeof(UINT) * m_uiN));
 
-    checkCudaErrors(cudaMalloc((void**)&m_pDeviceRealWorkingBuffer, sizeof(Real) * m_uiN * 7));
-    checkCudaErrors(cudaMalloc((void**)&m_pDeviceUIntWorkingBuffer, sizeof(UINT) * m_uiN));
+        checkCudaErrors(cudaMalloc((void**)&m_pDeviceRealWorkingBuffer, sizeof(Real) * m_uiN * 7));
+        checkCudaErrors(cudaMalloc((void**)&m_pDeviceUIntWorkingBuffer, sizeof(UINT) * m_uiN));
 
-    m_pHostMeasureProbability = (Real*)malloc(sizeof(Real) * m_uiN);
+        m_pHostMeasureProbability = (Real*)malloc(sizeof(Real) * m_uiN);
 
-    //============== initial degree buffers ===============
-    m_pHostDataY1Buffer = (Real*)malloc(sizeof(Real) * m_uiN);
-    m_pHostDataY2Buffer = (Real*)malloc(sizeof(Real) * 2 * m_uiN);
-    m_pHostDataZ1Buffer = (Real*)malloc(sizeof(Real) * m_uiN);
-    m_pHostDataZ2Buffer = (Real*)malloc(sizeof(Real) * 2 * m_uiN);
+        //============== initial degree buffers ===============
+        m_pHostDataY1Buffer = (Real*)malloc(sizeof(Real) * m_uiN);
+        m_pHostDataY2Buffer = (Real*)malloc(sizeof(Real) * 2 * m_uiN);
+        m_pHostDataZ1Buffer = (Real*)malloc(sizeof(Real) * m_uiN);
+        m_pHostDataZ2Buffer = (Real*)malloc(sizeof(Real) * 2 * m_uiN);
 
-    QLComplex* pTempComplexBuffer = NULL;
+        checkCudaErrors(cudaMalloc((void**)&m_pDeviceDataCV, sizeof(QLComplex) * 4 * m_uiN));
+
+        m_pMeasureCounts = (UINT*)malloc(sizeof(UINT) * m_uiN);
+    }
+
     Real* pTempY1 = NULL;
     Real* pTempY2 = NULL;
     Real* pTempZ1 = NULL;
     Real* pTempZ2 = NULL;
-    checkCudaErrors(cudaMalloc((void**)&pTempComplexBuffer, sizeof(QLComplex) * 4 * m_uiN));
+    QLComplex* pTempCV = NULL;
+    
     checkCudaErrors(cudaMalloc((void**)&pTempY1, sizeof(Real) * m_uiN));
     checkCudaErrors(cudaMalloc((void**)&pTempY2, sizeof(Real) * 2 * m_uiN));
     checkCudaErrors(cudaMalloc((void**)&pTempZ1, sizeof(Real) * m_uiN));
     checkCudaErrors(cudaMalloc((void**)&pTempZ2, sizeof(Real) * 2 * m_uiN));
-    _kernelQKMADVectorToNormalizedVector << <m_uiBlockN, m_uiThreadN >> > (pTempComplexBuffer, m_pDeviceData, m_uiN);
-    _kernelQKMADVectorToAngle << <m_uiBlockN, m_uiThreadN >> > (pTempY1, pTempY2, pTempZ1, pTempZ2, pTempComplexBuffer, m_uiN);
+    checkCudaErrors(cudaMalloc((void**)&pTempCV, sizeof(QLComplex) * 4 * m_uiN));
+    _kernelQKMADVectorToNormalizedVector << <m_uiBlockN, m_uiThreadN >> > (pTempCV, m_pDeviceData, m_uiN);
+    checkCudaErrors(cudaMemcpy(m_pDeviceDataCV, pTempCV, sizeof(QLComplex) * 4 * m_uiN, cudaMemcpyDeviceToDevice));
+    _kernelQKMADVectorToAngle << <m_uiBlockN, m_uiThreadN >> > (pTempY1, pTempY2, pTempZ1, pTempZ2, pTempCV, m_uiN);
     checkCudaErrors(cudaMemcpy(m_pHostDataY1Buffer, pTempY1, sizeof(Real) * m_uiN, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaMemcpy(m_pHostDataZ1Buffer, pTempZ1, sizeof(Real) * m_uiN, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaMemcpy(m_pHostDataY2Buffer, pTempY2, sizeof(Real) * 2 * m_uiN, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaMemcpy(m_pHostDataZ2Buffer, pTempZ2, sizeof(Real) * 2 * m_uiN, cudaMemcpyDeviceToHost));
 
-    checkCudaErrors(cudaFree(pTempComplexBuffer));
     checkCudaErrors(cudaFree(pTempY1));
     checkCudaErrors(cudaFree(pTempY2));
     checkCudaErrors(cudaFree(pTempZ1));
     checkCudaErrors(cudaFree(pTempZ2));
-    m_pMeasureCounts = (UINT*)malloc(sizeof(UINT) * m_uiN);
+    checkCudaErrors(cudaFree(pTempCV));
 
     appGeneral(_T("Buffer prepared.\n"));
 }
@@ -845,6 +873,40 @@ UINT QLQuantumKmeans::Reclassify(UBOOL bDebug)
     return uiChanged;
 }
 
+void QLQuantumKmeans::ReclassifyDistMode(UBOOL bDebug)
+{
+    //UINT uiChanged = 0;
+    UINT uiLastProgress = 0;
+    for (UINT i = 0; i < m_uiN; ++i)
+    {
+        static UINT measuredCount[1];
+        m_pHostKValues[i] = Reclassify(i, measuredCount);
+
+        if (bDebug)
+        {
+            appPushLogDate(FALSE);
+            UINT rate = static_cast<UINT>(F(100.0) * i / static_cast<Real>(m_uiN));
+            if (i == m_uiN - 1)
+            {
+                rate = 100;
+            }
+            if (rate > uiLastProgress)
+            {
+                appGeneral(_T("="));
+                if (50 == rate || 100 == rate)
+                {
+                    appGeneral(_T("\n"));
+                }
+            }
+
+            appPopLogDate();
+            uiLastProgress = rate;
+        }
+    }
+
+    checkCudaErrors(cudaMemcpy(m_pDeviceKValues, m_pHostKValues, sizeof(UINT) * m_uiN, cudaMemcpyHostToDevice));
+}
+
 void QLQuantumKmeans::TestCircuit(const Real* hostVectors)
 {
     //========== put vectors to m_pDeviceVBuffer =============
@@ -901,36 +963,105 @@ void QLQuantumKmeans::KMeans(const CCString& sResultFileName, UINT uiStop, UINT 
     m_uiRepeat = uiRepeat;
 
     //========== step1: initial =============
-    if (m_sStartCenterFile.IsEmpty())
+    if (!m_bDistanceMode)
     {
-        InitialK(bDebug);
+        if (m_sStartCenterFile.IsEmpty())
+        {
+            InitialK(bDebug);
+        }
+        else
+        {
+            InitialWithCenterFile();
+        }
+    }
+    
+    //========== step2: reclassify =============
+    if (m_bDistanceMode)
+    {
+        for (UINT uiIte = m_uiDistIterationStart; uiIte < m_uiDistIterations; ++uiIte)
+        {
+            memcpy(m_pHostY1Buffer, m_pHostDataY1BufferCenteroids + m_byMaxK * uiIte, sizeof(Real) * m_byMaxK);
+            memcpy(m_pHostZ1Buffer, m_pHostDataZ1BufferCenteroids + m_byMaxK * uiIte, sizeof(Real) * m_byMaxK);
+            memcpy(m_pHostY2Buffer, m_pHostDataY2BufferCenteroids + 2 * m_byMaxK * uiIte, sizeof(Real) * 2 * m_byMaxK);
+            memcpy(m_pHostZ2Buffer, m_pHostDataZ2BufferCenteroids + 2 * m_byMaxK * uiIte, sizeof(Real) * 2 * m_byMaxK);
+            ReclassifyDistMode(bDebug);
+            CalcDist(uiIte);
+            ExportDistData(uiIte);
+        }
     }
     else
     {
-        InitialWithCenterFile();
-    }
-    
-    //========== step2: calculate cetners =============
-    //========== step3: reclassify =============
-    UINT changed = Reclassify(bDebug);
-    ExportDebugInfo();
-    if (bDebug)
-    {
-        appGeneral(_T("Step: %d, Changed: %d\n"), m_uiStep, changed);
-    }
-
-    //========== step4: repeat step2 and step3 until finished =============
-    while (changed > uiStop)
-    {
-        changed = Reclassify(bDebug);
+        UINT changed = Reclassify(bDebug);
         ExportDebugInfo();
         if (bDebug)
         {
             appGeneral(_T("Step: %d, Changed: %d\n"), m_uiStep, changed);
         }
-    }
 
-    //========== step5: save k file =============
+        //========== step3: repeat step2 and step3 until finished =============
+        while (changed > uiStop)
+        {
+            changed = Reclassify(bDebug);
+            ExportDebugInfo();
+            if (bDebug)
+            {
+                appGeneral(_T("Step: %d, Changed: %d\n"), m_uiStep, changed);
+            }
+        }
+    }
+}
+
+void QLQuantumKmeans::SetDistanceMode(const CCString& fileName, UINT totalNumber, UINT iterationStart)
+{
+    m_uiDistIterations = totalNumber / m_byMaxK;
+    totalNumber = m_uiDistIterations * m_byMaxK;
+
+    m_bDistanceMode = TRUE;
+    m_uiDistIterationStart = iterationStart;
+
+    UINT w, h;
+    TArray<Real> data = ReadCSVAR(fileName, w, h);
+
+    checkCudaErrors(cudaMalloc((void**)&m_pDeviceCentroids, sizeof(Real) * 7 * totalNumber));
+    checkCudaErrors(cudaMemcpy(m_pDeviceCentroids, data.GetData(), sizeof(Real) * 7 * totalNumber, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMalloc((void**)&m_pDeviceDistances, sizeof(Real) * m_uiN));
+    checkCudaErrors(cudaMalloc((void**)&m_pDevicePreserveCVBuffer, sizeof(QLComplex) * 4 * totalNumber));
+
+    m_pHostDataY1BufferCenteroids = (Real*)malloc(sizeof(Real) * totalNumber);
+    m_pHostDataY2BufferCenteroids = (Real*)malloc(sizeof(Real) * 2 * totalNumber);
+    m_pHostDataZ1BufferCenteroids = (Real*)malloc(sizeof(Real) * totalNumber);
+    m_pHostDataZ2BufferCenteroids = (Real*)malloc(sizeof(Real) * 2 * totalNumber);
+
+    Real* pTempY1 = NULL;
+    Real* pTempY2 = NULL;
+    Real* pTempZ1 = NULL;
+    Real* pTempZ2 = NULL;
+    QLComplex* pTempCV = NULL;
+
+    checkCudaErrors(cudaMalloc((void**)&pTempY1, sizeof(Real) * totalNumber));
+    checkCudaErrors(cudaMalloc((void**)&pTempY2, sizeof(Real) * 2 * totalNumber));
+    checkCudaErrors(cudaMalloc((void**)&pTempZ1, sizeof(Real) * totalNumber));
+    checkCudaErrors(cudaMalloc((void**)&pTempZ2, sizeof(Real) * 2 * totalNumber));
+    checkCudaErrors(cudaMalloc((void**)&pTempCV, sizeof(QLComplex) * 4 * totalNumber));
+    
+    UINT uiBlockN = totalNumber > _QL_LAUNCH_MAX_THREAD ? Ceil(totalNumber, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT uiThreadN = totalNumber > _QL_LAUNCH_MAX_THREAD ? Ceil(totalNumber, uiBlockN) : totalNumber;
+
+    _kernelQKMADVectorToNormalizedVector << <uiBlockN, uiThreadN >> > (pTempCV, m_pDeviceCentroids, totalNumber);
+    checkCudaErrors(cudaMemcpy(m_pDevicePreserveCVBuffer, pTempCV, sizeof(QLComplex) * 4 * totalNumber, cudaMemcpyDeviceToDevice));
+    _kernelQKMADVectorToAngle << <uiBlockN, uiThreadN >> > (pTempY1, pTempY2, pTempZ1, pTempZ2, pTempCV, totalNumber);
+    checkCudaErrors(cudaMemcpy(m_pHostDataY1BufferCenteroids, pTempY1, sizeof(Real) * totalNumber, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(m_pHostDataZ1BufferCenteroids, pTempZ1, sizeof(Real) * totalNumber, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(m_pHostDataY2BufferCenteroids, pTempY2, sizeof(Real) * 2 * totalNumber, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(m_pHostDataZ2BufferCenteroids, pTempZ2, sizeof(Real) * 2 * totalNumber, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(pTempY1));
+    checkCudaErrors(cudaFree(pTempY2));
+    checkCudaErrors(cudaFree(pTempZ1));
+    checkCudaErrors(cudaFree(pTempZ2));
+    checkCudaErrors(cudaFree(pTempCV));
+    
+    m_pHostDistances = reinterpret_cast<Real*>(malloc(sizeof(Real) * m_uiN));
 }
 
 void QLQuantumKmeans::ExportDebugInfo()
@@ -946,6 +1077,33 @@ void QLQuantumKmeans::ExportDebugInfo()
     {
         SaveCSVAR(m_pHostMeasureProbability, 1, m_uiN, m_sSaveNameHead + _T("_p_") + appIntToString(static_cast<INT>(m_byMaxK)) + _T("_") + appIntToString(static_cast<INT>(m_uiStep)) + _T(".csv"));
     }
+}
+
+void QLQuantumKmeans::CalcDist(UINT ite)
+{
+    _kernelQKMeansCalcDist << <m_uiBlockN, m_uiThreadN >> > (m_pDeviceKValues, m_pDeviceDataCV, 
+        m_pDevicePreserveCVBuffer + sizeof(QLComplex) * 4 * ite * m_byMaxK, m_pDeviceDistances, m_uiN);
+}
+
+void QLQuantumKmeans::ExportDistData(UINT ite)
+{
+    CCString sFileName = m_sSaveNameHead
+        + _T("_") + appIntToString(static_cast<INT>(m_byMaxK))
+        + _T("_") + appIntToString(static_cast<INT>(m_uiRepeat))
+        + _T("_") + appIntToString(static_cast<INT>(ite + 1))
+        + _T(".csv");
+
+    checkCudaErrors(cudaMemcpy(m_pHostDistances, m_pDeviceDistances, sizeof(Real) * m_uiN, cudaMemcpyDeviceToHost));
+    SaveCSVAR(m_pHostDistances, 1, m_uiN, sFileName);
+
+    sFileName = m_sSaveNameHead
+        + _T("_") + appIntToString(static_cast<INT>(m_byMaxK))
+        + _T("_") + appIntToString(static_cast<INT>(m_uiRepeat))
+        + _T("_") + appIntToString(static_cast<INT>(ite + 1))
+        + _T("_k.csv");
+    SaveCSVAUI(m_pHostKValues, 1, m_uiN, sFileName);
+    appGeneral(_T("Step: %d, finshed, %s saved\n"), ite, sFileName.c_str());
+    
 }
 
 __END_NAMESPACE

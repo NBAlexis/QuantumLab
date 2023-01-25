@@ -46,6 +46,11 @@ public:
 
     void TestCircuit(const Real* hostVectors);
 
+    /**
+    * Call me after Prepare()
+    */
+    void SetDistanceMode(const CCString& fileName, UINT totalNumber, UINT iterationStart);
+
 protected:
 
     void CalculateDegreesOnlyCenters();
@@ -60,9 +65,13 @@ protected:
     UBOOL CalculateCenters(UBOOL bDebug);
     UINT Reclassify(UINT uiIdx, UINT* measurecount);
     UINT Reclassify(UBOOL bDebug);
+    void ReclassifyDistMode(UBOOL bDebug);
     void InitialK(UBOOL bDebug);
     void InitialWithCenterFile();
     void ExportDebugInfo();
+
+    void CalcDist(UINT ite);
+    void ExportDistData(UINT ite);
     
     UINT m_byMaxK;
     BYTE m_byQubit;
@@ -97,6 +106,7 @@ protected:
     Real* m_pHostZ2Buffer;
 
     Real* m_pDeviceData;
+    QLComplex* m_pDeviceDataCV;
     Real* m_pHostDataY1Buffer;
     Real* m_pHostDataY2Buffer;
     Real* m_pHostDataZ1Buffer;
@@ -120,6 +130,19 @@ protected:
 
     //========= continue ==========
     CCString m_sStartCenterFile;
+
+    //========= Distance Mode =====
+    UBOOL m_bDistanceMode;
+    UINT m_uiDistIterations;
+    UINT m_uiDistIterationStart;
+    Real* m_pDeviceCentroids;
+    Real* m_pDeviceDistances;
+    Real* m_pHostDistances;
+    QLComplex* m_pDevicePreserveCVBuffer;
+    Real* m_pHostDataY1BufferCenteroids;
+    Real* m_pHostDataY2BufferCenteroids;
+    Real* m_pHostDataZ1BufferCenteroids;
+    Real* m_pHostDataZ2BufferCenteroids;
 };
 
 

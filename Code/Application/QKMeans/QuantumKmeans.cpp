@@ -58,6 +58,22 @@ void QuantumKMeans(const CCString& yamlFile)
     CCString sFileHead;
     params.FetchStringValue(_T("FileName"), sFileHead);
 
+    __FetchIntWithDefault(_T("DistMode"), 1);
+    CCString sCenterFileHead;
+    UINT uiCenterFileCount = 0;
+    UINT uiDistModeIterationStart = 0;
+    UBOOL bDistMode = (iVaules != 0);
+    TArray<INT> coeffs;
+    if (bDistMode)
+    {
+        params.FetchStringValue(_T("CenterFile"), sCenterFileHead);
+        __FetchIntWithDefault(_T("CenterFileCount"), 0);
+        uiCenterFileCount = static_cast<UINT>(iVaules);
+        __FetchIntWithDefault(_T("DistModeIterationStart"), 0);
+        uiDistModeIterationStart = static_cast<UINT>(iVaules);
+
+        params.FetchValueArrayINT(_T("CoeffList"), coeffs);
+    }
 
     Real testvectorlist[17][7] = {
         //centeroids
@@ -86,13 +102,34 @@ void QuantumKMeans(const CCString& yamlFile)
     //qkmeans.TestCircuit(reinterpret_cast<Real*>(testvectorlist));
 
     CCString sLoadFileName;
-    sLoadFileName.Format(_T("%s.csv"), sFileHead.c_str());
+    CCString sSaveFileName;
+    sLoadFileName.Format(_T("%s%d.csv"), sFileHead.c_str(), coeffs[0]);
+    sSaveFileName.Format(_T("%s%d"), sFileHead.c_str(), coeffs[0]);
     qkmeans.Prepare(sLoadFileName, sStartCenter, uiCount);
     if (!bUseCC)
     {
         qkmeans.SetOtherParams(bUseCC, iTotalMeasure);
     }
-    qkmeans.KMeans(sFileHead, 1, uiMeasure, uiContinue, TRUE);
+    if (bDistMode)
+    {
+        qkmeans.SetDistanceMode(sCenterFileHead, uiCenterFileCount, uiDistModeIterationStart);
+
+        for (INT i = 0; i < coeffs.Num(); ++i)
+        {
+            if (0 != i)
+            {
+                sLoadFileName.Format(_T("%s%d.csv"), sFileHead.c_str(), coeffs[i]);
+                sSaveFileName.Format(_T("%s%d"), sFileHead.c_str(), coeffs[i]);
+                qkmeans.Prepare(sLoadFileName, sStartCenter, uiCount);
+            }
+            qkmeans.KMeans(sSaveFileName, 1, uiMeasure, uiContinue, TRUE);
+        }
+    }
+    else
+    {
+        qkmeans.KMeans(sFileHead, 1, uiMeasure, uiContinue, TRUE);
+    }
+    
     //QLGate gate = qkmeans.CompareCircuit((Real*)testvectorlist);
 
     //QLSimulatorParametersVector param;

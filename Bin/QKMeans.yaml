@@ -1,8 +1,8 @@
-#########################
+# ########################
 QKMeans: 1
-#########################
+# ########################
 # GPU Kmeans
-#########################
+# ########################
 DebugChange : 0
 CK : 50
 Start : 201
@@ -15,14 +15,23 @@ HasCoefficientIdx : 0
 CoefficientIdxStart : 0
 CoefficientIdxEnd : 20
 
-#########################
+# ########################
 # Quantum Kmeans
-#########################
-K : 64
+# ########################
+K : 16
 Count : 10000
-Measure : 10
-FileName : SM-1500
-UseCC : 0
+Measure : 1
+FileName : FT0-1500-
+UseCC : 1
 TotalMeasure : 300
 # Continue : 1
 # StartCenter: FT0-1500-20_c_27.csv
+
+# ########################
+# Quantum Kmeans Dist Mode
+# ########################
+DistMode : 1
+CoeffList : [0, 5, 10, 15, 20]
+CenterFile : SM-1500.csv
+CenterFileCount : 160
+DistModeIterationStart : 0
