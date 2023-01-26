@@ -1082,7 +1082,7 @@ void QLQuantumKmeans::ExportDebugInfo()
 void QLQuantumKmeans::CalcDist(UINT ite)
 {
     _kernelQKMeansCalcDist << <m_uiBlockN, m_uiThreadN >> > (m_pDeviceKValues, m_pDeviceDataCV, 
-        m_pDevicePreserveCVBuffer + sizeof(QLComplex) * 4 * ite * m_byMaxK, m_pDeviceDistances, m_uiN);
+        m_pDevicePreserveCVBuffer + 4 * ite * m_byMaxK, m_pDeviceDistances, m_uiN);
 }
 
 void QLQuantumKmeans::ExportDistData(UINT ite)
