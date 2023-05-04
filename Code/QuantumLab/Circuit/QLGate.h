@@ -149,7 +149,9 @@ public:
         return GetOperation(m_lstQubits);
     }
 
-    static void PerformBasicOperation(const struct Qureg& pReg, const SBasicOperation& op);
+    BYTE GetQubitCount() const { return static_cast<BYTE>(m_lstQubits.Num()); }
+
+    static Real PerformBasicOperation(const struct Qureg& pReg, const SBasicOperation& op);
 
     EBasicOperation m_eOp;
     UBOOL m_bDagger;
@@ -170,6 +172,11 @@ public:
     */
     TArray<BYTE> m_lstQubits;
     TArray<QLGate> m_lstSubGates;
+
+    /**
+    * Only used for draw circuit, almost always empty
+    */
+    TArray<BYTE> m_lstAdditionalQubitsData;
 
     Real m_fClassicalParameter;
     TArray<SBasicOperationInGate> m_lstOperations;

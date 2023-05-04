@@ -83,6 +83,40 @@ QLGate QLAPI FRy(const TArray<Real>& angles, UINT numberOfQubits)
     return ret;
 }
 
+QLGate QLAPI FRy(Real* angles, UINT numberOfQubits)
+{
+    assert(numberOfQubits >= 1);
+    UINT degreeNumber = 1U << (numberOfQubits - 1);
+
+    if (1 == numberOfQubits)
+    {
+        return QLGate(EBasicOperation::EBO_RY, angles[0]);
+    }
+
+    QLGate ret;
+    ret.AddQubits(static_cast<BYTE>(numberOfQubits));
+    ret.m_sName = _T("FRy");
+
+    TArray <Real> theta = SpliteAngles(angles, degreeNumber);
+    TArray <BYTE> target;
+    target.AddItem(static_cast<BYTE>(numberOfQubits - 1));
+    for (UINT i = 0; i < degreeNumber; ++i)
+    {
+        QLGate ry(EBasicOperation::EBO_RY, theta[i]);
+        ret.AppendGate(ry, target);
+
+        UINT ctrIdx = GrayCodeDifferent(i, degreeNumber);
+        ctrIdx = numberOfQubits - 2 - ctrIdx;
+
+        TArray <BYTE> cnotbits;
+        cnotbits.AddItem(static_cast<BYTE>(ctrIdx));
+        cnotbits.AddItem(static_cast<BYTE>(numberOfQubits - 1));
+        ret.AppendGate(QLGate(EBasicOperation::EBO_CX), cnotbits);
+    }
+
+    return ret;
+}
+
 QLGate QLAPI FRz(const TArray<Real>& angles, UINT numberOfQubits)
 {
     assert(numberOfQubits >= 1);
@@ -92,6 +126,40 @@ QLGate QLAPI FRz(const TArray<Real>& angles, UINT numberOfQubits)
         appCrucial(_T("degree number wrong!\n"));
         return QLGate();
     }
+
+    if (1 == numberOfQubits)
+    {
+        return QLGate(EBasicOperation::EBO_RZ, angles[0]);
+    }
+
+    QLGate ret;
+    ret.AddQubits(static_cast<BYTE>(numberOfQubits));
+    ret.m_sName = _T("FRz");
+
+    TArray <Real> theta = SpliteAngles(angles, degreeNumber);
+    TArray <BYTE> target;
+    target.AddItem(static_cast<BYTE>(numberOfQubits - 1));
+    for (UINT i = 0; i < degreeNumber; ++i)
+    {
+        QLGate rz(EBasicOperation::EBO_RZ, theta[i]);
+        ret.AppendGate(rz, target);
+
+        UINT ctrIdx = GrayCodeDifferent(i, degreeNumber);
+        ctrIdx = numberOfQubits - 2 - ctrIdx;
+
+        TArray <BYTE> cnotbits;
+        cnotbits.AddItem(static_cast<BYTE>(ctrIdx));
+        cnotbits.AddItem(static_cast<BYTE>(numberOfQubits - 1));
+        ret.AppendGate(QLGate(EBasicOperation::EBO_CX), cnotbits);
+    }
+
+    return ret;
+}
+
+QLGate QLAPI FRz(const Real* angles, UINT numberOfQubits)
+{
+    assert(numberOfQubits >= 1);
+    UINT degreeNumber = 1U << (numberOfQubits - 1);
 
     if (1 == numberOfQubits)
     {

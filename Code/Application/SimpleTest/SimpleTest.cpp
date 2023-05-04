@@ -8,7 +8,7 @@
 //  [10/09/2022 nbale]
 //=============================================================================
 
-#include "QuantumLab.h"
+#include "SimpleTest.h"
 
 void TestCSD2By1()
 {
@@ -49,7 +49,7 @@ void TestCSD()
 
 void TestRYGate()
 {
-    QLGate ch = QLGate(EBasicOperation::EBO_Phase, 0.3);
+    QLGate ch = QLGate(EBasicOperation::EBO_Phase, F(0.3));
     QLSimulatorParametersMatrix param;
     param.m_byQubitCount = 1;
     param.m_MasterGate = ch;
@@ -401,7 +401,7 @@ UINT TestCnRY4()
 
 void TestCP()
 {
-    QLGate ch = QLGate(EBasicOperation::EBO_CP, 0.3);
+    QLGate ch = QLGate(EBasicOperation::EBO_CP, F(0.3));
     QLSimulatorParametersMatrix param;
     param.m_byQubitCount = 2;
     param.m_MasterGate = ch;
@@ -555,23 +555,23 @@ void TestCSDGate()
     appGeneral(_T("||d||=%f"), norm.x);
 }
 
-void TestAmplitudeEncode()
-{
-    QLMatrix m(1, 8);
-    m.RandomOne();
-    m = m / _sqrt(m.VectorDot(m).x);
-    m.Print(_T("v"));
-    TArray<QLComplex> v = m.ToVector();
-
-    QLGate ae = AmplitudeEncode(v);
-
-    QLSimulatorParametersVector param;
-    param.m_byQubitCount = 3;
-    param.m_MasterGate = ae;
-
-    QLSimulatorVector sim;
-    sim.Simulate(&param);
-}
+//void TestAmplitudeEncode()
+//{
+//    QLMatrix m(1, 8);
+//    m.RandomOne();
+//    m = m / _sqrt(m.VectorDot(m).x);
+//    m.Print(_T("v"));
+//    TArray<QLComplex> v = m.ToVector();
+//
+//    QLGate ae = AmplitudeEncode(v);
+//
+//    QLSimulatorParametersVector param;
+//    param.m_byQubitCount = 3;
+//    param.m_MasterGate = ae;
+//
+//    QLSimulatorVector sim;
+//    sim.Simulate(&param);
+//}
 
 void TestZeroStartAmplitudeEncode()
 {
@@ -1456,7 +1456,7 @@ int main()
     //appGeneral(_T("%d"), TestCnRY4());
     //TestMatrixPower();
     //TestFRy2();
-    TestZeroEigenMatrixPower();
+    TestAmplitudeEncodeVectors();
 
     //std::vector<QLComplex> l1;
     //l1.push_back(_make_cuComplex(-0.70876551, -0.66743494));
@@ -1474,6 +1474,7 @@ int main()
     //param.m_MasterGate = ha;
     //QLSimulatorMatrix sim(NULL);
     //sim.Simulate(&param);
+    return 0;
 }
 
 

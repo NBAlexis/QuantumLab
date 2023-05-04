@@ -78,6 +78,7 @@
     <ClCompile Include="ToolClass\Tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="Circuit\Gates\AmplitudeEncodeCuda.cu" />
     <CudaCompile Include="Circuit\Subroutine\QKMeans.cu" />
     <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu" />
     <CudaCompile Include="ClassicalTools\QLMatrix.cu" />

@@ -27,9 +27,68 @@ extern TArray<QLComplex> QLAPI NormalizeV(const TArray<QLComplex>& v, UINT& lenP
 
 extern TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower);
 
+//[[deprecated("use AmplitudeEncodeOneVector instead")]]
 extern QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v);
 
 extern QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v);
+
+//=============================================================================
+// rewrite amplitude encode
+//=============================================================================             
+
+
+/**
+* (factor, r1 + r2 I, r3 + r3 I, ...)
+*/
+extern void QLAPI NormalizeRealToComplex(const Real* deviceData, QLComplex* deviceNormalized, UINT realVectorLength, UINT complexVectorLength, UINT uiVectorCount, Real factor);
+
+/**
+* v is on host
+* phaseBuffer and deviceZ can be NULL if v is real
+* len(v) = 1 << vectorPower
+* 
+* absBuffer and vectorCount are middle result
+*/
+extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+
+/**
+*
+*/
+extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ, Real* hostY, Real* hostZ);
+
+/**
+*
+*/
+extern QLGate QLAPI ExchangeToYZGate(UINT vectorPower, Real* hostY, Real* hostZ, UBOOL bHasPhase);
+
+/**
+*
+*/
+extern QLGate QLAPI ExchangeToYZGate(UINT vectorCountPower, UINT vectorPower, Real* hostY, Real* hostZ, UBOOL bHasPhase);
+
+/**
+* the gate to build |phi>
+* Assume hostV has 2-power length
+* Assume hostV is already normalized
+*/
+extern QLGate QLAPI AmplitudeEncodeOneVector(const QLComplex* hostv, UINT vectorPower, UBOOL bHasPhase);
+
+/**
+* the gate to build |i>|phi_i>
+* Assume len(i) and len(phi_i) both have 2-power length
+* Assume phi_i are normalized
+* |i> use higher qubits, and phi use lower qubits
+* For example, 8 phi_i with len(phi) = 4, there are 5 qubits, |i> is 2,3,4 and |phi> is 0,1
+*/
+extern QLGate QLAPI AmplitudeEncodeVectors(const QLComplex* hostv, UINT vectorCountPower, UINT vectorPower, UBOOL bHasPhase);
+
+
+extern void QLAPI TestProbalityToBuildAmplitude(UINT uiVectorLength, UINT uiKPower, Real fFactor, Real& probToBuild, Real& probToObtainLargest, UBOOL bDebugPrint = FALSE);
+
+extern void QLAPI TestDistance(const CCString& sSaveFileName, UINT uiVectorLength, Real fFactor, UINT testPairCount);
+
+//not used
+extern void QLAPI TestProbalityToBuildAmplitude(const CCString& sFileName, UINT uiVectorLength, UINT uiK, Real fFactor, UINT uiTestCount);
 
 __END_NAMESPACE
 

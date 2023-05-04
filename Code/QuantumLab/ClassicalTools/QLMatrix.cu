@@ -48,6 +48,20 @@ _kernelRandomOne(QLComplex* pDevicePtr, UINT perthread, UINT uiMax)
 }
 
 __global__ void _QL_LAUNCH_BOUND
+_kernelRandomOneReal(QLComplex* pDevicePtr, UINT perthread, UINT uiMax)
+{
+    const UINT uiThread = threadIdx.x;
+    for (UINT i = 0; i < perthread; ++i)
+    {
+        const UINT idx = uiThread * perthread + i;
+        if (idx < uiMax)
+        {
+            pDevicePtr[idx] = _make_cuComplex(_deviceRandomF(uiThread) * F(2.0) - F(1.0), F(0.0));
+        }
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
 _kernelTranspose(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UBOOL bConj, UINT uiXLen, UINT uiYLen, UINT uiMax)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
@@ -107,6 +121,40 @@ _kernelAdd(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
 }
 
 __global__ void _QL_LAUNCH_BOUND
+_kernelSub(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT uiYLen, UINT uiMax)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCsubf(pDevicePtr[uiID1], pSource[uiID1]);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelSub(QLComplex* pDevicePtr, QLComplex v, UINT uiYLen, UINT uiMax)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiID1 = uiYLen * uiX + uiX;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCsubf(pDevicePtr[uiID1], v);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelSub(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiID1 = uiYLen * uiX + uiX;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = cuCsubf_cr(pDevicePtr[uiID1], v);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
 _kernelMul(QLComplex* pDevicePtr, QLComplex v, UINT uiYLen, UINT uiMax)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
@@ -151,6 +199,18 @@ _kernelDiv(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
     if (uiID1 < uiMax)
     {
         pDevicePtr[uiID1] = cuCdivf_cr(pDevicePtr[uiID1], v);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelElementDiv(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT uiYLen, UINT uiMax)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = _cuCdivf(pDevicePtr[uiID1], pSource[uiID1]);
     }
 }
 
@@ -313,6 +373,21 @@ void QLMatrix::RandomOne()
     checkCudaErrors(cudaMalloc((void**)&deviceBuffer, sizeof(QLComplex) * uiMax));
 
     _kernelRandomOne << <1, _QL_LAUNCH_MAX_THREAD >> > (deviceBuffer, uiPerthread, uiMax);
+
+    OnChangeContent();
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * uiMax, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::RandomOneReal()
+{
+    UINT uiMax = m_uiX * m_uiY;
+    UINT uiPerthread = Ceil(uiMax, _QL_LAUNCH_MAX_THREAD);
+    QLComplex* deviceBuffer = NULL;
+
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer, sizeof(QLComplex) * uiMax));
+
+    _kernelRandomOneReal << <1, _QL_LAUNCH_MAX_THREAD >> > (deviceBuffer, uiPerthread, uiMax);
 
     OnChangeContent();
     checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * uiMax, cudaMemcpyDeviceToHost));
@@ -1015,6 +1090,65 @@ void QLMatrix::Add(const Real& other)
     checkCudaErrors(cudaFree(deviceBuffer));
 }
 
+void QLMatrix::Sub(const QLMatrix& other)
+{
+    if (m_uiX != other.m_uiX || m_uiY != other.m_uiY)
+    {
+        appCrucial("Sub of two matrix not much!\n");
+        return;
+    }
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    QLComplex* deviceBuffer1 = NULL;
+    QLComplex* deviceBuffer2 = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(deviceBuffer2, other.HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    _kernelSub << <blocks, threads >> > (deviceBuffer1, deviceBuffer2, m_uiY, m_uiX * m_uiY);
+
+    OnChangeContent();
+
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(deviceBuffer1));
+    checkCudaErrors(cudaFree(deviceBuffer2));
+}
+
+void QLMatrix::Sub(const QLComplex& other)
+{
+    dim3 blocks;
+    dim3 threads;
+    GetDimDiag(blocks, threads);
+
+    QLComplex* deviceBuffer = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    _kernelSub << <blocks, threads >> > (deviceBuffer, other, m_uiY, m_uiX * m_uiY);
+
+    OnChangeContent();
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::Sub(const Real& other)
+{
+    dim3 blocks;
+    dim3 threads;
+    GetDimDiag(blocks, threads);
+
+    QLComplex* deviceBuffer = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    _kernelSub << <blocks, threads >> > (deviceBuffer, other, m_uiY, m_uiX * m_uiY);
+
+    OnChangeContent();
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(deviceBuffer));
+}
+
 //======================================================================================================
 // C = alpha A.B + beta C
 // If beta==0, C does not have to be a valid input
@@ -1210,6 +1344,33 @@ void QLMatrix::Div(const Real& other)
     OnChangeContent();
     checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::ElementDiv(const QLMatrix& other)
+{
+    if (m_uiX != other.m_uiX || m_uiY != other.m_uiY)
+    {
+        appCrucial("Add of two matrix not much!\n");
+        return;
+    }
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    QLComplex* deviceBuffer1 = NULL;
+    QLComplex* deviceBuffer2 = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(deviceBuffer2, other.HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    _kernelElementDiv << <blocks, threads >> > (deviceBuffer1, deviceBuffer2, m_uiY, m_uiX * m_uiY);
+
+    OnChangeContent();
+
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(deviceBuffer1));
+    checkCudaErrors(cudaFree(deviceBuffer2));
 }
 
 QLMatrix QLMatrix::GetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen) const
@@ -1769,6 +1930,17 @@ TArray<QLComplex> QLMatrix::ToVector() const
     for (UINT i = 0; i < m_uiX * m_uiY; ++i)
     {
         ret.AddItem(buffer[i]);
+    }
+    return ret;
+}
+
+TArray<Real> QLMatrix::ToVectorRe() const
+{
+    const QLComplex* buffer = HostBuffer();
+    TArray<Real> ret;
+    for (UINT i = 0; i < m_uiX * m_uiY; ++i)
+    {
+        ret.AddItem(buffer[i].x);
     }
     return ret;
 }

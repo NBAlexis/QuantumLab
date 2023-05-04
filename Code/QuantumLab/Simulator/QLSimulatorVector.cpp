@@ -53,7 +53,11 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
 
     for (SIZE_T i = 0; i < opssize; ++i)
     {
-        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        Real fProba = QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        if (NULL != output)
+        {
+            output->m_fProbability *= fProba;
+        }
     }
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);

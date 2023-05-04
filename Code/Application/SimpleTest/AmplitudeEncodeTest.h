@@ -1,26 +1,16 @@
 //=============================================================================
-// FILENAME : QKMeans.h
+// FILENAME : AmplitudeEncodeTest.h
 // 
 // DESCRIPTION:
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [09/12/2022 nbale]
+//  [12/03/2023 nbale]
 //=============================================================================
 
-#ifndef _QL_QKMEANS_H_
-#define _QL_QKMEANS_H_
+extern void TestAmplitudeEncodeOneVector();
+extern void TestAmplitudeEncodeVectors();
 
-#include "QuantumLab.h"
-
-extern void ClassicalKMeans(const CCString& yamlFile);
-extern void QuantumKMeans(const CCString& yamlFile);
-
-extern void TestDistance();
-extern void TestProbalityToBuild();
-extern void TestProbalityMeanP6();
-
-#endif //#ifndef _QL_QKMEANS_H_
 
 //=============================================================================
 // END OF FILE

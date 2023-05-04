@@ -19,7 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AmplitudeEncodeTest.cpp" />
     <ClCompile Include="SimpleTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AmplitudeEncodeTest.h" />
+    <ClInclude Include="SimpleTest.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

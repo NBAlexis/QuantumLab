@@ -35,3 +35,8 @@ CoeffList : [0, 5, 10, 15, 20]
 CenterFile : SM-1500.csv
 CenterFileCount : 160
 DistModeIterationStart : 0
+
+# ########################
+# Test Probability p6
+# ########################
+P6TestList : [100000, 100000, 100000, 100000, 100000, 100000, 50000, 30000, 15000, 8000, 4000, 2000, 1000]

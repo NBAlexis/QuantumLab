@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CircuitTest.cpp" />
     <ClCompile Include="ClassicalKmeans.cpp" />
     <ClCompile Include="QKMeans.cpp" />
     <ClCompile Include="QuantumKmeans.cpp" />

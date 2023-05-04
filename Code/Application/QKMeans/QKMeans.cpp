@@ -12,21 +12,24 @@
 
 int main()
 {
-    CParameters params;
-    CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
-    INT iVaules;
-    __FetchIntWithDefault(_T("QKMeans"), 0);
-    UBOOL bQKMeans = (iVaules != 0);
+    QLRandomInitializer random(ERandom::ER_XORWOW, appGetTimeStamp());
 
-    if (bQKMeans)
-    {
-        QuantumKMeans(_T("../QKMeans.yaml"));
-    }
-    else
-    {
-        ClassicalKMeans(_T("../QKMeans.yaml"));
-    }
+    //CParameters params;
+    //CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
+    //INT iVaules;
+    //__FetchIntWithDefault(_T("QKMeans"), 0);
+    //UBOOL bQKMeans = (iVaules != 0);
 
+    //if (bQKMeans)
+    //{
+    //    QuantumKMeans(_T("../QKMeans.yaml"));
+    //}
+    //else
+    //{
+    //    ClassicalKMeans(_T("../QKMeans.yaml"));
+    //}
+
+    TestDistance();
     return 0;
 }
 

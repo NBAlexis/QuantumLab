@@ -66,7 +66,11 @@ extern TArray<Real> QLAPI SpliteAngles(const Real* angles, UINT length);
 */
 extern QLGate QLAPI FRy(const TArray<Real>& angles, UINT numberOfQubits);
 
+extern QLGate QLAPI FRy(const Real* angles, UINT numberOfQubits);
+
 extern QLGate QLAPI FRz(const TArray<Real>& angles, UINT numberOfQubits);
+
+extern QLGate QLAPI FRz(const Real* angles, UINT numberOfQubits);
 
 /**
 * Used in Cosin-Sine decomposition, when FRz-dagger is appended after FRy, two CNots can be removed

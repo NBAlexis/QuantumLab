@@ -166,6 +166,8 @@ public:
     //random(-1, 1) + random(-1, 1) I
     void RandomOne();
 
+    void RandomOneReal();
+
     //same as scipy, m^dagger m = 1
     void RandomUnitary();
 
@@ -203,12 +205,17 @@ public:
     void Add(const QLComplex& other);
     void Add(const Real& other);
 
+    void Sub(const QLMatrix& other);
+    void Sub(const QLComplex& other);
+    void Sub(const Real& other);
+
     //cublasOperation_t = CUBLAS_OP_N (none), CUBLAS_OP_T (transpose) CUBLAS_OP_C (dagger)
     QLMatrix Mul(const QLMatrix& other, cublasOperation_t left = CUBLAS_OP_N, cublasOperation_t right = CUBLAS_OP_N) const;
     void Mul(const QLComplex& other);
     void Mul(const Real& other);
     void Div(const QLComplex& other);
     void Div(const Real& other);
+    void ElementDiv(const QLMatrix& other);
 
     QLAPI friend QLMatrix operator+(const QLMatrix& m1, const QLMatrix& m2) { QLMatrix ret = m1; ret.Add(m2); return ret; }
     QLAPI friend QLMatrix operator+(const QLMatrix& m, const QLComplex& v) { QLMatrix ret = m; ret.Add(v); return ret; }
@@ -401,6 +408,7 @@ public:
     UINT Y() const { return m_uiY; }
 
     TArray<QLComplex> ToVector() const;
+    TArray<Real> ToVectorRe() const;
     QLComplex VectorDot(const QLMatrix& other, UBOOL bConjL = TRUE, UBOOL bConjR = FALSE) const;
     QLMatrix VectorFFT(UBOOL bForward = TRUE) const;
 

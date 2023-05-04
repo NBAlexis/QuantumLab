@@ -29,7 +29,10 @@ public:
 class QLAPI QLSimulatorOutput
 {
 public:
+
+    QLSimulatorOutput() : m_fProbability(F(1.0)) {}
     virtual ~QLSimulatorOutput() {}
+    Real m_fProbability;
 };
 
 class QLAPI QLSimulator
@@ -40,9 +43,9 @@ protected:
 public:
 
     //pOutput will be deleted in the destroy of QLSimulator
-    QLSimulator() { }
+    QLSimulator() {}
 
-    virtual ~QLSimulator() { }
+    virtual ~QLSimulator() {}
 
     virtual void Simulate(QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const = 0;
 

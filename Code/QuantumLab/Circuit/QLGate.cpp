@@ -459,6 +459,13 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 void QLGate::ApplyOnQubits(const TArray<BYTE>& lstMappingQubits)
 {
 	m_lstQubits = ExchangeQubits(lstMappingQubits); //thess changes are enough for basic gates
+	TArray<BYTE> additionalQubitData;
+	INT qubitSize = m_lstAdditionalQubitsData.Num();
+	for (INT i = 0; i < qubitSize; ++i)
+	{
+		additionalQubitData.AddItem(lstMappingQubits[m_lstAdditionalQubitsData[i]]);
+	}
+	m_lstAdditionalQubitsData = additionalQubitData;
 	if (EBasicOperation::EBO_Composite == m_eOp)
 	{
 		INT gatesize = m_lstSubGates.Num();
@@ -480,8 +487,9 @@ TArray<BYTE> QLGate::ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const
 	return ret;
 }
 
-void QLGate::PerformBasicOperation(const Qureg& reg, const SBasicOperation& op)
+Real QLGate::PerformBasicOperation(const Qureg& reg, const SBasicOperation& op)
 {
+	Real ret = F(1.0);
 	switch (op.m_eOperation)
 	{
 	case EBasicOperation::EBO_H:
@@ -532,12 +540,13 @@ void QLGate::PerformBasicOperation(const Qureg& reg, const SBasicOperation& op)
 		break;
 
 	case EBasicOperation::EBO_CC:
-		collapseToOutcome(reg, op.m_lstQubits[0], static_cast<INT>(op.m_fClassicalParameter));
+		ret = static_cast<Real>(collapseToOutcome(reg, op.m_lstQubits[0], static_cast<INT>(op.m_fClassicalParameter)));
 		break;
 	default:
 		printf("not supported type!\n");
 		break;
 	}
+	return ret;
 }
 
 void QLGate::DebugPrint(INT iDepth) const
