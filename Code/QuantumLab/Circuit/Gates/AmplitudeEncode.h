@@ -52,6 +52,11 @@ extern void QLAPI NormalizeRealToComplex(const Real* deviceData, QLComplex* devi
 extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
 
 /**
+* suppose abs and phase are already calculated
+*/
+extern void QLAPI CalculateDegrees(Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+
+/**
 *
 */
 extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ, Real* hostY, Real* hostZ);
@@ -82,13 +87,6 @@ extern QLGate QLAPI AmplitudeEncodeOneVector(const QLComplex* hostv, UINT vector
 */
 extern QLGate QLAPI AmplitudeEncodeVectors(const QLComplex* hostv, UINT vectorCountPower, UINT vectorPower, UBOOL bHasPhase);
 
-
-extern void QLAPI TestProbalityToBuildAmplitude(UINT uiVectorLength, UINT uiKPower, Real fFactor, Real& probToBuild, Real& probToObtainLargest, UBOOL bDebugPrint = FALSE);
-
-extern void QLAPI TestDistance(const CCString& sSaveFileName, UINT uiVectorLength, Real fFactor, UINT testPairCount);
-
-//not used
-extern void QLAPI TestProbalityToBuildAmplitude(const CCString& sFileName, UINT uiVectorLength, UINT uiK, Real fFactor, UINT uiTestCount);
 
 __END_NAMESPACE
 

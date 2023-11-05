@@ -13,7 +13,32 @@
 int main()
 {
     QLRandomInitializer random(ERandom::ER_XORWOW, appGetTimeStamp());
+    CParameters params;
+    CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
+    params.Dump();
 
+
+    CCString sValues;
+    __FetchStringWithDefault(_T("KMeansJob"), _T("EQKJ_TestDifferentDimension"));
+    EQKmeansJob eJob = __STRING_TO_ENUM(EQKmeansJob, sValues);
+    switch (eJob)
+    {
+    case EQKJ_TestDifferentDimension:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("CircuitTestDim"), jobparam))
+            {
+                TestProbabilityDifferentDimension(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("CircuitTestDim not found!\n"));
+            }
+        }
+        break;
+    default:
+        break;
+    }
     //CParameters params;
     //CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
     //INT iVaules;
@@ -29,7 +54,8 @@ int main()
     //    ClassicalKMeans(_T("../QKMeans.yaml"));
     //}
 
-    TestDistance();
+    //TestDistance();
+
     return 0;
 }
 

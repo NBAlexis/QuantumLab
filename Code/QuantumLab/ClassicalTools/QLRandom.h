@@ -178,7 +178,7 @@ public:
         return _make_cuComplex(_cos(f2) * amplitude, _sin(f2) * amplitude);
     }
 
-    __device__ __inline__ UINT _deviceRandomI(UINT uithreadIdx, UINT uiMax) const
+    __device__ __inline__ UINT _deviceRandomUI(UINT uithreadIdx, UINT uiMax) const
     {
         UINT toRet = static_cast<UINT>(uiMax * _deviceRandomF(uithreadIdx));
         if (toRet >= uiMax)
@@ -195,7 +195,7 @@ public:
 
     __device__ __inline__ QLComplex _deviceRandomZN(UINT uithreadIdx, UINT uiMax) const
     {
-        const Real byRandom = static_cast<Real>(_deviceRandomI(uithreadIdx, uiMax));
+        const Real byRandom = static_cast<Real>(_deviceRandomUI(uithreadIdx, uiMax));
         const Real arg = PI2 * byRandom / static_cast<Real>(uiMax);
         return _make_cuComplex(_cos(arg), _sin(arg));
     }
@@ -244,9 +244,9 @@ public:
     /**
     * run on device, parally set the table
     */
-    __device__ __inline__ static void _deviceAsignSeeds(UINT* devicePtr, UINT uiSeed, UINT uiFatIndex)
+    __device__ __inline__ static void _deviceAsignSeeds(UINT* devicePtr, UINT uiSeed, UINT threadIndex)
     {
-        devicePtr[uiFatIndex] = (1664525UL * (uiFatIndex + uiSeed) + 1013904223UL) & 0xffffffff;
+        devicePtr[threadIndex] = (1664525UL * (threadIndex + uiSeed) + 1013904223UL) & 0xffffffff;
     }
 
 protected:
@@ -273,6 +273,7 @@ protected:
 
 extern __constant__ class QLRandom* __r;
 
+
 __DefineRandomFuncion(Real, F)
 
 __DefineRandomFuncion(Real, GaussF)
@@ -280,6 +281,11 @@ __DefineRandomFuncion(Real, GaussF)
 __DefineRandomFuncion(QLComplex, C)
 
 __DefineRandomFuncion(QLComplex, GaussC)
+
+__device__ __inline__ static UINT _deviceRandomUI(UINT uiThreadIdx, UINT uiN)
+{
+    return __r->_deviceRandomUI(uiThreadIdx, uiN);
+}
 
 __device__ __inline__ static Real _deviceRandomIF(UINT uiThreadIdx, UINT uiN)
 {

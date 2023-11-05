@@ -200,6 +200,7 @@ public:
     void Transpose(UBOOL bConjugate = FALSE);
     void Dagger() { Transpose(TRUE); }
     void Opposite();
+    void ElementAbs();
 
     void Add(const QLMatrix& other);
     void Add(const QLComplex& other);
@@ -410,6 +411,10 @@ public:
     TArray<QLComplex> ToVector() const;
     TArray<Real> ToVectorRe() const;
     QLComplex VectorDot(const QLMatrix& other, UBOOL bConjL = TRUE, UBOOL bConjR = FALSE) const;
+    Real Norm2() const
+    {
+        return sqrt(_cuCabsf(this->VectorDot(*this)));
+    }
     QLMatrix VectorFFT(UBOOL bForward = TRUE) const;
 
     static QLComplex ReduceSum(QLComplex* deviceBuffer, UINT uiLen);

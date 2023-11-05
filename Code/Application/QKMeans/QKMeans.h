@@ -13,12 +13,23 @@
 
 #include "QuantumLab.h"
 
-extern void ClassicalKMeans(const CCString& yamlFile);
-extern void QuantumKMeans(const CCString& yamlFile);
+__DEFINE_ENUM(EQKmeansJob,
+    EQKJ_Kmeans,
+    EQKJ_TestDifferentDimension,
+    EQKJ_TestDifferentVectorNumber,
+    EQKJ_TestQKmeans,
+    EQKJ_TestAnomalyDetection,
+    )
+
+
+extern void ClassicalKMeans(CParameters& yamlFile);
+extern void QuantumKMeans(CParameters& yamlFile);
 
 extern void TestDistance();
 extern void TestProbalityToBuild();
 extern void TestProbalityMeanP6();
+
+extern void TestProbabilityDifferentDimension(CParameters& params);
 
 #endif //#ifndef _QL_QKMEANS_H_
 

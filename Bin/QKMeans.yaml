@@ -1,19 +1,31 @@
 # ########################
-QKMeans: 1
+# EQKJ_TestDifferentDimension
+KMeansJob : EQKJ_TestDifferentDimension
+
 # ########################
 # GPU Kmeans
 # ########################
-DebugChange : 0
-CK : 50
-Start : 201
-End : 205
-CFileName : SM
-Energy : [1500]
-Stop : 600
+GPUKmeans:
 
-HasCoefficientIdx : 0
-CoefficientIdxStart : 0
-CoefficientIdxEnd : 20
+    DebugChange : 0
+    CK : 50
+    Start : 201
+    End : 205
+    CFileName : SM
+    Energy : [1500]
+    Stop : 600
+
+    HasCoefficientIdx : 0
+    CoefficientIdxStart : 0
+    CoefficientIdxEnd : 20
+
+CircuitTestDim:
+
+    CSVFileName : q8.csv
+    AmplitudeSave : aq8_16.csv
+    MeasureSave : mq8_16.csv
+    Count : 4
+    Repeat : 64
 
 # ########################
 # Quantum Kmeans

@@ -22,7 +22,7 @@ _kernelInitialK(BYTE* kBuffer, UINT uiMax, BYTE kMax)
 
     if (idx < uiMax)
     {
-        kBuffer[idx] = static_cast<BYTE>(__r->_deviceRandomI(threadIdx.x, kMax));
+        kBuffer[idx] = static_cast<BYTE>(__r->_deviceRandomUI(threadIdx.x, kMax));
     }
 }
 
@@ -34,7 +34,7 @@ _kernelSpliteK(BYTE* kBuffer, UINT uiMax, BYTE kToSplit, BYTE* splitTo, BYTE cou
 
     if (idx < uiMax && kBuffer[idx] == kToSplit)
     {
-        kBuffer[idx] = splitTo[__r->_deviceRandomI(threadIdx.x, countOfSplitTo)];
+        kBuffer[idx] = splitTo[__r->_deviceRandomUI(threadIdx.x, countOfSplitTo)];
     }
 }
 

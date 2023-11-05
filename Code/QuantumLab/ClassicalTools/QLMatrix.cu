@@ -27,6 +27,12 @@ __device__ complexfunc devicefunctionSqrt = __cuCsqrtf;
 
 __device__ complexfuncTwoR devicefunctionIExp = IExp;
 
+__inline__  __device__ QLComplex ElementWiseAbs(const QLComplex& c)
+{
+    return _make_cuComplex(_cuCabsf(c), F(0.0));
+}
+__device__ complexfunc devicefunctionAbs = ElementWiseAbs;
+
 #pragma endregion
 
 
@@ -961,6 +967,14 @@ void QLMatrix::Transpose(UBOOL bConjugate)
 
     checkCudaErrors(cudaFree(deviceBuffer1));
     checkCudaErrors(cudaFree(deviceBuffer2));
+}
+
+void QLMatrix::ElementAbs()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionAbs, sizeof(complexfunc)));
+
+    ElementWiseFunction(host_func);
 }
 
 

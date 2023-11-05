@@ -212,6 +212,9 @@
     <ClInclude Include="Circuit\Subroutine\QKMeans.h">
       <Filter>Circuit\Subroutine</Filter>
     </ClInclude>
+    <ClInclude Include="ToolClass\EnumGather.h">
+      <Filter>ToolClass</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">

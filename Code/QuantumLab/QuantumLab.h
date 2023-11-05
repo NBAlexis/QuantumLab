@@ -57,6 +57,7 @@
 #include "ToolClass/THashMap.h"
 #include "ToolClass/Tracer.h"
 #include "ToolClass/CYAMLParser.h"
+#include "ToolClass/EnumGather.h"
 
 #include "ClassicalTools/ReduceSum.h"
 #include "ClassicalTools/QLRandom.h"

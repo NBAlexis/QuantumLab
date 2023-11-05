@@ -48,6 +48,7 @@
     <ClInclude Include="ToolClass\CNMD5.h" />
     <ClInclude Include="ToolClass\CSV.h" />
     <ClInclude Include="ToolClass\CYAMLParser.h" />
+    <ClInclude Include="ToolClass\EnumGather.h" />
     <ClInclude Include="ToolClass\MemStack.h" />
     <ClInclude Include="ToolClass\STDStringFunctions.h" />
     <ClInclude Include="ToolClass\TArray.h" />
@@ -181,7 +182,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>compute_61,sm_61;compute_75,sm_75;compute_86,sm_86</CodeGeneration>
+      <CodeGeneration>compute_75,sm_75;compute_86,sm_86</CodeGeneration>
       <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
       <FastMath>true</FastMath>
       <CompileOut>$(SolutionDir)..\Temp\$(Configuration)\$(ProjectName)\%(Filename)%(Extension).obj</CompileOut>

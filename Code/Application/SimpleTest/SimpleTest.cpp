@@ -1454,9 +1454,9 @@ int main()
     QLRandomInitializer random;
 
     //appGeneral(_T("%d"), TestCnRY4());
-    //TestMatrixPower();
+    TestMatrixPower();
     //TestFRy2();
-    TestAmplitudeEncodeVectors();
+    //TestAmplitudeEncodeVectors();
 
     //std::vector<QLComplex> l1;
     //l1.push_back(_make_cuComplex(-0.70876551, -0.66743494));

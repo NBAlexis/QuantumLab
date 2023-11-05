@@ -33,117 +33,48 @@ public:
     /**
     * pData is not freed in QLQuantumKmeans
     */
-    QLQuantumKmeans(UINT maxK);
+    QLQuantumKmeans();
     ~QLQuantumKmeans();
 
-    void Prepare(const CCString& fileName, const CCString& sStartCenterFile = _T(""), UINT n = 0);
-    void SetOtherParams(UBOOL bUseCC, INT iTotalMeasure)
-    {
-        m_bControlledCollapse = bUseCC;
-        m_iTotalMeasure = iTotalMeasure;
-    }
-    void KMeans(const CCString& sResultFileName, UINT uiStop, UINT uiRepeat, UINT uiStep = 0, UBOOL bDebug = FALSE);
+    /**
+    * We do not use extra CPU to judge, but the CSV is required that, w=Power 2 and each vector is already normalized.
+    */
+    void LoadFile(const CCString& sReferenceCSV, const CCString& sTestCSV);
 
-    void TestCircuit(const Real* hostVectors);
+    UBOOL ReferenceLoaded() const { return m_uiVectorDim > 0; }
+
+    UBOOL TestLoaded() const { return m_uiTestVectorCount > 0; }
 
     /**
-    * Call me after Prepare()
+    * Build <v|u_i>|i>
+    *
+    *
     */
-    void SetDistanceMode(const CCString& fileName, UINT totalNumber, UINT iterationStart);
+    static void TestCircuitBuildState(const CCString& sReferenceCSV, const CCString& sAmplitudeSave, const CCString& sMeasureRate, UINT vectorCount, UINT testRepeat);
 
 protected:
 
-    void CalculateDegreesOnlyCenters();
-    void CalculateDegrees();
-    QLGate ApplyInitialState() const;
-    void ApplyInverseVector(QLGate& gate, UBOOL bControlledCollpase) const;
-    QLGate CompareCircuit(UINT uiIdx);
-    QLGate CompareCircuit();
-    UINT Measure(const QLGate& gate, UINT uiRepeat, UINT* count = NULL, UINT* measureCount = NULL, Real* measureProb = NULL) const;
-    UINT MeasureWithoutCollapse(const QLGate& gate, UINT uiRepeat, UINT* count = NULL, UINT* measureCount = NULL) const;
+    /**
+    * 
+    */
+    static void LoadFile(const CCString& sReferenceCSV, Real** targetAbs, Real** targetPhase, UINT& uiDim, UINT& uiCount);
 
-    UBOOL CalculateCenters(UBOOL bDebug);
-    UINT Reclassify(UINT uiIdx, UINT* measurecount);
-    UINT Reclassify(UBOOL bDebug);
-    void ReclassifyDistMode(UBOOL bDebug);
-    void InitialK(UBOOL bDebug);
-    void InitialWithCenterFile();
-    void ExportDebugInfo();
-
-    void CalcDist(UINT ite);
-    void ExportDistData(UINT ite);
     
-    UINT m_byMaxK;
-    BYTE m_byQubit;
-    UINT m_byVectorCount;
-    UINT m_uiRepeat;
-    UBOOL m_bControlledCollapse;
-    INT m_iTotalMeasure;
 
-    UINT m_uiN;
+    UINT m_uiVectorDim;
+    UINT m_uiReferenceVectorCount;
+    UINT m_uiTestVectorCount;
 
-    UINT m_uiBlock;
-    UINT m_uiThread;
-    UINT m_uiBlockN;
-    UINT m_uiThreadN;
-    UINT m_uiBlockC;
-    UINT m_uiThreadC;
+    Real* m_pDeviceReferenceVectorsAbs;
+    Real* m_pDeviceReferenceVectorsPhase;
+    Real* m_pDeviceTestVectorsAbs;
+    Real* m_pDeviceTestVectorsPhase;
 
-    Real* m_pDeviceVBuffer;
-    QLComplex* m_pDeviceCVBuffer;
-    UINT* m_pDeviceKCounts; //How many points are there in one cluster
-    UINT* m_pHostKCounts;
-    UINT* m_pDeviceTempKBuffer; //used for split
-
-    Real* m_pDeviceY1Buffer;
-    Real* m_pDeviceY2Buffer;
-    Real* m_pDeviceZ1Buffer;
-    Real* m_pDeviceZ2Buffer;
-
-    Real* m_pHostY1Buffer;
-    Real* m_pHostY2Buffer;
-    Real* m_pHostZ1Buffer;
-    Real* m_pHostZ2Buffer;
-
-    Real* m_pDeviceData;
-    QLComplex* m_pDeviceDataCV;
-    Real* m_pHostDataY1Buffer;
-    Real* m_pHostDataY2Buffer;
-    Real* m_pHostDataZ1Buffer;
-    Real* m_pHostDataZ2Buffer;
-    UINT* m_pHostKValues; //used for count how many point changes
-    UINT* m_pDeviceKValues; //save the k-values
+    Real* m_pWorkingSpaceAbsBuffer;
+    Real* m_pWorkingSpacePhaseBuffer;
     
-    Real* m_pDeviceRealWorkingBuffer; //used for reduce
-    UINT* m_pDeviceUIntWorkingBuffer;
-
-    BYTE* m_pHostVectorReal;
-    BYTE* m_pHostVectorImag;
-    LONGLONG m_llVeclen;
-
-    //========= debug use ==========
-    Real* m_pHostCenters;
-    Real* m_pHostMeasureProbability;
-    UINT m_uiStep;
-    UINT* m_pMeasureCounts;
-    CCString m_sSaveNameHead;
-
-    //========= continue ==========
-    CCString m_sStartCenterFile;
-
-    //========= Distance Mode =====
-    UBOOL m_bDistanceMode;
-    UINT m_uiDistIterations;
-    UINT m_uiDistIterationStart;
-    Real* m_pDeviceCentroids;
-    Real* m_pDeviceDistances;
-    Real* m_pHostDistances;
-    QLComplex* m_pDevicePreserveCVBuffer;
-    Real* m_pHostDataY1BufferCenteroids;
-    Real* m_pHostDataY2BufferCenteroids;
-    Real* m_pHostDataZ1BufferCenteroids;
-    Real* m_pHostDataZ2BufferCenteroids;
 };
+
 
 
 __END_NAMESPACE
