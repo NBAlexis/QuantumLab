@@ -28,6 +28,18 @@ _kernelQKMADVectorForm(Real* resAbs, Real* resPhase, const Real* __restrict__ v,
 }
 
 __global__ void _QL_LAUNCH_BOUND
+_kernelQKMADVectorFormC(Real* resAbs, Real* resPhase, const QLComplex* __restrict__ v, UINT uiMax)
+{
+    UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
+
+    if (idx < uiMax)
+    {
+        resAbs[idx] = _cuCabsf(v[idx]);
+        resPhase[idx] = __cuCargf(v[idx]);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
 _kernelQKMADPickVector(Real* targetAbs, Real* targetPhase, const Real* __restrict__ sourceAbs, const Real* __restrict__ sourcePhase, UINT uiDim, UINT uiMax, UINT uiTotal)
 {
     UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
@@ -411,6 +423,7 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
         if (i < uiVectorPower)
         {
             idxs.AddItem(static_cast<BYTE>(0));
+            //idxs.AddItem(static_cast<BYTE>(2));
         }
         else
         {
@@ -502,6 +515,7 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
         QLMatrix finalstate = ShowStateVectorDetail(res, idxs, FALSE);
         finalstate.ElementAbs();
         finalstate.ReShape(uiVectorDim, vectorCount);
+        finalstate.Print();
 
         // 5 - Compare the results
         Real norm = expectedRes.Norm2();
@@ -519,7 +533,7 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
         // 6 - Record the results
         finalAbs.Append(expectedRes.ToVector().GetData(), vectorCount);
 
-        if (49 == (i % 50))
+        if (49U == (i % 50U))
         {
             appGeneral(_T("="));
             appPopLogDate();
@@ -551,6 +565,185 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
     appSafeFree(res);
 }
 
+void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QLMatrix& hostU, UINT vectorCount, UINT vectorDim)
+{
+    #pragma region build circuit
+    //================= Build Circuit ===================
+    UINT uiVectorPower = MostSignificantPowerTwo(vectorDim);
+    UINT uiVectorCountPower = MostSignificantPowerTwo(vectorCount);
+
+    QLComplex* deviceWorkSpaceComplex = NULL;
+    Real* pDeviceWorkSpaceAbs = NULL;
+    Real* pDeviceWorkSpacePhase = NULL;
+    Real* pDeviceWorkSpaceY = NULL;
+    Real* pDeviceWorkSpaceZ = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceWorkSpaceComplex, sizeof(QLComplex) * vectorDim * vectorCount));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceWorkSpaceAbs, sizeof(Real) * vectorDim * vectorCount));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceWorkSpacePhase, sizeof(Real) * vectorDim * vectorCount));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceWorkSpaceY, sizeof(Real) * vectorDim * vectorCount));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceWorkSpaceZ, sizeof(Real) * vectorDim * vectorCount));
+    Real* pHostWorkSpaceY = reinterpret_cast<Real*>(malloc(sizeof(Real) * vectorDim * vectorCount));
+    Real* pHostWorkSpaceZ = reinterpret_cast<Real*>(malloc(sizeof(Real) * vectorDim * vectorCount));
+
+    checkCudaErrors(cudaMemcpy(deviceWorkSpaceComplex, hostVi.HostBuffer(), sizeof(QLComplex) * vectorDim * vectorCount, cudaMemcpyHostToDevice));
+    UINT elementCount = vectorDim * vectorCount;
+    UINT uiBlock = Ceil(elementCount, _QL_LAUNCH_MAX_THREAD);
+    _kernelQKMADVectorFormC << <uiBlock, _QL_LAUNCH_MAX_THREAD >> > (pDeviceWorkSpaceAbs, pDeviceWorkSpacePhase, deviceWorkSpaceComplex, vectorDim * vectorCount);
+    CalculateDegrees(pDeviceWorkSpaceAbs, pDeviceWorkSpacePhase, vectorCount, uiVectorPower, pDeviceWorkSpaceY, pDeviceWorkSpaceZ);
+    checkCudaErrors(cudaMemcpy(pHostWorkSpaceY, pDeviceWorkSpaceY, sizeof(Real) * vectorDim * vectorCount, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostWorkSpaceZ, pDeviceWorkSpaceZ, sizeof(Real) * vectorDim * vectorCount, cudaMemcpyDeviceToHost));
+    QLGate ampGate1 = ExchangeToYZGate(uiVectorCountPower, uiVectorPower, pHostWorkSpaceY, pHostWorkSpaceZ, FALSE);
+
+    checkCudaErrors(cudaMemcpy(deviceWorkSpaceComplex, hostU.HostBuffer(), sizeof(QLComplex) * vectorDim, cudaMemcpyHostToDevice));
+    elementCount = vectorDim;
+    uiBlock = Ceil(elementCount, _QL_LAUNCH_MAX_THREAD);
+    _kernelQKMADVectorFormC << <uiBlock, _QL_LAUNCH_MAX_THREAD >> > (pDeviceWorkSpaceAbs, pDeviceWorkSpacePhase, deviceWorkSpaceComplex, vectorDim);
+    CalculateDegrees(pDeviceWorkSpaceAbs, pDeviceWorkSpacePhase, 1, uiVectorPower, pDeviceWorkSpaceY, pDeviceWorkSpaceZ);
+    checkCudaErrors(cudaMemcpy(pHostWorkSpaceY, pDeviceWorkSpaceY, sizeof(Real) * vectorDim, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostWorkSpaceZ, pDeviceWorkSpaceZ, sizeof(Real) * vectorDim, cudaMemcpyDeviceToHost));
+    QLGate ampGate2 = ExchangeToYZGate(uiVectorPower, pHostWorkSpaceY, pHostWorkSpaceZ, FALSE);
+    ampGate2.Dagger();
+
+    QLGate totalCircuit;
+    totalCircuit.AddQubits(static_cast<BYTE>(uiVectorCountPower + uiVectorPower));
+
+    TArray<BYTE> ampGateQubits;
+    TArray<BYTE> ampDaggerGateQubits;
+    for (BYTE byToAdd = 0; byToAdd < static_cast<BYTE>(uiVectorCountPower + uiVectorPower); ++byToAdd)
+    {
+        ampGateQubits.AddItem(byToAdd);
+        if (byToAdd < uiVectorPower)
+        {
+            ampDaggerGateQubits.AddItem(byToAdd);
+        }
+    }
+    totalCircuit.AppendGate(ampGate1, ampGateQubits);
+    totalCircuit.AppendGate(ampGate2, ampDaggerGateQubits);
+
+    #pragma endregion
+
+    //================= Add Amplitude amplifier ===================
+    QLGate totalWithAA;
+    UINT totalQubits = uiVectorCountPower + uiVectorPower + 1;
+    //UINT totalQubits = uiVectorCountPower + uiVectorPower;
+    totalWithAA.AddQubits(totalQubits);
+    TArray<BYTE> addAQubits;
+    addAQubits.Append(ByteSequnce + 1, uiVectorCountPower + uiVectorPower);
+    TArray<BYTE> sxQubits;
+    sxQubits.Append(ByteSequnce + 1, uiVectorPower);
+    sxQubits.AddItem(0);
+    //sxQubits.AddItem(uiVectorCountPower + uiVectorPower + 1);
+    QLGate s0Gate = GroverSXGate(uiVectorPower, 0, FALSE);
+
+    QLGate x(EBasicOperation::EBO_X);
+    QLGate h(EBasicOperation::EBO_H);
+    TArray<BYTE> ancillaQubit;
+    ancillaQubit.AddItem(0);
+    totalWithAA.AppendGate(totalCircuit, addAQubits);
+    totalWithAA.AppendGate(x, ancillaQubit);
+    totalWithAA.AppendGate(h, ancillaQubit);
+
+    for (UINT i = 0; i < 1; ++i)
+    {
+        totalWithAA.AppendGate(s0Gate, sxQubits);
+        totalCircuit.Dagger();
+        totalWithAA.AppendGate(totalCircuit, addAQubits);
+        totalWithAA.AppendGate(s0Gate, sxQubits);
+        totalCircuit.Dagger();
+        totalWithAA.AppendGate(totalCircuit, addAQubits);
+    }
+
+    totalWithAA.AppendGate(h, ancillaQubit);
+    totalWithAA.AppendGate(x, ancillaQubit);
+
+    //totalWithAA.DebugPrint(2);
+
+
+    //================= Calculate Classical result ===================
+    //The hostVi is:
+    //v1x v2x
+    //v1y v2y
+    //v1z v2z
+    //so we need to dagger it first
+    QLMatrix hostViCopy = hostVi;
+    hostViCopy.Dagger();
+    hostViCopy = hostViCopy * hostU;
+    Real norm = hostViCopy.Norm2();
+    hostViCopy = hostViCopy / norm;
+    hostViCopy.ReShape(vectorCount, 1);
+    hostViCopy.ElementAbs();
+    hostViCopy.Print("expected");
+
+
+    //================= Compare Classical result =====================
+    //QLGate ctrCollapse(EBasicOperation::EBO_CC, 0);
+    //for (UINT j = 0; j < uiVectorPower; ++j)
+    //{
+    //    TArray<BYTE> bitsctr;
+    //    bitsctr.AddItem(static_cast<BYTE>(j + 1));
+    //    totalWithAA.AppendGate(ctrCollapse, bitsctr);
+    //}
+    LONGLONG veclen = 1LL << totalQubits;
+    QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * veclen));
+    TArray<SBasicOperation> ops = totalWithAA.GetOperation(totalWithAA.m_lstQubits);
+    SIZE_T opssize = ops.Num();
+
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(totalWithAA.GetQubitCount(), evn);
+
+    syncQuESTEnv(evn);
+    vec.stateVec.real[0] = F(1.0);
+    vec.stateVec.imag[0] = F(0.0);
+    for (LONGLONG line2 = 1; line2 < veclen; ++line2)
+    {
+        vec.stateVec.real[line2] = F(0.0);
+        vec.stateVec.imag[line2] = F(0.0);
+    }
+    copyStateToGPU(vec);
+
+    Real probToBuild = F(1.0);
+    for (SIZE_T i = 0; i < opssize; ++i)
+    {
+        probToBuild = probToBuild * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+    for (LONGLONG line2 = 0; line2 < veclen; ++line2)
+    {
+        res[line2].x = static_cast<Real>(vec.stateVec.real[line2]);
+        res[line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
+    }
+    TArray<BYTE> idxs;
+    for (UINT i = 0; i < totalQubits; ++i)
+    {
+        if (i < uiVectorPower)
+        {
+            //idxs.AddItem(static_cast<BYTE>(0));
+            idxs.AddItem(static_cast<BYTE>(2));
+        }
+        else
+        {
+            idxs.AddItem(static_cast<BYTE>(2));
+        }
+    }
+    QLMatrix finalstate = ShowStateVectorDetail(res, idxs, FALSE);
+    //finalstate.ElementAbs();
+    finalstate.ReShape(vectorDim, vectorCount * 2);
+    finalstate.Print("res");
+
+    //================= Show Measure probability =====================
+    appGeneral(_T("measure rate = %f\n"), probToBuild);
+
+    //================= Free the resources =====================
+    checkCudaErrors(cudaFree(deviceWorkSpaceComplex));
+    checkCudaErrors(cudaFree(pDeviceWorkSpaceAbs));
+    checkCudaErrors(cudaFree(pDeviceWorkSpacePhase));
+    checkCudaErrors(cudaFree(pDeviceWorkSpaceY));
+    checkCudaErrors(cudaFree(pDeviceWorkSpaceZ));
+    appSafeFree(pHostWorkSpaceY);
+    appSafeFree(pHostWorkSpaceZ);
+    appSafeFree(res);
+}
 
 __END_NAMESPACE
 

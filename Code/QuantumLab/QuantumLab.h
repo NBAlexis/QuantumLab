@@ -79,6 +79,7 @@
 
 #include "Circuit/Subroutine/HHL.h"
 #include "Circuit/Subroutine/QKMeans.h"
+#include "Circuit/Subroutine/Grover.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

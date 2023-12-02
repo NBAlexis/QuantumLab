@@ -52,6 +52,11 @@ public:
     */
     static void TestCircuitBuildState(const CCString& sReferenceCSV, const CCString& sAmplitudeSave, const CCString& sMeasureRate, UINT vectorCount, UINT testRepeat);
 
+    /**
+    * Build <v|u_i>|i> once
+    */
+    static void TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QLMatrix& hostU, UINT vectorCount, UINT vectorDim);
+
 protected:
 
     /**

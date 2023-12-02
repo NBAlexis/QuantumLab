@@ -1454,7 +1454,7 @@ int main()
     QLRandomInitializer random;
 
     //appGeneral(_T("%d"), TestCnRY4());
-    TestMatrixPower();
+    //TestMatrixPower();
     //TestFRy2();
     //TestAmplitudeEncodeVectors();
 
@@ -1474,6 +1474,10 @@ int main()
     //param.m_MasterGate = ha;
     //QLSimulatorMatrix sim(NULL);
     //sim.Simulate(&param);
+
+    //TestCnNOTAncilla();
+    TestGroverGate();
+
     return 0;
 }
 

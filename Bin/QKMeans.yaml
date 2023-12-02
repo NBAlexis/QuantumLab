@@ -25,7 +25,7 @@ CircuitTestDim:
     AmplitudeSave : aq8_16.csv
     MeasureSave : mq8_16.csv
     Count : 4
-    Repeat : 64
+    Repeat : 8
 
 # ########################
 # Quantum Kmeans

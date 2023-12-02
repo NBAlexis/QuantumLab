@@ -88,6 +88,9 @@
     <ClCompile Include="ToolClass\CYAMLParser.cpp">
       <Filter>ToolClass</Filter>
     </ClCompile>
+    <ClCompile Include="Circuit\Subroutine\Grover.cpp">
+      <Filter>Circuit\Subroutine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -214,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="ToolClass\EnumGather.h">
       <Filter>ToolClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Subroutine\Grover.h">
+      <Filter>Circuit\Subroutine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

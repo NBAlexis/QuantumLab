@@ -18,7 +18,7 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_TestDifferentDimension,
     EQKJ_TestDifferentVectorNumber,
     EQKJ_TestQKmeans,
-    EQKJ_TestAnomalyDetection,
+    EQKJ_TestAnomalyDetection
     )
 
 

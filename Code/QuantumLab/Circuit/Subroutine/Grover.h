@@ -1,17 +1,24 @@
 //=============================================================================
-// FILENAME : AmplitudeEncodeTest.h
+// FILENAME : Grover.h
 // 
 // DESCRIPTION:
-// This is the file for building options
+// 
 //
 // REVISION: [dd/mm/yy]
-//  [12/03/2023 nbale]
+//  [11/28/2023 nbale]
 //=============================================================================
 
-extern void TestAmplitudeEncodeOneVector();
-extern void TestAmplitudeEncodeVectors();
-extern void TestCnNOTAncilla();
-extern void TestGroverGate();
+#ifndef _GROVER_H_
+#define _GROVER_H_
+
+__BEGIN_NAMESPACE
+
+extern QLGate QLAPI GroverSXGate(BYTE numberOfQubits, UINT elementToFlip, UBOOL bUseAncilla = TRUE);
+
+__END_NAMESPACE
+
+
+#endif //#ifndef _GROVER_H_
 
 //=============================================================================
 // END OF FILE

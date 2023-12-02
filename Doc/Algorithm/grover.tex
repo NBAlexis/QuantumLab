@@ -1,0 +1,38 @@
+Grover算法和amplitude amplification。
+
+\subsection{Oracle}
+
+Oracle的作用是实现
+\begin{equation}
+\begin{split}
+&f(x)=\left\{\begin{array}{cc}-1 & x=n\\ 1 & x\neq n \end{array}\right.
+\end{split}
+\end{equation}
+
+这个可以通过一个phase kickback在一个辅助bit上实现。假设$f(n)$对应一个Cn-NOT门，且，
+\begin{equation}
+\begin{split}
+&f(n)|x\rangle |\phi\rangle =\left\{\begin{array}{cc}  \sigma _x |x\rangle |\phi\rangle & x=n\\ |x\rangle|\phi\rangle & x\neq n \end{array}\right.
+\end{split}
+\end{equation}
+那么
+\begin{equation}
+\begin{split}
+&f(n)|x\rangle \frac{|0\rangle -|1\rangle}{\sqrt{2}} =\left\{\begin{array}{cc}  -|x\rangle \frac{|0\rangle -|1\rangle}{\sqrt{2}} & x=n\\ |x\rangle \frac{|0\rangle -|1\rangle}{\sqrt{2}} & x\neq n \end{array}\right.
+\end{split}
+\end{equation}
+
+注意$f(x)=1-2|x\rangle \langle x|$
+
+假定$A|0\rangle _A |0\rangle _B = a|\phi _1\rangle _A |0\rangle _B+b\sum _{n\neq 0}|\phi _n\rangle _A |n\rangle _B=a|\Phi _1\rangle+b|\Phi _2\rangle$，且只有$|\phi _1\rangle$是我们需要的。
+\begin{equation}
+\begin{split}
+&\left(1-2|\Phi\rangle \langle \Phi|\right)\left(1-2|\Phi_1\rangle \langle \Phi_1|\right)A|0\rangle _A |0\rangle _B\\
+&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(1-2|\Phi_1\rangle \langle \Phi_1|\right)\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)\\
+&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)-2|\Phi_1\rangle \langle \Phi_1|\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)\right)\\
+&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)\\
+&=\left(\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)-2|\Phi\rangle \left(a\langle \Phi _1|+b\langle \Phi _2| \right)\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)\right)\\
+&=\left(\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)-2(-a^2+b^2)|\Phi\rangle \right)\\
+&=a\left(b^2-a^2-1\right)|\Phi _1\rangle+b\left(1-a^2+b^2\right)|\Phi _2\rangle\\
+\end{split}
+\end{equation}

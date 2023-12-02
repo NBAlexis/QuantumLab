@@ -136,13 +136,18 @@ CCString CTracer::PrintComplex(Real fReal, Real fImg, const CCString& sFloatForm
         sprintf_(bufferf, 256, "%s", sFloatFormat.c_str());
         sprintf_(buffer, 256, bufferf, fReal);
     }
-    INT bufferL = static_cast<INT>(appStrlen(buffer));
-    CCString sSpaces;
-    for (INT i = 0; i < static_cast<INT>(length) - bufferL; ++i)
+    if (length > 0)
     {
-        sSpaces = sSpaces + _T(" ");
+        INT bufferL = static_cast<INT>(appStrlen(buffer));
+        CCString sSpaces;
+        for (INT i = 0; i < static_cast<INT>(length) - bufferL; ++i)
+        {
+            sSpaces = sSpaces + _T(" ");
+        }
+        return sSpaces + CCString(buffer);
     }
-    return sSpaces + CCString(buffer);
+
+    return CCString(buffer);
 }
 
 __END_NAMESPACE

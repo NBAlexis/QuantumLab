@@ -35,7 +35,6 @@ public:
         , m_pStream(NULL)
         , m_pStdStream(NULL)
         , m_bLogDate(TRUE)
-        , m_uiTableComplexLength(16)
     {
         Initial(EVerboseLevel::PARANOIAC);
     }
@@ -51,7 +50,7 @@ public:
 
     inline void SetVerboseLevel(EVerboseLevel eLevel) { m_eLevel = eLevel; }
 
-    inline void SetOutStream(const CCString& filename = _T("stdout"))
+    inline void SetOutStream(const CCString& filename = _T("datetime"))
     {
         appSafeDelete(m_pStdStream);
         if (NULL != m_pStream)
@@ -97,7 +96,7 @@ public:
         }
     }
 
-    inline void Initial(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("stdout"), const CCString& sFloatFormat = _T("%.4f"))
+    inline void Initial(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("datetime"), const CCString& sFloatFormat = _T("%.4f"))
     {
         m_eLevel = eLevel;
         m_sFloatFormat = sFloatFormat;
@@ -120,6 +119,7 @@ public:
             const CCString sRealFile = appStringFormat(_T("%s.log"), datetime);
             m_pStream = new std::ofstream(sRealFile);
             bShowHasFile = TRUE;
+            printf("initialled file: %s \n", sRealFile.c_str());
         }
         else
         {
@@ -253,12 +253,14 @@ public:
 
     inline void SetFloatFormat(const CCString& sFormat) { m_sFloatFormat = sFormat; }
 
-    static CCString PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length);
+    static CCString PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length = 0);
 
-    CCString PrintComplex(Real fReal, Real fImg) const
+    CCString PrintComplex(Real fReal, Real fImg, UINT length = 0) const
     {
-        return PrintComplex(fReal, fImg, m_sFloatFormat, m_uiTableComplexLength);
+        return PrintComplex(fReal, fImg, m_sFloatFormat, length);
     }
+
+    CCString GetFloatFormat() const { return m_sFloatFormat; }
 
 private:
 
@@ -271,10 +273,9 @@ private:
     TArray<EVerboseLevel> m_eLogLevelHist;
     CCString m_sTraceHeader;
     CCString m_sFloatFormat;
-    UINT m_uiTableComplexLength;
 };
 
-extern QLAPI void appInitialTracer(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("stdout"), const CCString& sFloatFormat = _T("%.6f"));
+extern QLAPI void appInitialTracer(EVerboseLevel eLevel = EVerboseLevel::PARANOIAC, const CCString& filename = _T("datetime"), const CCString& sFloatFormat = _T("%.6f"));
 extern QLAPI void appVOut(EVerboseLevel eLevel, const TCHAR *format, ...);
 extern QLAPI void _appCrucial(const TCHAR *format, ...);
 extern QLAPI void _appWarning(const TCHAR* format, ...);
@@ -340,9 +341,9 @@ inline void appSetLogHeader(const CCString& sHeader)
     GTracer.SetLogHeader(sHeader);
 }
 
-inline CCString appPrintComplex(Real fReal, Real fImg)
+inline CCString appPrintComplex(Real fReal, Real fImg, UINT length = 0)
 {
-    return GTracer.PrintComplex(fReal, fImg);
+    return GTracer.PrintComplex(fReal, fImg, length);
 }
 
 __END_NAMESPACE

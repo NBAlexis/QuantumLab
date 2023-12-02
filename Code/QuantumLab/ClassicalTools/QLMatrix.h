@@ -200,7 +200,6 @@ public:
     void Transpose(UBOOL bConjugate = FALSE);
     void Dagger() { Transpose(TRUE); }
     void Opposite();
-    void ElementAbs();
 
     void Add(const QLMatrix& other);
     void Add(const QLComplex& other);
@@ -216,6 +215,13 @@ public:
     void Mul(const Real& other);
     void Div(const QLComplex& other);
     void Div(const Real& other);
+
+    void ElementAbs();
+    void ElementExp();
+    void ElementIExp();
+    void ElementAbsSq();
+    void ElementSqrt();
+    void ElementMul(const QLMatrix& other);
     void ElementDiv(const QLMatrix& other);
 
     QLAPI friend QLMatrix operator+(const QLMatrix& m1, const QLMatrix& m2) { QLMatrix ret = m1; ret.Add(m2); return ret; }
@@ -322,6 +328,7 @@ protected:
     void MatrixFunction(complexfunc func);
     void MatrixFunctionTwoR(complexfuncTwoR func, Real r);
     void ElementWiseFunction(complexfunc func);
+    void ElementWiseFunctionTwo(complexfuncTwo func, const QLMatrix& other);
     void ElementWiseFunctionTwoR(complexfuncTwoR func, Real r);
 
 public:

@@ -29,6 +29,7 @@
     <ClInclude Include="Circuit\Gates\SimpleGates.h" />
     <ClInclude Include="Circuit\Gates\SwapTest.h" />
     <ClInclude Include="Circuit\QLGate.h" />
+    <ClInclude Include="Circuit\Subroutine\Grover.h" />
     <ClInclude Include="Circuit\Subroutine\HHL.h" />
     <ClInclude Include="Circuit\Subroutine\QKMeans.h" />
     <ClInclude Include="ClassicalTools\GPUKmeans\GPUKmeans.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="Circuit\Gates\SimpleGates.cpp" />
     <ClCompile Include="Circuit\Gates\SwapTest.cpp" />
     <ClCompile Include="Circuit\QLGate.cpp" />
+    <ClCompile Include="Circuit\Subroutine\Grover.cpp" />
     <ClCompile Include="Circuit\Subroutine\HHL.cpp" />
     <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />

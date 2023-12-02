@@ -31,7 +31,25 @@ __inline__  __device__ QLComplex ElementWiseAbs(const QLComplex& c)
 {
     return _make_cuComplex(_cuCabsf(c), F(0.0));
 }
+__inline__  __device__ QLComplex ElementWiseAbsSq(const QLComplex& c)
+{
+    return _make_cuComplex(__cuCabsSqf(c), F(0.0));
+}
+
 __device__ complexfunc devicefunctionAbs = ElementWiseAbs;
+__device__ complexfunc devicefunctionAbsSq = ElementWiseAbsSq;
+
+__inline__  __device__ QLComplex ElementWiseMul (const QLComplex& a, const QLComplex& b)
+{
+    return _cuCmulf(a, b);
+}
+__inline__  __device__ QLComplex ElementWiseDiv(const QLComplex& a, const QLComplex& b)
+{
+    return _cuCdivf(a, b);
+}
+
+__device__ complexfuncTwo devicefunctionMul = ElementWiseMul;
+__device__ complexfuncTwo devicefunctionDiv = ElementWiseDiv;
 
 #pragma endregion
 
@@ -209,18 +227,6 @@ _kernelDiv(QLComplex* pDevicePtr, Real v, UINT uiYLen, UINT uiMax)
 }
 
 __global__ void _QL_LAUNCH_BOUND
-_kernelElementDiv(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, UINT uiYLen, UINT uiMax)
-{
-    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
-    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
-    const UINT uiID1 = uiYLen * uiX + uiY;
-    if (uiID1 < uiMax)
-    {
-        pDevicePtr[uiID1] = _cuCdivf(pDevicePtr[uiID1], pSource[uiID1]);
-    }
-}
-
-__global__ void _QL_LAUNCH_BOUND
 _kernelDot(QLComplex* pDevicePtr, const QLComplex* __restrict__ pDevicePtr2, UINT uiYLen, UINT uiMax, UBOOL bConjLeft, UBOOL bConjRight)
 {
     const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
@@ -274,6 +280,18 @@ _kernelComplexFunc(QLComplex* pDevicePtr, UINT uiYLen, UINT uiMax, complexfunc f
     if (uiID1 < uiMax)
     {
         pDevicePtr[uiID1] = (*func)(pDevicePtr[uiID1]);
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelComplexFuncTwo(QLComplex* pDevicePtr, const QLComplex* __restrict__ pSource, complexfuncTwo func, UINT uiYLen, UINT uiMax)
+{
+    const UINT uiX = threadIdx.x + blockDim.x * blockIdx.x;
+    const UINT uiY = threadIdx.y + blockDim.y * blockIdx.y;
+    const UINT uiID1 = uiYLen * uiX + uiY;
+    if (uiID1 < uiMax)
+    {
+        pDevicePtr[uiID1] = (*func)(pDevicePtr[uiID1], pSource[uiID1]);
     }
 }
 
@@ -407,7 +425,30 @@ void QLMatrix::Print(const CCString& sName) const
     {
         appGeneral("%s=", sName.c_str());
     }
-    appGeneral("{");
+
+    //first loop, find the spaces
+    TArray<UINT> lengths;
+    for (UINT x = 0; x < m_uiX; ++x)
+    {
+        QLComplex toPrint = Get(x, 0);
+        UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat()).GetLength();
+        lengths.AddItem(l);
+    }
+
+    for (UINT y = 1; y < m_uiY; ++y)
+    {
+        for (UINT x = 0; x < m_uiX; ++x)
+        {
+            QLComplex toPrint = Get(x, y);
+            UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat()).GetLength();
+            if (l > lengths[x])
+            {
+                lengths[x] = l;
+            }
+        }
+    }
+
+    appGeneral("{\n");
     for (UINT y = 0; y < m_uiY; ++y)
     {
         for (UINT x = 0; x < m_uiX; ++x)
@@ -421,7 +462,7 @@ void QLMatrix::Print(const CCString& sName) const
                 appGeneral(", ");
             }
             QLComplex toPrint = Get(x, y);
-            appGeneral(appPrintComplex(toPrint.x, toPrint.y));
+            appGeneral(appPrintComplex(toPrint.x, toPrint.y, lengths[x]));
         }
         if (y == (m_uiY - 1))
         {
@@ -973,10 +1014,36 @@ void QLMatrix::ElementAbs()
 {
     complexfunc host_func;
     checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionAbs, sizeof(complexfunc)));
-
     ElementWiseFunction(host_func);
 }
 
+void QLMatrix::ElementExp()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionExp, sizeof(complexfunc)));
+    ElementWiseFunction(host_func);
+}
+
+void QLMatrix::ElementIExp()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionIExp, sizeof(complexfunc)));
+    ElementWiseFunction(host_func);
+}
+
+void QLMatrix::ElementAbsSq()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionAbsSq, sizeof(complexfunc)));
+    ElementWiseFunction(host_func);
+}
+
+void QLMatrix::ElementSqrt()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionSqrt, sizeof(complexfunc)));
+    ElementWiseFunction(host_func);
+}
 
 QLMatrix QLMatrix::SquareMatrixByAddOne() const
 {
@@ -1360,31 +1427,20 @@ void QLMatrix::Div(const Real& other)
     checkCudaErrors(cudaFree(deviceBuffer));
 }
 
+void QLMatrix::ElementMul(const QLMatrix& other)
+{
+    complexfuncTwo host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionMul, sizeof(complexfunc)));
+
+    ElementWiseFunctionTwo(host_func, other);
+}
+
 void QLMatrix::ElementDiv(const QLMatrix& other)
 {
-    if (m_uiX != other.m_uiX || m_uiY != other.m_uiY)
-    {
-        appCrucial("Add of two matrix not much!\n");
-        return;
-    }
+    complexfuncTwo host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionDiv, sizeof(complexfunc)));
 
-    dim3 blocks;
-    dim3 threads;
-    GetDim(blocks, threads);
-    QLComplex* deviceBuffer1 = NULL;
-    QLComplex* deviceBuffer2 = NULL;
-    checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY));
-    checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * m_uiX * m_uiY));
-    checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(deviceBuffer2, other.HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
-    _kernelElementDiv << <blocks, threads >> > (deviceBuffer1, deviceBuffer2, m_uiY, m_uiX * m_uiY);
-
-    OnChangeContent();
-
-    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
-
-    checkCudaErrors(cudaFree(deviceBuffer1));
-    checkCudaErrors(cudaFree(deviceBuffer2));
+    ElementWiseFunctionTwo(host_func, other);
 }
 
 QLMatrix QLMatrix::GetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen) const
@@ -1828,6 +1884,33 @@ void QLMatrix::ElementWiseFunction(complexfunc func)
     OnChangeContent();
     checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaFree(deviceBuffer));
+}
+
+void QLMatrix::ElementWiseFunctionTwo(complexfuncTwo func, const QLMatrix& other)
+{
+    if (m_uiX != other.m_uiX || m_uiY != other.m_uiY)
+    {
+        appCrucial("Add of two matrix not much!\n");
+        return;
+    }
+
+    dim3 blocks;
+    dim3 threads;
+    GetDim(blocks, threads);
+    QLComplex* deviceBuffer1 = NULL;
+    QLComplex* deviceBuffer2 = NULL;
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMalloc((void**)&deviceBuffer2, sizeof(QLComplex) * m_uiX * m_uiY));
+    checkCudaErrors(cudaMemcpy(deviceBuffer1, HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(deviceBuffer2, other.HostBuffer(), sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyHostToDevice));
+    _kernelComplexFuncTwo << <blocks, threads >> > (deviceBuffer1, deviceBuffer2, func, m_uiY, m_uiX * m_uiY);
+
+    OnChangeContent();
+
+    checkCudaErrors(cudaMemcpy(m_pData->m_pData, deviceBuffer1, sizeof(QLComplex) * m_uiX * m_uiY, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(deviceBuffer1));
+    checkCudaErrors(cudaFree(deviceBuffer2));
 }
 
 void QLMatrix::ElementWiseFunctionTwoR(complexfuncTwoR func, Real r)

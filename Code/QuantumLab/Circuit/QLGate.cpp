@@ -416,6 +416,23 @@ void QLGate::AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits)
 	m_lstSubGates.AddItem(toAppend);
 }
 
+void QLGate::AppendGate(QLGate toAppend, BYTE qubit, ...)
+{
+	va_list arg;
+	{
+		va_start(arg, qubit);
+		TArray<BYTE> qubits;
+		qubits.AddItem(qubit);
+		for (BYTE i = 1; i < toAppend.GetQubitCount(); ++i)
+		{
+			qubits.AddItem(va_arg(arg, BYTE));
+		}
+
+		AppendGate(toAppend, qubits);
+		va_end(arg);
+	}
+}
+
 TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubits) const
 {
 	TArray<SBasicOperation> ret;

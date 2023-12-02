@@ -80,14 +80,17 @@ enum class EBasicOperation : UINT
     //controlled rotation z
     EBO_CRZ,
 
-
-
     //controlled collapse
     EBO_CC,
 
     //composite gates
     EBO_Composite,
     
+};
+
+static BYTE ByteSequnce[64] = 
+{
+    0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63
 };
 
 struct QLAPI SBasicOperation
@@ -143,6 +146,9 @@ public:
     * 'lstMappingQubits' are qubits where the gate 'toAppend' acting on
     */
     void AppendGate(QLGate toAppend, const TArray<BYTE>& lstMappingQubits);
+
+    void AppendGate(QLGate toAppend, BYTE qubit, ...);
+
     TArray<SBasicOperation> GetOperation(const TArray<BYTE>& lstMappingQubits) const;
     TArray<SBasicOperation> GetOperation() const
     {
@@ -191,10 +197,11 @@ public:
         assert(0 == m_lstQubits.Num());
         if (0 == m_lstQubits.Num())
         {
-            for (BYTE i = 0; i < add; ++i)
-            {
-                m_lstQubits.AddItem(i);
-            }
+            m_lstQubits.Append(ByteSequnce, add);
+            //for (BYTE i = 0; i < add; ++i)
+            //{
+            //    m_lstQubits.AddItem(i);
+            //}
         }
     }
 
