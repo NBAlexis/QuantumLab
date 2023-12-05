@@ -25,6 +25,9 @@
     <Filter Include="ClassicalTools\GPUKmeans">
       <UniqueIdentifier>{36fd58ee-a0bb-4d1e-bd72-2b1a4ba58a73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Circuit\Hamitonian">
+      <UniqueIdentifier>{1a9086c9-4b22-4706-bd1f-af6705d8968c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -90,6 +93,27 @@
     </ClCompile>
     <ClCompile Include="Circuit\Subroutine\Grover.cpp">
       <Filter>Circuit\Subroutine</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianList.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianPauli.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianPauliNeighbour.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianStaggeredJordanWigner1D.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianTerm.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CHamitonianPauliPlaqutte.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Hamitonian\CLattice1D.cpp">
+      <Filter>Circuit\Hamitonian</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +245,33 @@
     <ClInclude Include="Circuit\Subroutine\Grover.h">
       <Filter>Circuit\Subroutine</Filter>
     </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianList.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianPauli.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianPauliNeighbour.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianStaggeredJordanWigner1D.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianTerm.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CHamitonianPauliPlaqutte.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CLattice1D.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CLattice2D.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Hamitonian\CLattice.h">
+      <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">
@@ -240,6 +291,9 @@
     </CudaCompile>
     <CudaCompile Include="Circuit\Gates\AmplitudeEncodeCuda.cu">
       <Filter>Circuit\Gates</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Circuit\Hamitonian\CLattice2D.cu">
+      <Filter>Circuit\Hamitonian</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

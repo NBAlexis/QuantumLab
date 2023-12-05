@@ -81,6 +81,16 @@
 #include "Circuit/Subroutine/QKMeans.h"
 #include "Circuit/Subroutine/Grover.h"
 
+#include "Circuit/Hamitonian/CLattice.h"
+#include "Circuit/Hamitonian/CLattice1D.h"
+#include "Circuit/Hamitonian/CLattice2D.h"
+#include "Circuit/Hamitonian/CHamitonianTerm.h"
+#include "Circuit/Hamitonian/CHamitonianPauli.h"
+#include "Circuit/Hamitonian/CHamitonianPauliNeighbour.h"
+#include "Circuit/Hamitonian/CHamitonianPauliPlaqutte.h"
+#include "Circuit/Hamitonian/CHamitonianStaggeredJordanWigner1D.h"
+#include "Circuit/Hamitonian/CHamitonianList.h"
+
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"
 #include "Simulator/QLSimulatorVector.h"

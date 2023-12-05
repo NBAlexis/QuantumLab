@@ -500,9 +500,9 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
         copyStateToGPU(vec);
 
         Real probToBuild = F(1.0);
-        for (SIZE_T i = 0; i < opssize; ++i)
+        for (SIZE_T j = 0; j < opssize; ++j)
         {
-            probToBuild = probToBuild * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+            probToBuild = probToBuild * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(j)]);
         }
         measureRate.AddItem(_make_cuComplex(probToBuild, F(0.0)));
         syncQuESTEnv(evn);
@@ -532,7 +532,6 @@ void QLQuantumKmeans::TestCircuitBuildState(const CCString& sReferenceCSV, const
 
         // 6 - Record the results
         finalAbs.Append(expectedRes.ToVector().GetData(), vectorCount);
-
         if (49U == (i % 50U))
         {
             appGeneral(_T("="));
@@ -626,14 +625,14 @@ void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QL
     QLGate totalWithAA;
     UINT totalQubits = uiVectorCountPower + uiVectorPower + 1;
     //UINT totalQubits = uiVectorCountPower + uiVectorPower;
-    totalWithAA.AddQubits(totalQubits);
+    totalWithAA.AddQubits(static_cast<BYTE>(totalQubits));
     TArray<BYTE> addAQubits;
     addAQubits.Append(ByteSequnce + 1, uiVectorCountPower + uiVectorPower);
     TArray<BYTE> sxQubits;
     sxQubits.Append(ByteSequnce + 1, uiVectorPower);
     sxQubits.AddItem(0);
     //sxQubits.AddItem(uiVectorCountPower + uiVectorPower + 1);
-    QLGate s0Gate = GroverSXGate(uiVectorPower, 0, FALSE);
+    QLGate s0Gate = GroverSXGate(static_cast<BYTE>(uiVectorPower), 0, FALSE);
 
     QLGate x(EBasicOperation::EBO_X);
     QLGate h(EBasicOperation::EBO_H);
