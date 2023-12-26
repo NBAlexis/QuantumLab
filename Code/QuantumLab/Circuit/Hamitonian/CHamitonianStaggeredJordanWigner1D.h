@@ -33,7 +33,7 @@ public:
 
     }
 
-    QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const override;
+    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
 
 private:
 
@@ -55,7 +55,7 @@ public:
 
     }
 
-    QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const override;
+    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
 };
 
 /**
@@ -72,7 +72,7 @@ public:
 
     }
 
-    QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const override;
+    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
 };
 
 /**
@@ -89,7 +89,7 @@ public:
 
     }
 
-    QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const override;
+    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
 };
 
 

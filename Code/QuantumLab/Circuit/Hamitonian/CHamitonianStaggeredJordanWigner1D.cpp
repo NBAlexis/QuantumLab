@@ -5,7 +5,7 @@
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [11/09/2022 nbale]
+//  [04/12/2023 nbale]
 //=============================================================================
 
 #include "QuantumLabPCH.h"
@@ -16,16 +16,13 @@ __BEGIN_NAMESPACE
 * (1/4a) n=0,...,n-2 [sx(n)sx(n+1)+sy(n)sy(n+1)]
 * + (-1)^{N/2} /4a [sx(N-1)sx(0)+sy(N-1)sy(0)] prod _{n=0,...,n-2} sz(n)
 */
-QLGate CHamitonianStaggeredJordanWigner1DKinetic::BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const
+TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DKinetic::GetAllTerms(const CLattice* pLattice) const
 {
     TArray<CLatticeSiteData> pairs = pLattice->GetNeighbourPairs();
     UINT uiControllerCount = pLattice->GetControllerCount();
 
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(uiControllerCount + 1));
+    TArray<PauliProduct> ret;
 
-    TArray<BYTE> toAdd;
-    toAdd.Append(ByteSequnce, uiControllerCount + 1);
     UBOOL bReverse = (uiControllerCount >> 1) & 1;
 
     Real fCoeff = m_fCoefficient * F(0.25);
@@ -69,11 +66,11 @@ QLGate CHamitonianStaggeredJordanWigner1DKinetic::BuildCircuit(const CLattice* p
 
         if (pairs[i].m_bCrossBoundary && bReverse)
         {
-            ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime, -fCoeff), toAdd);
+            ret.AddItem(PauliProduct(pauliProduct, -fCoeff));
         }
         else
         {
-            ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime, fCoeff), toAdd);
+            ret.AddItem(PauliProduct(pauliProduct, fCoeff));
         }
     }
 
@@ -83,17 +80,14 @@ QLGate CHamitonianStaggeredJordanWigner1DKinetic::BuildCircuit(const CLattice* p
 /**
 * (-1)^n sigma_z / 2
 */
-QLGate CHamitonianStaggeredJordanWigner1DPsibarPsi::BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const
+TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DPsibarPsi::GetAllTerms(const CLattice* pLattice) const
 {
     TArray<CLatticeSiteData> sites = pLattice->GetSites();
     UINT uiControllerCount = pLattice->GetControllerCount();
 
     Real fCoeff = m_fCoefficient * F(0.5);
 
-    TArray<BYTE> toAdd;
-    toAdd.Append(ByteSequnce, uiControllerCount + 1);
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(uiControllerCount + 1));
+    TArray<PauliProduct> ret;
 
     for (INT i = 0; i < sites.Num(); ++i)
     {
@@ -110,7 +104,7 @@ QLGate CHamitonianStaggeredJordanWigner1DPsibarPsi::BuildCircuit(const CLattice*
             }
         }
 
-        ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime, (sites[i].m_byStaggeredEta & 1) ? -fCoeff  : fCoeff), toAdd);
+        ret.AddItem(PauliProduct(pauliProduct, (sites[i].m_byStaggeredEta & 1) ? -fCoeff : fCoeff));
     }
 
     return ret;
@@ -119,17 +113,14 @@ QLGate CHamitonianStaggeredJordanWigner1DPsibarPsi::BuildCircuit(const CLattice*
 /**
 * sigma_z / 2
 */
-QLGate CHamitonianStaggeredJordanWigner1DPsibarG0Psi::BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const
+TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DPsibarG0Psi::GetAllTerms(const CLattice* pLattice) const
 {
     TArray<CLatticeSiteData> sites = pLattice->GetSites();
     UINT uiControllerCount = pLattice->GetControllerCount();
 
     Real fCoeff = m_fCoefficient * F(0.5);
 
-    TArray<BYTE> toAdd;
-    toAdd.Append(ByteSequnce, uiControllerCount + 1);
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(uiControllerCount + 1));
+    TArray<PauliProduct> ret;
 
     for (INT i = 0; i < sites.Num(); ++i)
     {
@@ -146,7 +137,7 @@ QLGate CHamitonianStaggeredJordanWigner1DPsibarG0Psi::BuildCircuit(const CLattic
             }
         }
 
-        ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime, fCoeff), toAdd);
+        ret.AddItem(PauliProduct(pauliProduct, fCoeff));
     }
 
     return ret;
@@ -160,17 +151,14 @@ QLGate CHamitonianStaggeredJordanWigner1DPsibarG0Psi::BuildCircuit(const CLattic
 * = -g/4a[\sum _{n=0,N-2}(1+sz(n) + 1+sz(n+1) +sz(n)sz(n+1))  + (1+sz(N-1) +1+sz(0) +sz(0)sz(N-1)) - 2\sum _{n=0,N-1}(1+sz(n))]
 * = -g/4a[\sum _{n=0,N-2}sz(n)sz(n+1)  + sz(0)sz(N-1)]
 */
-QLGate CHamitonianStaggeredJordanWigner1DPsibarPsiSqaure::BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const
+TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DPsibarPsiSqaure::GetAllTerms(const CLattice* pLattice) const
 {
     Real fCoeff = m_fCoefficient * F(-0.25);
 
     TArray<CLatticeSiteData> pairs = pLattice->GetNeighbourPairs();
     UINT uiControllerCount = pLattice->GetControllerCount();
 
-    TArray<BYTE> toAdd;
-    toAdd.Append(ByteSequnce, uiControllerCount + 1);
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(uiControllerCount + 1));
+    TArray<PauliProduct> ret;
 
     for (INT i = 0; i < pairs.Num(); ++i)
     {
@@ -191,7 +179,7 @@ QLGate CHamitonianStaggeredJordanWigner1DPsibarPsiSqaure::BuildCircuit(const CLa
             }
         }
 
-        ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime, fCoeff), toAdd);
+        ret.AddItem(PauliProduct(pauliProduct, fCoeff));
     }
 
     return ret;

@@ -50,6 +50,11 @@ public:
     */
     QLGate OneStepGate(Real fTrotterTime) const;
 
+    /**
+    * project to this base
+    */
+    QLGate Project() const;
+
     UINT m_iOrder;
     TArray<BYTE> m_lstPauliType;
     Real m_fCoefficient;

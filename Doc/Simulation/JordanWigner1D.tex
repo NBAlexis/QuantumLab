@@ -1,0 +1,456 @@
+Jordan Wigner变换，其2维对应了$SU(2)$规范理论，可能不太好实现，但是1维目前几乎是费米子模拟的标准做法。
+
+\subsection{Jordan Wigner string的定义}
+
+定义：
+\begin{equation}
+\begin{split}
+&\sigma ^{\pm} = \frac{\sigma ^x \pm i \sigma ^y}{2}\\
+&c(n)=\sigma ^-(n)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\\
+\end{split}
+\end{equation}
+
+自然的，根据$c$的定义，
+\begin{equation}
+\begin{split}
+&c^{\dagger}(n)=\prod _{j=0}^{n-1}\left(i\sigma ^z(j)\right)\sigma ^+(n)\\
+\end{split}
+\end{equation}
+
+进一步的计算需要用到下面这些关系，易验证：
+\begin{equation}
+\begin{split}
+\left\{\sigma ^{\pm}, \sigma ^z\right\}=0,\quad & \sigma ^{\pm}\sigma ^z = \pm \sigma ^{\pm}\\
+\left\{\sigma ^+, \sigma ^-\right\}=1, \quad & \sigma ^++\sigma ^- = \sigma ^x\\
+\sigma ^+\sigma ^- = \frac{1-\sigma ^z}{2} \quad & \sigma ^-\sigma ^+ = \frac{1+\sigma ^z}{2}\\
+\sigma^+\sigma^+=\sigma^-\sigma^-=0 \quad & 
+\end{split}
+\end{equation}
+
+容易知道:
+\begin{equation}
+\begin{split}
+&c(n) c^{\dagger}(n) = \sigma ^-(n)\sigma ^+(n)\\
+\end{split}
+\end{equation}
+因为$\prod $中不包括$n$，$c(n)$中的$\sigma ^z$和$\prod$是对易的，
+\begin{equation}
+\begin{split}
+&c^{\dagger}(n) c(n) = \sigma ^+(n)\sigma ^-(n)\\
+&\left\{ c(n),c^{\dagger}(n)\right\} = 1\\
+\end{split}
+\end{equation}
+
+考虑$m>n$，
+\begin{equation}
+\begin{split}
+&c(m) c^{\dagger}(n) = \sigma ^-(m) \prod _{j=n}^{m-1} (-i\sigma ^z(j))\sigma ^+(n)\\
+&c^{\dagger}(n) c(m) = \sigma ^+(n) \prod _{j=n}^{m-1} (-i\sigma ^z(j)) \sigma ^-(m)\\
+\end{split}
+\end{equation}
+注意到右侧的$\sigma ^{\pm}$，只有第一项有和中间的$\prod$同一个site的，因此根据反对易关系
+\begin{equation}
+\begin{split}
+&c(m) c^{\dagger}(n) = -\sigma ^-(m) \sigma ^+(n)\prod _{j=n}^{m-1} (-i\sigma ^z(j))\\
+&c^{\dagger}(n) c(m) = \sigma ^+(n) \sigma ^-(m)\prod _{j=n}^{m-1} (-i\sigma ^z(j)) \\
+&\left\{c(m),c^{\dagger}(n)\right\} = \delta _{m,n}
+\end{split}
+\end{equation}
+
+除此之外$n< m$时，
+\begin{equation}
+\begin{split}
+&c(m) c(n) = \sigma ^-(m)\prod _{j=0}^{m-1}\left(-i\sigma ^z(j)\right)\sigma ^-(n)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\\
+&=-\sigma ^-(m)\sigma ^-(n)\prod _{j=0}^{m-1}\left(-i\sigma ^z(j)\right)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\\
+&c(n) c(m) = \sigma ^-(n)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\sigma ^-(m)\prod _{j=0}^{m-1}\left(-i\sigma ^z(j)\right)\\
+&=\sigma ^-(n)\sigma ^-(m)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\prod _{j=0}^{m-1}\left(-i\sigma ^z(j)\right)\\
+&c(m) c(n)+c(n) c(m)=0\\
+\end{split}
+\end{equation}
+当$m=n$时，由于$\sigma ^-(n)\sigma ^-(n)=0$
+\begin{equation}
+\begin{split}
+&c(n) c(n) = \sigma ^-(n)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)\sigma ^-(n)\prod _{j=0}^{n-1}\left(-i\sigma ^z(j)\right)=0\\
+\end{split}
+\end{equation}
+因此，总有
+\begin{equation}
+\begin{split}
+&\left\{c(n), c(m)\right\} =0\\
+\end{split}
+\end{equation}
+
+$\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直接由$\left\{c(n), c(m)\right\} =0$得到），因此$c$是费米子算符。
+
+%我们不用去管TIM模型如何用Jordan Wigner representation 求解，我们需要用到的只是$c(n)$的定义。
+
+\subsection{Staggered fermion}
+
+为了清晰，我们使用$h$表示even sites，那么
+\begin{equation}
+\begin{split}
+&\psi(h) =\begin{pmatrix} \psi^{\alpha} (h)  \\ \psi^{\beta}(h) \end{pmatrix}= \frac{1}{\sqrt{a}}\begin{pmatrix} \chi _{2n}  \\ \chi _{2n+1} \end{pmatrix}
+\end{split}
+\end{equation}
+这里，$h=2n$，并且我们假定$n$总是偶数个。注意$a$是$h$的间隔
+
+同时，注意导数是对$h$的导数，这里我们使用
+\begin{equation}
+\begin{split}
+&\partial _h \psi(h) = \frac{1}{a} \begin{pmatrix} \psi^{\alpha}(h+1) - \psi^{\alpha} (h) \\ \psi^{\beta}(h) - \psi ^{\beta}(h-1) \end{pmatrix} = \frac{1}{a\sqrt{a}} \begin{pmatrix} \chi_{2n+2} -\chi_{2n} \\ \chi_{2n+1} - \chi _{2n-1} \end{pmatrix} 
+\end{split}
+\end{equation}
+
+除此之外，还需要知道$\gamma$矩阵的对应关系，
+
+\begin{equation}
+\begin{split}
+&\gamma _0=\sigma _z, \;\; \gamma _1=-i\sigma _y, \;\; \gamma _5=\gamma _0\gamma _1 = -\sigma _x
+\end{split}
+\end{equation}
+
+注意，在Jordan Wigner这一步之前，这些矩阵必须带入确定的结果，也就是说到下一节时不再出现Pauli矩阵。
+
+\begin{equation}
+\begin{split}
+&\bar{\psi}(h)i\gamma _1\partial _x \psi(h) =-i\psi^{\dagger}(h) \sigma _x \partial _h \psi(h) \\
+&=-\frac{i}{a^2}\left(\chi^{\dagger}_{2n+1}\chi_{2n+2}+\chi^{\dagger}_{2n}\chi _{2n+1} - \chi^{\dagger}_{2n}\chi _{2n-1}- \chi ^{\dagger}_{2n+1}\chi _{2n}\right)\\
+&\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) = -\frac{i}{a^2} \sum _n \left(\chi^{\dagger}_n\chi _{n+1} - \chi ^{\dagger}_{n+1}\chi _n\right)\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&a\bar{\psi}(h) \psi(h) =\psi^{\dagger}(h) \sigma _z  \psi(h) =\chi ^{\dagger}_{2n}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+1}\\
+&a\bar{\psi}(h) \gamma _0 \psi(h) =\psi^{\dagger}(h) \psi(h) = \chi ^{\dagger}_{2n}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+1}\\
+&a\bar{\psi}(h) \gamma _1 \psi(h) =-\psi^{\dagger}(h) \sigma _x  \psi(h) = -\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n}\\
+&a\bar{\psi}(h) \gamma _5 \psi(h) =-\psi^{\dagger}(h) \sigma _z\sigma _x  \psi(h) = \chi ^{\dagger}_{2n+1}\chi _{2n} - \chi ^{\dagger}_{2n}\chi _{2n+1}\\
+&a\bar{\psi}(h) \gamma _5\gamma _0 \psi(h) =- \bar{\psi}(h) \gamma _1 \psi(h) \\
+&a\bar{\psi}(h) \gamma _5\gamma _1 \psi(h) =-\bar{\psi}(h) \gamma _0 \psi(h)\\
+\end{split}
+\end{equation}
+
+我们可以忽略$a$，根据量纲添加。
+
+\begin{equation}
+\begin{split}
+&\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \chi^{\dagger} _n\chi _n\\
+&\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \chi^{\dagger} _n\chi _n\\
+&\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\sum _{even\;n} \left(\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&\sum _h \bar{\psi}(h) \gamma _5 \psi(h) =\sum _{even\;n} \left(\chi ^{\dagger}_{n+1}\chi _{n} - \chi ^{\dagger}_{n}\chi _{n+1}\right)\\
+\end{split}
+\end{equation}
+
+注意，后面两项没有$2n+1 \to 2n+2$之间的连接项。当然，这一点可以通过引入高阶的算符来克服。
+因为
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}+\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}-(\partial _x \chi ^{\dagger}_{2n})\chi _{2n+1}\\
+\end{split}
+\end{equation}
+
+
+类似的，
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n+1}\chi _{2n}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}+\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}-a\chi^{\dagger}_{2n+1}(\partial _x \chi _{2n})\\
+\end{split}
+\end{equation}
+
+整合一下，有
+\begin{equation}
+\begin{split}
+&\sum _{even\;n}\left(\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&=\frac{1}{2}\sum _{n}\left(\chi ^{\dagger}_{n}\chi _{n+1}+ \chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&-\frac{a}{2}\sum _{even\;n} \left((\partial _x \chi ^{\dagger}_{n})\chi _{n+1} + \chi^{\dagger}_{n+1}(\partial _x \chi _{n})\right)
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&\sum _{even\;n}\left(\chi ^{\dagger}_{n}\chi _{n+1}-\chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&=\frac{1}{2}\sum _{n}(-1)^n\left(\chi ^{\dagger}_{n}\chi _{n+1}- \chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&-\frac{a}{2}\sum _{even\;n} \left((\partial _x \chi ^{\dagger}_{n})\chi _{n+1} - \chi^{\dagger}_{n+1}(\partial _x \chi _{n})\right)
+\end{split}
+\end{equation}
+
+
+注意，平方项必须在这一步就解决，因为到了Jordan Wigner变换后，平方应该都是1，我们需要考虑的有，
+\begin{equation}
+\begin{split}
+&(\bar{\psi}(h) \psi(h) )^2=(\chi ^{\dagger}_{2n}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2\\
+&=(\chi ^{\dagger}_{2n}\chi _{2n})^2+(\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2-2\chi ^{\dagger}_{2n}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n+1}\\
+&(\bar{\psi}(h) \gamma _0 \psi(h) )^2=(\chi ^{\dagger}_{2n}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2\\
+&=(\chi ^{\dagger}_{2n}\chi _{2n})^2+(\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2+2\chi ^{\dagger}_{2n}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n+1}\\
+&(\bar{\psi}(h) \gamma _1 \psi(h) )^2=(-\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n})^2\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}\\
+&(\bar{\psi}(h) \gamma _5 \psi(h) )^2=(\chi ^{\dagger}_{2n+1}\chi _{2n} - \chi ^{\dagger}_{2n}\chi _{2n+1})^2\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n} \chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}
+\end{split}
+\end{equation}
+
+上面已经用了反对易关系，
+
+
+\begin{equation}
+\begin{split}
+&2\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}\\
+&=2\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n+2}\chi_{2n+2}\chi^{\dagger}_{2n+1}\chi_{2n+1}-\chi^{\dagger}_{2n+2}\chi_{2n+2}\chi^{\dagger}_{2n+1}\chi_{2n+1}\\
+&=\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n+2}\chi_{2n+2}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}-\chi^{\dagger}_{2n+2}\chi_{2n+2}\chi^{\dagger}_{2n+1}\chi_{2n+1}\\
+&=\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n+1}\chi_{2n+1}\chi^{\dagger}_{2n+2}\chi_{2n+2}\\
+&+\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}-\chi^{\dagger}_{2n+2}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n+2}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}-\chi^{\dagger}_{2n+2}\chi_{2n+2}\chi^{\dagger}_{2n+1}\chi_{2n+1}\\
+&=\chi^{\dagger}_{2n}\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}+\chi^{\dagger}_{2n+1}\chi_{2n+1}\chi^{\dagger}_{2n+2}\chi_{2n+2}-a(\partial _x\chi^{\dagger}_{2n})\chi_{2n}\chi^{\dagger}_{2n+1}\chi_{2n+1}-a\chi^{\dagger}_{2n+2}(\partial _x\chi_{2n})\chi^{\dagger}_{2n+1}\chi_{2n+1}\\
+\end{split}
+\end{equation}
+
+因此
+\begin{equation}
+\begin{split}
+&\sum _h (\bar{\psi}(h) \psi(h) )^2=\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2-(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)-a\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi_{n}\chi^{\dagger}_{n+1}\chi_{n+1}+\chi^{\dagger}_{n+2}(\partial _x\chi_{n})\chi^{\dagger}_{n+1}\chi_{n+1}\right)\\
+&\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2+(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)+a\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi_{n}\chi^{\dagger}_{n+1}\chi_{n+1}+\chi^{\dagger}_{n+2}(\partial _x\chi_{n})\chi^{\dagger}_{n+1}\chi_{n+1}\right)\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+2}\chi _{2n+1}+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&-a(\partial _x \chi^{\dagger}_{2n})\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-a\chi ^{\dagger}_{2n+2}\chi _{2n+1}(\partial _x\chi ^{\dagger}_{2n})\chi _{2n+1}
+\end{split}
+\end{equation}
+
+类似的
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n+2}+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&-a\chi^{\dagger}_{2n+1}(\partial _x \chi _{2n})\chi ^{\dagger}_{2n}\chi _{2n+1}-a\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}(\partial _x \chi _{2n})
+\end{split}
+\end{equation}
+
+因此
+\begin{equation}
+\begin{split}
+&\sum _{even\;n}\left(\chi ^{\dagger}_{n}\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n}\chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&=\frac{1}{2}\sum _n\left(\chi ^{\dagger}_{n}\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n}\chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&-\frac{a}{2}\sum _{even\;n}\left((\partial _x \chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+2}\chi _{n+1}(\partial _x\chi ^{\dagger}_{n})\chi _{n+1}+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})\right)
+\end{split}
+\end{equation}
+
+
+以及
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n+2}+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&+\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}-\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&=\chi ^{\dagger}_{2n}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n}+\chi ^{\dagger}_{2n+2}\chi _{2n+1}\chi ^{\dagger}_{2n+1}\chi _{2n+2}\\
+&-a(\partial _x\chi^{\dagger}_{2n})\chi _{2n+1}\chi ^{\dagger}_{2n}\chi _{2n+1}-a\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+1}(\partial _x \chi _{2n})
+\end{split}
+\end{equation}
+
+和
+\begin{equation}
+\begin{split}
+&2\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+2}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&+\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&=\chi ^{\dagger}_{2n+1}\chi _{2n}\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n+2}\chi ^{\dagger}_{2n+2}\chi _{2n+1}\\
+&-a\chi^{\dagger}_{2n+1}(\partial _x \chi _{2n})\chi ^{\dagger}_{2n}\chi _{2n+1}-a\chi ^{\dagger}_{2n+1}\chi _{2n+2}(\partial _x \chi ^{\dagger}_{2n})\chi _{2n+1}
+\end{split}
+\end{equation}
+
+因此
+\begin{equation}
+\begin{split}
+&\sum _{even\;n}\left(\chi ^{\dagger}_{n}\chi _{n+1}\chi ^{\dagger}_{n+1}\chi _{n}+\chi ^{\dagger}_{n+1}\chi _{n}\chi ^{\dagger}_{n}\chi _{n+1}\right)\\
+&=\frac{1}{2}\sum _n\left(\chi ^{\dagger}_{n}\chi _{n+1}\chi ^{\dagger}_{n+1}\chi _{n}+\chi ^{\dagger}_{n+1}\chi _{n}\chi ^{\dagger}_{n}\chi _{n+1}\right)\\
+&-\frac{a}{2}\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}(\partial _x \chi ^{\dagger}_{n})\chi _{n+1}\right)
+\end{split}
+\end{equation}
+
+总结：
+\textcolor[rgb]{0,0,1}{
+\begin{equation}
+\begin{split}
+&\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) = -\frac{i}{a^2} \sum _n \left(\chi^{\dagger}_n\chi _{n+1} - \chi ^{\dagger}_{n+1}\chi _n\right)\\
+&a\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \chi^{\dagger} _n\chi _n\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \chi^{\dagger} _n\chi _n\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{2}\sum _{n}\left(\chi ^{\dagger}_{n}\chi _{n+1}+ \chi ^{\dagger}_{n+1}\chi _{n}\right)+\frac{a}{2}\sum _{even\;n} \left((\partial _x \chi ^{\dagger}_{n})\chi _{n+1} + \chi^{\dagger}_{n+1}(\partial _x \chi _{n})\right)\\
+&a\sum _h \bar{\psi}(h) \gamma _5 \psi(h) =\frac{1}{2}\sum _{n}(-1)^n\left(\chi ^{\dagger}_{n}\chi _{n+1}- \chi ^{\dagger}_{n+1}\chi _{n}\right)-\frac{a}{2}\sum _{even\;n} \left((\partial _x \chi ^{\dagger}_{n})\chi _{n+1} - \chi^{\dagger}_{n+1}(\partial _x \chi _{n})\right)\\
+&a^2\sum _h (\bar{\psi}(h) \psi(h) )^2=\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2-(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)-a\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi_{n}\chi^{\dagger}_{n+1}\chi_{n+1}+\chi^{\dagger}_{n+2}(\partial _x\chi_{n})\chi^{\dagger}_{n+1}\chi_{n+1}\right)\\
+&a^2\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2+(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)+a\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi_{n}\chi^{\dagger}_{n+1}\chi_{n+1}+\chi^{\dagger}_{n+2}(\partial _x\chi_{n})\chi^{\dagger}_{n+1}\chi_{n+1}\right)\\
+&a^2\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{2}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n}\chi _{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n+1}\chi _{n}+\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n+1}\chi _{n}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n}\chi _{n+1}\right)\\
+&-\frac{a}{2}\sum _{even\;n}\left((\partial _x \chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+2}\chi _{n+1}(\partial _x\chi ^{\dagger}_{n})\chi _{n+1}+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})\right)\\
+&-\frac{a}{2}\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}(\partial _x \chi ^{\dagger}_{n})\chi _{n+1}\right)\\
+&a^2\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{2}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n}\chi _{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n+1}\chi _{n}-\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n+1}\chi _{n}-\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n}\chi _{n+1}\right)\\
+&-\frac{a}{2}\sum _{even\;n}\left((\partial _x \chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+2}\chi _{n+1}(\partial _x\chi ^{\dagger}_{n})\chi _{n+1}+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})\right)\\
+&+\frac{a}{2}\sum _{even\;n}\left((\partial _x\chi^{\dagger}_{n})\chi _{n+1}\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}\chi ^{\dagger}_{n+1}(\partial _x \chi _{n})+\chi^{\dagger}_{n+1}(\partial _x \chi _{n})\chi ^{\dagger}_{n}\chi _{n+1}+\chi ^{\dagger}_{n+1}\chi _{n+2}(\partial _x \chi ^{\dagger}_{n})\chi _{n+1}\right)\\
+\end{split}
+\end{equation}
+}
+
+忽略掉$\mathcal{O}(a)$项，
+\begin{equation}
+\begin{split}
+&a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) = -\frac{i}{a} \sum _n \left(\chi^{\dagger}_n\chi _{n+1} - \chi ^{\dagger}_{n+1}\chi _n\right)\\
+&a\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \chi^{\dagger} _n\chi _n\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \chi^{\dagger} _n\chi _n\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{2}\sum _{n}\left(\chi ^{\dagger}_{n}\chi _{n+1}+ \chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&a\sum _h \bar{\psi}(h) \gamma _5 \psi(h) =\frac{1}{2}\sum _{n}(-1)^n\left(\chi ^{\dagger}_{n}\chi _{n+1}- \chi ^{\dagger}_{n+1}\chi _{n}\right)\\
+&a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{a}\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2-(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{a}\sum _n \left((\chi ^{\dagger}_{n}\chi _{n})^2+(\chi ^{\dagger}_{n}\chi _{n}) (\chi ^{\dagger}_{n+1}\chi _{n+1})\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n}\chi _{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n+1}\chi _{n}+\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n+1}\chi _{n}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n}\chi _{n+1}\right)\\
+&=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\right)^2\\
+&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n}\chi _{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n+1}\chi _{n}-\chi^{\dagger}_{n}\chi_{n+1}\chi^{\dagger}_{n+1}\chi _{n}-\chi^{\dagger}_{n+1}\chi_{n}\chi^{\dagger}_{n}\chi _{n+1}\right)\\
+&=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}-\chi^{\dagger}_{n+1}\chi_{n}\right)^2\\
+\end{split}
+\end{equation}
+
+\subsection{从Staggered fermion到Jordan Wigner string}
+
+我们假定$N$是偶数，因此
+\begin{equation}
+\begin{split}
+&(-i)^{N-1} = (-i)i^{N-2} =(-i) (-1)^{\frac{N}{2}-1}=i(-1)^{\frac{N}{2}}\\
+&(i)^{N-1} = (i)i^{N-2} =(i) (-1)^{\frac{N}{2}-1}=-i(-1)^{\frac{N}{2}}\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&\chi^{\dagger}_n\chi _n = \frac{1-\sigma ^z(n)}{2}\\
+&\chi^{\dagger}_{n+1}\chi _n = \prod _{j=0}^n(i\sigma ^z(j)) \sigma ^+(n+1)\sigma ^-(n)\prod _{j=0}^{n-1}(-i\sigma ^z(j))\\
+&=(i\sigma ^z(n)) \sigma ^+(n+1)\sigma ^-(n)= i\sigma ^+(n+1)\sigma ^-(n)\\
+&\chi^{\dagger}_{0}\chi _{N-1} = \sigma ^+(0)\sigma ^-(N-1)\prod _{j=0}^{N-2}(-i\sigma ^z(j))=(-i)^{N-1}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&=i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&\chi^{\dagger}_{n}\chi _{n+1}=\prod _{j=0}^{n-1}(i\sigma ^z(j)) \sigma ^+(n)\sigma ^-(n+1)\prod _{j=0}^{n}(-i\sigma ^z(j))\\
+&=-i\sigma ^+(n)\sigma^-(n+1)\\
+&\chi^{\dagger}_{N-1}\chi _{0}=\prod _{j=0}^{N-2}(i\sigma ^z(j)) \sigma ^+(N-1)\sigma ^-(0)=i^{N-1}\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&=-i(-1)^{\frac{N}{2}}\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+\end{split}
+\end{equation}
+
+注意如果不在同一个格点
+\begin{equation}
+\begin{split}
+&\left(\sigma ^-(n)\sigma ^+(n+1)+\sigma ^+(n)\sigma ^- (n+1)\right) = \frac{1}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\\
+&i\left(\sigma ^-(n)\sigma ^+(n+1)-\sigma ^+(n)\sigma ^- (n+1)\right) = \frac{1}{2}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n = -i \left(\sigma ^-(n)\sigma ^+(n+1)+\sigma ^+(n)\sigma ^- (n+1)\right)\\
+&=-\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\\
+&\chi^{\dagger}_n\chi_{n+1}+\chi^{\dagger}_{n+1}\chi _n = i\left(\sigma ^-(n)\sigma ^+(n+1)-\sigma ^+(n)\sigma ^- (n+1)\right) \\
+&= \frac{1}{2}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+\end{split}
+\end{equation}
+
+这里比较特殊的是$\gamma _5$，
+\begin{equation}
+\begin{split}
+&\sum _{even\;n}\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n -\chi^{\dagger}_{n+1}\chi_{n+2} + \chi^{\dagger}_{n+2}\chi _{n+1} \right)\\
+&=\sum _{even\;n}\left((\chi^{\dagger}_n+\chi^{\dagger}_{n+2}-2\chi^{\dagger}_{n+1})\chi_{n+1}-\chi^{\dagger}_{n+1}(\chi _n +\chi _{n+2}-2\chi _{n+1})\right)\\
+\end{split}
+\end{equation}
+这一项是$\mathcal{O}(a^2)$的。
+
+\begin{equation}
+\begin{split}
+&a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) \\
+&= -\frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)-\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&a\sum _h \bar{\psi}(h) \psi(h) = -\frac{1}{2}\sum _{n=0} (-1)^n \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =-\frac{1}{2}\sum _{n=0} \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1-\sigma ^z(n)}{2}-\frac{(1-\sigma ^z(n))(1-\sigma ^z(n+1))}{4}\right)\\
+&=\frac{1}{a}\sum _n \left(\frac{-\sigma ^z(n)}{2}-\frac{-\sigma ^z(n)-\sigma ^z(n+1) + \sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
+&=-\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1-\sigma ^z(n)}{2}+\frac{(1-\sigma ^z(n))(1-\sigma ^z(n+1))}{4}\right)\\
+&=\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)-\frac{1}{a}\sum _n \sigma ^z(n)\\
+\end{split}
+\end{equation}
+
+要计算平方，先看看一项的结果
+
+\begin{equation}
+\begin{split}
+&\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n\right)^2 = \left(-\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\right)^2\\
+&=-\frac{1}{4}\left(2+\sigma ^x(n)\sigma ^x(n+1)\sigma ^y(n)\sigma ^y(n+1)+\sigma ^y(n)\sigma ^y(n+1)\sigma ^x(n)\sigma ^x(n+1)\right)\\
+\end{split}
+\end{equation}
+
+由于$\sigma ^x\sigma ^y = -\sigma ^y\sigma ^x$，
+\begin{equation}
+\begin{split}
+&\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n\right)^2 = -\frac{1}{4}\left(2+2\sigma ^x(n)\sigma ^y(n)\sigma ^x(n+1)\sigma ^y(n+1)\right)\\
+&= -\frac{1}{4}\left(-2\sigma ^z(n)\sigma ^z(n+1)\right)\\
+&=\frac{1}{2}\sigma ^z(n)\sigma ^z(n+1)\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&\left(\chi^{\dagger}_{N-1}\chi_{0}-\chi^{\dagger}_{0}\chi _{N-1}\right)^2 = \left(-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\right)^2\left(\prod _{j=1}^{N-2}\sigma ^z(j)\right)^2\\
+&=-\left(\sigma ^-(0)\sigma ^+(N-1)+\sigma ^+(0)\sigma ^-(N-1)\right)^2\\
+&=-\frac{1}{4}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)^2
+\end{split}
+\end{equation}
+
+所以这个可以与前面一项合并到一起。
+
+\begin{equation}
+\begin{split}
+&\left(\chi^{\dagger}_n\chi_{n+1}+\chi^{\dagger}_{n+1}\chi _n\right)^2 = \left(\frac{1}{2}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\right)^2\\
+&=\frac{1}{4}\left(2-\sigma ^y(n)\sigma ^x(n)\sigma ^x(n+1)\sigma ^y(n+1)-\sigma ^x(n)\sigma ^y(n)\sigma ^y(n+1)\sigma ^x(n+1)\right)\\
+&=\frac{1}{4}\left(2\sigma ^x(n)\sigma ^y(n)\sigma ^x(n+1)\sigma ^y(n+1)\right)\\
+&=-\frac{1}{2}\sigma ^z(n)\sigma ^z(n+1)\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&\left(\chi^{\dagger}_{N-1}\chi_{0}+\chi^{\dagger}_{0}\chi _{N-1}\right)^2 = \left(-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)+i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\right)^2\left(\prod _{j=1}^{N-2}\sigma ^z(j)\right)^2\\
+&=-\left(\sigma ^-(0)\sigma ^+(N-1)-\sigma ^+(0)\sigma ^-(N-1)\right)^2\\
+&=-\left(\frac{-i}{2}\right)^2\left(\sigma ^y(0)\sigma ^x(N-1)-\sigma ^x(0)\sigma ^y(N-1)\right)^2
+\end{split}
+\end{equation}
+
+所以这一项也能合并，于是
+\begin{equation}
+\begin{split}
+&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\right)^2=\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}-\chi^{\dagger}_{n+1}\chi_{n}\right)^2=-\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+\end{split}
+\end{equation}
+
+\subsection{总结}
+
+\begin{equation}
+\begin{split}
+&a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) \\
+&= -\frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)-\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&a\sum _h \bar{\psi}(h) \psi(h) = -\frac{1}{2}\sum _{n=0} (-1)^n \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =-\frac{1}{2}\sum _{n=0} \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \psi(h) )^2=-\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)-\frac{1}{a}\sum _n \sigma ^z(n)\\
+&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=-\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+\end{split}
+\end{equation}
+
+

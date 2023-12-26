@@ -41,6 +41,10 @@ QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
     prepare.AddQubits(static_cast<BYTE>(m_iOrder + 1));
     prepare.m_sName = _T("Prepare");
 
+    QLGate p(EBasicOperation::EBO_P, -PI / 2);
+    QLGate cnot(EBasicOperation::EBO_CX);
+    QLGate h(EBasicOperation::EBO_H);
+
     for (INT i = 0; i < m_lstPauliType.Num(); ++i)
     {
         TArray<BYTE> bit;
@@ -48,8 +52,6 @@ QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
         TArray<BYTE> cbit;
         cbit.AddItem(static_cast<BYTE>(i));
         cbit.AddItem(byAncilla);
-        QLGate cnot(EBasicOperation::EBO_CX);
-        QLGate h(EBasicOperation::EBO_H);
 
         switch (m_lstPauliType[i])
         {
@@ -61,7 +63,6 @@ QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
             break;
         case 2:
             {
-                QLGate p(EBasicOperation::EBO_P, -PI / 2);
                 prepare.AppendGate(p, bit);
                 prepare.AppendGate(h, bit);
                 prepare.AppendGate(cnot, cbit);
@@ -80,6 +81,37 @@ QLGate PauliProduct::OneStepGate(Real fTrotterTime) const
     ret.AppendGate(rz, abit);
     prepare.Dagger();
     ret.AppendGate(prepare, ret.m_lstQubits);
+
+    return ret;
+}
+
+QLGate PauliProduct::Project() const
+{
+    QLGate ret;
+    ret.AddQubits(static_cast<BYTE>(m_iOrder));
+    ret.m_sName = _T("Project");
+
+    QLGate p(EBasicOperation::EBO_P, -PI / 2);
+    QLGate cnot(EBasicOperation::EBO_CX);
+    QLGate h(EBasicOperation::EBO_H);
+
+    for (INT i = 0; i < m_lstPauliType.Num(); ++i)
+    {
+        switch (m_lstPauliType[i])
+        {
+        case 1:
+            {
+                ret.AppendGate(h, static_cast<BYTE>(i));
+            }
+            break;
+        case 2:
+            {
+                ret.AppendGate(p, static_cast<BYTE>(i));
+                ret.AppendGate(h, static_cast<BYTE>(i));
+            }
+            break;
+        }
+    }
 
     return ret;
 }

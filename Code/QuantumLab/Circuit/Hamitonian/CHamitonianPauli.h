@@ -33,7 +33,7 @@ public:
         
     }
 
-    QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const override;
+    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
 
     EPauliType m_eType;
 

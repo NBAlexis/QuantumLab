@@ -12,15 +12,12 @@
 
 __BEGIN_NAMESPACE
 
-QLGate CHamitonianPauliNeighbour::BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const
+TArray<PauliProduct> CHamitonianPauliNeighbour::GetAllTerms(const CLattice* pLattice) const
 {
     TArray<CLatticeSiteData> pairs = pLattice->GetNeighbourPairs();
     UINT uiControllerCount = pLattice->GetControllerCount();
 
-    TArray<BYTE> toAdd;
-    toAdd.Append(ByteSequnce, uiControllerCount + 1);
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(uiControllerCount + 1));
+    TArray<PauliProduct> ret;
 
     for (INT i = 0; i < pairs.Num(); ++i)
     {
@@ -41,7 +38,7 @@ QLGate CHamitonianPauliNeighbour::BuildCircuit(const CLattice* pLattice, Real fT
             }
         }
 
-        ret.AppendGate(OneTermOneStep(pauliProduct, fTrotterTime), toAdd);
+        ret.AddItem(PauliProduct(pauliProduct, m_fCoefficient));
     }
 
     return ret;

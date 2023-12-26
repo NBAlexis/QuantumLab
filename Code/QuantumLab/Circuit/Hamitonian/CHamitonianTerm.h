@@ -19,12 +19,14 @@ public:
 
     CHamitonianTerm(Real fCoeff) : m_fCoefficient(fCoeff) {}
 
+    virtual TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const = 0;
+
     /**
     * build a circuit to implement Controlled-Exp[i c t H]
     * where c is the coefficient
     * 
     */
-    virtual QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const = 0;
+    virtual QLGate BuildCircuit(const CLattice* pLattice, Real fTrotterTime) const;
 
     /**
     * When H = sigma1 otimes sigma2 ..... otimes sigman, where n is the number of sites
@@ -43,6 +45,10 @@ public:
         PauliProduct prod(pauliType, fCoefficient);
         return prod.OneStepGate(fTrotterTime);
     }
+
+    inline static Real OneTermMeasure(const TArray<BYTE>& pauliType, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat);
+
+    virtual Real Measure(const CLattice* pLattice, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat) const;
 
     Real m_fCoefficient;
 };
