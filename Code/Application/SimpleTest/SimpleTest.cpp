@@ -1481,7 +1481,9 @@ int main()
     //CLattice2D lattice2d(4, 4, TRUE, EPeriodicType::EPT_Open);
     //lattice2d.Draw();
 
-    TestNoiseSimulatorUsingPhaseEstimation();
+    //TestNoiseSimulatorUsingPhaseEstimation();
+
+    ShowMatrixOfGate();
 
     return 0;
 }

@@ -36,6 +36,8 @@ extern QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize 
 
 extern QLGate QLAPI CreateSwapGate();
 
+extern QLGate QLAPI CreateControlledSwap(BYTE numOfController);
+
 extern QLGate QLAPI CreateControlledHadamardGate();
 
 __END_NAMESPACE

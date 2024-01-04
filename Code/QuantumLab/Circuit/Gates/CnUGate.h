@@ -36,11 +36,46 @@ extern QLGate QLAPI CreateCnNot(BYTE numOfController);
 
 /**
 * 0,1 controller, 2 is target
+* it is known that n-bit toffoli needs 2n CNOT to implement
+* 10.26421/QIC9.5-6-8
+* 
+* T = exp(i pi sigmaz / 8)
+* 
+* ---------.----------.-------.---T---.---
+*          |          |       |       |
+* ---.-----|-----.----|---T---+---Td--+---
+*    |     |     |    |
+* -H-+--Td-+--T--+-Td-+---T---H-----------
 */
 inline QLGate CreateToffoliGate()
 {
-    QLGate ret = CreateCnNot(2);
-    ret.m_sName = _T("CCN");
+    QLGate ret;
+    ret.AddQubits(3);
+    ret.m_sName = _T("toffoli");
+
+    QLGate h(EBasicOperation::EBO_H);
+    QLGate t(EBasicOperation::EBO_RZ, -PI / F(4.0));
+    QLGate td(EBasicOperation::EBO_RZ, PI / F(4.0));
+    QLGate cx(EBasicOperation::EBO_CX);
+
+    ret.AppendGate(h, 2);
+    ret.AppendGate(cx, 1, 2);
+    ret.AppendGate(td, 2);
+    ret.AppendGate(cx, 0, 2);
+    ret.AppendGate(t, 2);
+    ret.AppendGate(cx, 1, 2);
+    ret.AppendGate(td, 2);
+    ret.AppendGate(cx, 0, 2);
+
+    ret.AppendGate(t, 2);
+    ret.AppendGate(h, 2);
+
+    ret.AppendGate(t, 1);
+    ret.AppendGate(cx, 0, 1);
+    ret.AppendGate(t, 0);
+    ret.AppendGate(td, 1);
+    ret.AppendGate(cx, 0, 1);
+
     return ret;
 }
 

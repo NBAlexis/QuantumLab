@@ -32,8 +32,7 @@ QLGate QLAPI CreateSwapTest(TArray<QLComplex> v1, TArray<QLComplex> v2)
     QLGate ret;
     ret.AddQubits(2 * qubitForEachVector + 1);
 
-    QLGate swap = CreateSwapGate();
-    QLGate cswap = swap.CreateControlled();
+    QLGate cswap = CreateControlledSwap(1);
 
     QLGate aev1 = AmplitudeEncodeOneVector(v1.GetData(), qubitForEachVector, FALSE);
     QLGate aev2 = AmplitudeEncodeOneVector(v2.GetData(), qubitForEachVector, FALSE);
@@ -88,8 +87,7 @@ QLGate QLAPI CreateSwapTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2)
     QLGate ret;
     ret.AddQubits(2 * qubitForEachVector + 1);
 
-    QLGate swap = CreateSwapGate();
-    QLGate cswap = swap.CreateControlled();
+    QLGate cswap = CreateControlledSwap(1);
 
     QLGate aev1 = AmplitudeEncodeOneVectorReal(v1.GetData(), qubitForEachVector);
     QLGate aev2 = AmplitudeEncodeOneVectorReal(v2.GetData(), qubitForEachVector);

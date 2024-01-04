@@ -54,6 +54,8 @@ enum class EBasicOperation : UINT
     EBO_RY,
 
     /**
+    *  exp(-i sigmaz t / 2)
+    * 
     *  exp(-it/2)      0
     *  0           exp(it/2)
     */
@@ -143,6 +145,11 @@ struct QLAPI SBasicOperation
     UBOOL IsTwoQubitGate() const
     {
         return !IsMeasure() && !IsNoise() && 2 == m_lstQubits.Num();
+    }
+
+    UBOOL IsBasicGate() const
+    {
+        return IsSingleQubitGate() || (EBasicOperation::EBO_CX == m_eOperation);
     }
 };
 

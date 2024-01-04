@@ -9,6 +9,7 @@
 //=============================================================================
 
 #include "SwapTest.h"
+#include <random>
 
 TArray<QLComplex> ExchangeComplexBuffer(const TArray<QLComplex>& row)
 {
@@ -27,10 +28,8 @@ TArray<QLComplex> ExchangeComplexBuffer(const TArray<QLComplex>& row)
     return ret;
 }
 
-TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, UBOOL bComplex, const QLSimulatorParametersDensityMatrix& param)
+TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, UBOOL bComplex, const QLSimulatorParametersDensityMatrix& param, INT iRealMeasure)
 {
-    
-
     QLSimulatorParametersDensityMatrix param2 = param;
     if (bComplex)
     {
@@ -53,7 +52,33 @@ TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComple
 
     Real fAveragePurity = out.AveragePurity();
     Real fAverageFidelity = out.AverageFidelity();
-    Real fRes = _sqrt(2 * out.m_lstMeasureOutcomes[0] - 1);
+    Real fRes = 2 * out.m_lstMeasureOutcomes[0] - 1;
+    if (iRealMeasure > 0)
+    {
+        std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        std::uniform_real_distribution<> dis(0.0, 1.0);
+
+        UINT iMeasure0 = 0;
+        for (INT i = 0; i < iRealMeasure; ++i)
+        {
+            //appGeneral(_T("%f %f\n"), dis(gen), out.m_lstMeasureOutcomes[0]);
+            if (dis(gen) < out.m_lstMeasureOutcomes[0])
+            {
+                ++iMeasure0;
+            }
+        }
+        fRes = iMeasure0 / static_cast<Real>(iRealMeasure);
+        fRes = 2 * fRes - 1;
+    }
+    if (fRes < _QL_FLT_MIN)
+    {
+        fRes = F(0.0);
+    }
+    else
+    {
+        fRes = _sqrt(fRes);
+    }
 
     appGeneral(_T("average purity: %f, average fidelity: %f, res: %f \n"), fAveragePurity, fAverageFidelity, fRes);
 
@@ -87,12 +112,15 @@ int main()
     __FetchStringWithDefault(_T("FileName1"), _T(""));
 
     //Load Data File
+    CCString sFile1 = sValues;
     QLMatrix m1 = ReadCSVR(sValues);
     m1.Print("v1");
 
     __FetchStringWithDefault(_T("FileName2"), _T(""));
     QLMatrix m2 = ReadCSVR(sValues);
     m2.Print("v2");
+
+    UBOOL bSameFile = sFile1 == sValues;
 
     QLSimulatorParametersDensityMatrix simulateParam;
     simulateParam.m_bMeasureFidelity = TRUE;
@@ -125,7 +153,8 @@ int main()
     simulateParam.m_fMixPauliBeforeMeasure = fValues;
 
     __FetchIntWithDefault(_T("MeasureRepeat"), 100);
-    simulateParam.m_iMeasureTimes = iValues;
+    simulateParam.m_iMeasureTimes = -1;
+    INT iRealMeasure = iValues;
 
     __FetchIntWithDefault(_T("Complex"), 1);
     UBOOL bComplex = (0 != iValues);
@@ -134,10 +163,31 @@ int main()
     TArray<QLComplex> output;
     TArray<QLComplex> averagePurity;
     TArray<QLComplex> averageFidelity;
+    UINT iNow = 0;
     for (INT i = 0; i < static_cast<INT>(m1.Y()); ++i)
     {
         for (INT j = 0; j < static_cast<INT>(m2.Y()); ++j)
         {
+            if (bSameFile)
+            {
+                if (i == j)
+                {
+                    expectedoutput.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+                    output.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+                    averagePurity.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+                    averageFidelity.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+                    continue;
+                }
+                else if (j < i)
+                {
+                    UINT idx = j * m2.Y() + i;
+                    expectedoutput.AddItem(expectedoutput[idx]);
+                    output.AddItem(output[idx]);
+                    averagePurity.AddItem(averagePurity[idx]);
+                    averageFidelity.AddItem(averageFidelity[idx]);
+                    continue;
+                }
+            }
             TArray<QLComplex> v1 = m1.GetLine(i);
             TArray<QLComplex> v2 = m2.GetLine(j);
             if (bComplex)
@@ -146,10 +196,15 @@ int main()
                 v2 = ExchangeComplexBuffer(v2);
             }
             Real fClassical = ClassicalDot(v1, v2);
-            appGeneral(_T("=============\nComparing v1[%d] v2[%d] (progress %d/%d), expected result: %f\n"),
-                i, j, i * m2.Y() + j + 1, m1.Y() * m2.Y(), fClassical);
+            ++iNow;
+            appGeneral(_T("=============\nCalculating v1[%d] * v2[%d] (progress %d/%d), expected result: %f\n"),
+                i, 
+                j, 
+                iNow,
+                bSameFile ? ((m1.Y() * m1.Y() - m1.Y()) / 2) : m1.Y() * m2.Y(),
+                fClassical);
 
-            TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam);
+            TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam, iRealMeasure);
 
             expectedoutput.AddItem(_make_cuComplex(fClassical, F(0.0)));
             output.AddItem(_make_cuComplex(quantumRes[2], F(0.0)));
@@ -172,25 +227,25 @@ int main()
     if (!sValues.IsEmpty())
     {
         SaveCSVR(expm, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues);
+        appGeneral(_T("%f file saved...\n"), sValues.c_str());
     }
     __FetchStringWithDefault(_T("QuantumResSaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {
         SaveCSVR(resm, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues);
+        appGeneral(_T("%f file saved...\n"), sValues.c_str());
     }
     __FetchStringWithDefault(_T("AveragePuritySaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {
         SaveCSVR(purity, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues);
+        appGeneral(_T("%f file saved...\n"), sValues.c_str());
     }
     __FetchStringWithDefault(_T("AverageFidelitySaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {
         SaveCSVR(fidelity, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues);
+        appGeneral(_T("%f file saved...\n"), sValues.c_str());
     }
 
     return 0;

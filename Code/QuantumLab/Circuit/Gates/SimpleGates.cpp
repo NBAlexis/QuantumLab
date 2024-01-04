@@ -160,6 +160,23 @@ QLGate QLAPI CreateSwapGate()
     return retGate;
 }
 
+QLGate QLAPI CreateControlledSwap(BYTE controller)
+{
+    QLGate cnot(EBasicOperation::EBO_CX);
+    QLGate cnnot = CreateCnNot(controller + 1);
+
+    TArray<BYTE> qubits;
+    qubits.Append(ByteSequnce, controller + 2);
+
+    QLGate ret;
+    ret.AddQubits(controller + 2);
+    ret.m_sName = _T("cswap");
+    ret.AppendGate(cnot, controller + 1, controller);
+    ret.AppendGate(cnnot, qubits);
+    ret.AppendGate(cnot, controller + 1, controller);
+    return ret;
+}
+
 QLGate QLAPI CreateControlledHadamardGate()
 {
     QLGate retGate;

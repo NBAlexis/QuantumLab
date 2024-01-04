@@ -53,6 +53,10 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
         if (op.IsTwoQubitGate())
         {
             ++uiTwoQubitGate;
+            if (!op.IsBasicGate())
+            {
+                appParanoiac(_T("there is no basic gate: %d\n"), op.m_eOperation);
+            }
         }
 
         Real fProba = QLGate::PerformBasicOperation(vec, op);
@@ -135,22 +139,23 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
     }
     syncQuESTEnv(evn);
 
-    appGeneral(_T("operator number: %d, single qubit gate: %d, two qubit gate: %d\n"), opssize, uiSingleQubitGate, uiTwoQubitGate);
+    appGeneral(_T("qubits: %d, operator number: %d, single qubit gate: %d, two qubit gate: %d\n"), param->m_byQubitCount, opssize, uiSingleQubitGate, uiTwoQubitGate);
 
     if (param->m_iMeasureTimes > 0)
     {
         copyStateFromGPU(vec);
+        syncQuESTEnv(evn);
 
-        Real* resreal = reinterpret_cast<Real*>(malloc(sizeof(Real) * bufferlength));
-        Real* resimag = reinterpret_cast<Real*>(malloc(sizeof(Real) * bufferlength));
-        if (NULL == resreal || NULL == resimag)
-        {
-            appCrucial("buffer not created!");
-            return;
-        }
+        //Real* resreal = reinterpret_cast<Real*>(malloc(sizeof(Real) * bufferlength));
+        //Real* resimag = reinterpret_cast<Real*>(malloc(sizeof(Real) * bufferlength));
+        //if (NULL == resreal || NULL == resimag)
+        //{
+        //    appCrucial("buffer not created!");
+        //    return;
+        //}
 
-        memcpy(resreal, vec.stateVec.real, sizeof(Real) * bufferlength);
-        memcpy(resimag, vec.stateVec.imag, sizeof(Real) * bufferlength);
+        //memcpy(resreal, vec.stateVec.real, sizeof(Real) * bufferlength);
+        //memcpy(resimag, vec.stateVec.imag, sizeof(Real) * bufferlength);
 
         TArray<UINT> lstCount;
         for (UINT i = 0; i < (1U << param->m_lstMeasureQubits.Num()); ++i)
@@ -162,8 +167,8 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
         {
             if (0 != i)
             {
-                memcpy(vec.stateVec.real, resreal, sizeof(Real)* bufferlength);
-                memcpy(vec.stateVec.imag, resimag, sizeof(Real)* bufferlength);
+                //memcpy(vec.stateVec.real, resreal, sizeof(Real)* bufferlength);
+                //memcpy(vec.stateVec.imag, resimag, sizeof(Real)* bufferlength);
                 copyStateToGPU(vec);
                 syncQuESTEnv(evn);
             }
@@ -227,8 +232,8 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
             }
         }
 
-        appSafeFree(resreal);
-        appSafeFree(resimag);
+        //appSafeFree(resreal);
+        //appSafeFree(resimag);
     }
     else
     {

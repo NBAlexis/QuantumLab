@@ -1,7 +1,7 @@
 # ########################
 FileName1 : ../Debug/SwapTest.csv
 FileName2 : ../Debug/SwapTest.csv
-MeasureRepeat : -1
+MeasureRepeat : 100
 ConjugateDot : 0
 Complex : 0
 

@@ -1,19 +1,16 @@
 //=============================================================================
-// FILENAME : SimpleTest.h
+// FILENAME : GateTest.h
 // 
 // DESCRIPTION:
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [12/03/2023 nbale]
+//  [04/01/2024 nbale]
 //=============================================================================
 
-#include "QuantumLab.h"
+extern void ShowMatrixOfGate();
 
-#include "AmplitudeEncodeTest.h"
-#include "SimulatorTest.h"
-#include "GateTest.h"
-
+extern void CSDOfGate();
 
 //=============================================================================
 // END OF FILE

@@ -75,6 +75,11 @@ QLGate QLAPI CreateCnNot(BYTE numOfController)
         return QLGate(EBasicOperation::EBO_CX);
     }
 
+    if (2 == numOfController)
+    {
+        return CreateToffoliGate();
+    }
+
     QLGate retGate;
     retGate.AddQubits(numOfController + 1);
     retGate.m_sName = _T("CnNOT");
