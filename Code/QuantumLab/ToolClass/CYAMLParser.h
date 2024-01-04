@@ -49,6 +49,10 @@
 
 #define __FetchStringWithDefault(tagname, defaultv) __FetchStringWithDefaultSub(params, tagname, defaultv)
 
+#define __FetchRealWithDefaultSub(paramname, tagname, defaultv) if (!paramname.FetchValueReal(tagname, fValues)) { fValues = defaultv; }
+
+#define __FetchRealWithDefault(tagname, defaultv) __FetchRealWithDefaultSub(params, tagname, defaultv)
+
 
 __BEGIN_NAMESPACE
 
@@ -111,6 +115,8 @@ public:
 
     _FetchFunction(DOUBLE)
 
+    _FetchFunction(Real)
+
     UBOOL FetchStringValue(const CCString& key, CCString& value) const
     {
         if (m_pStrings.Lookup(key, value))
@@ -128,6 +134,8 @@ public:
     _FetchFunctionArray(FLOAT)
 
     _FetchFunctionArray(DOUBLE)
+
+    _FetchFunctionArray(Real)
 
     UBOOL FetchStringVectorValue(const CCString& key, TArray<CCString>& value) const
     {

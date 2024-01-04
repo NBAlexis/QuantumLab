@@ -83,7 +83,7 @@ QLGate QLAPI FRy(const TArray<Real>& angles, UINT numberOfQubits)
     return ret;
 }
 
-QLGate QLAPI FRy(Real* angles, UINT numberOfQubits)
+QLGate QLAPI FRy(const Real* angles, UINT numberOfQubits)
 {
     assert(numberOfQubits >= 1);
     UINT degreeNumber = 1U << (numberOfQubits - 1);

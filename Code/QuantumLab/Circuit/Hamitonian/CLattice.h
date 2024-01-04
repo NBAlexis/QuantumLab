@@ -49,6 +49,7 @@ public:
     virtual TArray<CLatticeSiteData> GetSites() const = 0;
     virtual TArray<CLatticeSiteData> GetNeighbourPairs() const = 0;
     virtual TArray<CLatticeSiteData> GetPlaquttes() const = 0;
+    virtual TArray<CLatticeSiteData> GetCrosses() const = 0;
     virtual UINT GetControllerCount() const = 0;
 
     virtual void Draw() const = 0;

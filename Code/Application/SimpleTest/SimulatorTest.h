@@ -1,18 +1,14 @@
 //=============================================================================
-// FILENAME : SimpleTest.h
+// FILENAME : SimulatorTest.h
 // 
 // DESCRIPTION:
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [12/03/2023 nbale]
+//  [03/01/2024 nbale]
 //=============================================================================
 
-#include "QuantumLab.h"
-
-#include "AmplitudeEncodeTest.h"
-#include "SimulatorTest.h"
-
+extern void TestNoiseSimulatorUsingPhaseEstimation();
 
 //=============================================================================
 // END OF FILE

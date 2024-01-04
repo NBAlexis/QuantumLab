@@ -45,17 +45,8 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
 
     //appGeneral(_T("building zero start\n"));
 
-    if (param->m_lstStart.Num() < static_cast<INT>(veclen))
-    {
-        param->BuildZeroStart(param->m_byQubitCount);
-    }
-
     syncQuESTEnv(evn);
-    for (LONGLONG line2 = 0; line2 < veclen; ++line2)
-    {
-        vec.stateVec.real[line2] = param->m_lstStart[static_cast<INT>(line2)].x;
-        vec.stateVec.imag[line2] = param->m_lstStart[static_cast<INT>(line2)].y;
-    }
+    param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
     copyStateToGPU(vec);
     syncQuESTEnv(evn);
 

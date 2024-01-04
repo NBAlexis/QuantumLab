@@ -30,12 +30,19 @@ public:
         return ret;
     }
 
-    void Draw() const
+    TArray<CLatticeSiteData> GetCrosses() const override
+    {
+        appCrucial(_T("1D Lattice does NOT support cross!\n"));
+        TArray<CLatticeSiteData> ret;
+        return ret;
+    }
+
+    void Draw() const override
     {
         appWarning(_T("1D Lattice is naive to draw.\n"));
     }
 
-    UINT GetControllerCount() const 
+    UINT GetControllerCount() const override
     {
         return m_uiNumberOfSites;
     }

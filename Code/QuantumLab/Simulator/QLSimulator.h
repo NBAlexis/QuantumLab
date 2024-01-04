@@ -24,6 +24,17 @@ class QLAPI QLSimulatorParameters
 {
 public:
     virtual ~QLSimulatorParameters() {}
+
+    virtual UINT BuildZeroStart(BYTE byQubit, Real* pReal, Real* pImag) const
+    {
+        UINT uiVectorLength = 1U << byQubit;
+
+        memset(pReal, 0, sizeof(Real) * uiVectorLength);
+        memset(pImag, 0, sizeof(Real) * uiVectorLength);
+        pReal[0] = F(1.0);
+
+        return uiVectorLength;
+    }
 };
 
 class QLAPI QLSimulatorOutput

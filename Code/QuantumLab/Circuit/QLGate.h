@@ -83,6 +83,19 @@ enum class EBasicOperation : UINT
     //controlled collapse
     EBO_CC,
 
+    //=================================
+    //Noises added like gate
+    EBO_Noise_Damping,
+    EBO_Noise_Dephaseing,
+    EBO_Noise_Depolarising,
+    EBO_Noise_MixPauliX,
+    EBO_Noise_MixPauliY,
+    EBO_Noise_MixPauliZ,
+    EBO_Noise_MixPauliAll,
+    EBO_Noise_TwoQubitDephaseing,
+    EBO_Noise_TwoQubitDepolarising,
+
+
     //composite gates
     EBO_Composite,
     
@@ -102,6 +115,34 @@ struct QLAPI SBasicOperation
     UBOOL operator==(const SBasicOperation& other) const
     {
         return m_eOperation == other.m_eOperation && m_lstQubits == other.m_lstQubits && abs(m_fClassicalParameter - other.m_fClassicalParameter) < _QL_FLT_EPSILON;
+    }
+
+    UBOOL IsNoise() const
+    {
+        return EBasicOperation::EBO_Noise_Damping == m_eOperation
+            || EBasicOperation::EBO_Noise_Dephaseing == m_eOperation
+            || EBasicOperation::EBO_Noise_Depolarising == m_eOperation
+            || EBasicOperation::EBO_Noise_MixPauliX == m_eOperation
+            || EBasicOperation::EBO_Noise_MixPauliY == m_eOperation
+            || EBasicOperation::EBO_Noise_MixPauliZ == m_eOperation
+            || EBasicOperation::EBO_Noise_MixPauliAll == m_eOperation
+            || EBasicOperation::EBO_Noise_TwoQubitDephaseing == m_eOperation
+            || EBasicOperation::EBO_Noise_TwoQubitDepolarising == m_eOperation;
+    }
+
+    UBOOL IsMeasure() const
+    {
+        return EBasicOperation::EBO_CC == m_eOperation;
+    }
+
+    UBOOL IsSingleQubitGate() const
+    {
+        return !IsMeasure() && !IsNoise() && 1 == m_lstQubits.Num();
+    }
+
+    UBOOL IsTwoQubitGate() const
+    {
+        return !IsMeasure() && !IsNoise() && 2 == m_lstQubits.Num();
     }
 };
 

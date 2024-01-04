@@ -30,6 +30,7 @@ extern TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower);
 //[[deprecated("use AmplitudeEncodeOneVector instead")]]
 extern QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v);
 
+//[[deprecated("use AmplitudeEncodeOneVectorReal instead")]]
 extern QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v);
 
 //=============================================================================
@@ -50,26 +51,31 @@ extern void QLAPI NormalizeRealToComplex(const Real* deviceData, QLComplex* devi
 * absBuffer and vectorCount are middle result
 */
 extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+extern void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY);
 
 /**
 * suppose abs and phase are already calculated
 */
 extern void QLAPI CalculateDegrees(Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+extern void QLAPI CalculateDegreesReal(Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY);
 
 /**
 *
 */
 extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ, Real* hostY, Real* hostZ);
+extern void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* hostY);
 
 /**
 *
 */
 extern QLGate QLAPI ExchangeToYZGate(UINT vectorPower, Real* hostY, Real* hostZ, UBOOL bHasPhase);
+extern QLGate QLAPI ExchangeToYGate(UINT vectorPower, Real* hostY);
 
 /**
 *
 */
 extern QLGate QLAPI ExchangeToYZGate(UINT vectorCountPower, UINT vectorPower, Real* hostY, Real* hostZ, UBOOL bHasPhase);
+
 
 /**
 * the gate to build |phi>
@@ -77,6 +83,7 @@ extern QLGate QLAPI ExchangeToYZGate(UINT vectorCountPower, UINT vectorPower, Re
 * Assume hostV is already normalized
 */
 extern QLGate QLAPI AmplitudeEncodeOneVector(const QLComplex* hostv, UINT vectorPower, UBOOL bHasPhase);
+extern QLGate QLAPI AmplitudeEncodeOneVectorReal(const QLComplex* hostv, UINT vectorPower);
 
 /**
 * the gate to build |i>|phi_i>

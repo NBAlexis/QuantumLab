@@ -48,7 +48,7 @@ Real CHamitonianTerm::OneTermMeasure(const TArray<BYTE>& pauliType, const Real* 
         }
 
         UINT measureRes = 0;
-        for (INT j = 0; j < uiQubit; ++j)
+        for (INT j = 0; j < static_cast<INT>(uiQubit); ++j)
         {
             INT out = measure(vec, j);
             if (1 == out)

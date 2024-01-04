@@ -93,7 +93,7 @@ public:
 
     QLMatrix(const QLMatrix& other);
 
-    static QLMatrix CopyCreate(UINT uiX, UINT uiY, QLComplex* buffer);
+    static QLMatrix CopyCreate(UINT uiX, UINT uiY, const QLComplex* buffer);
 
     const QLMatrix& operator=(const QLMatrix& other)
     {
@@ -151,6 +151,26 @@ public:
     {
         OnChangeContent();
         m_pData->m_pData[m_uiY * x + y] = v;
+    }
+
+    TArray<QLComplex> GetLine(UINT y) const
+    {
+        TArray<QLComplex> ret;
+        for (INT x = 0; x < static_cast<INT>(m_uiX); ++x)
+        {
+            ret.AddItem(Get(x, y));
+        }
+        return ret;
+    }
+
+    TArray<QLComplex> GetColumn(UINT x) const
+    {
+        TArray<QLComplex> ret;
+        for (INT y = 0; y < static_cast<INT>(m_uiY); ++y)
+        {
+            ret.AddItem(Get(x, y));
+        }
+        return ret;
     }
 
     //void SetHostBuffer(QLComplex* pBuffer)

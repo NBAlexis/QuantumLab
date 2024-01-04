@@ -19,20 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AmplitudeEncodeTest.cpp" />
-    <ClCompile Include="SimpleTest.cpp" />
-    <ClCompile Include="SimulatorTest.cpp" />
+    <ClCompile Include="SwapTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AmplitudeEncodeTest.h" />
-    <ClInclude Include="SimpleTest.h" />
-    <ClInclude Include="SimulatorTest.h" />
+    <ClInclude Include="SwapTest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Bin\SwapTest.yaml" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{822F8F39-205B-439B-8145-4A16E355CAE4}</ProjectGuid>
+    <ProjectGuid>{0307AC4E-860C-4A4F-8EAA-414FDC6E4606}</ProjectGuid>
     <RootNamespace>QuantumLab</RootNamespace>
-    <ProjectName>SimpleTest</ProjectName>
+    <ProjectName>SwapTest</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

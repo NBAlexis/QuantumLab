@@ -95,6 +95,7 @@
 #include "Simulator/QLSimulatorMatrix.h"
 #include "Simulator/QLSimulatorVector.h"
 #include "Simulator/QLSimulatorMeasure.h"
+#include "Simulator/QLSimulatorDensityMatrix.h"
 
 #ifndef _QL_PRIVATE
 __USE_NAMESPACE

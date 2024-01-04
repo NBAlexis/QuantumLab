@@ -52,6 +52,11 @@ inline DOUBLE appStrToDOUBLE(const TCHAR* s)
     return appStoD(s);
 }
 
+inline Real appStrToReal(const TCHAR* s)
+{
+    return static_cast<Real>(appStoD(s));
+}
+
 //=====================================================
 //    CCStringData
 //=====================================================

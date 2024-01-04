@@ -176,11 +176,11 @@ public:
                     appGetTimeNow(timeBuffer, 256);
                     if (NULL != m_pStdStream)
                     {
-                        *m_pStdStream << _T("[") << timeBuffer << "|" << m_sTraceHeader.c_str() << _T("]");
+                        *m_pStdStream << _T("[") << timeBuffer << _T("|") << m_sTraceHeader.c_str() << _T("]");
                     }
                     if (NULL != m_pStream)
                     {
-                        *m_pStream << _T("[") << timeBuffer << "|" << m_sTraceHeader.c_str() << _T("]");
+                        *m_pStream << _T("[") << timeBuffer << _T("|") << m_sTraceHeader.c_str() << _T("]");
                     }
                 }
             }

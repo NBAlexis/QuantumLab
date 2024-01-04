@@ -1,18 +1,19 @@
 //=============================================================================
-// FILENAME : SimpleTest.h
+// FILENAME : SwapTest.h
 // 
 // DESCRIPTION:
-// This is the file for building options
+// 
 //
 // REVISION: [dd/mm/yy]
-//  [12/03/2023 nbale]
+//  [03/01/2024 nbale]
 //=============================================================================
+
+#ifndef _APP_SWAP_TEST_H_
+#define _APP_SWAP_TEST_H_
 
 #include "QuantumLab.h"
 
-#include "AmplitudeEncodeTest.h"
-#include "SimulatorTest.h"
-
+#endif //#ifndef _APP_SWAP_TEST_H_
 
 //=============================================================================
 // END OF FILE

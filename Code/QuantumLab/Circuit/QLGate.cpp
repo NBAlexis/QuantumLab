@@ -132,6 +132,71 @@ QLGate::QLGate(EBasicOperation eOp, Real fParam)
 		m_lstOperations.AddItem(op_h);
 		m_sName = "collapse";
 		break;
+
+	case EBasicOperation::EBO_Noise_Damping:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "damping";
+		break;
+
+	case EBasicOperation::EBO_Noise_Dephaseing:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "dephase";
+		break;
+
+	case EBasicOperation::EBO_Noise_Depolarising:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "depolar";
+		break;
+
+	case EBasicOperation::EBO_Noise_MixPauliX:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "mixPauliX";
+		break;
+
+	case EBasicOperation::EBO_Noise_MixPauliY:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "mixPauliY";
+		break;
+
+	case EBasicOperation::EBO_Noise_MixPauliZ:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "mixPauliZ";
+		break;
+
+	case EBasicOperation::EBO_Noise_MixPauliAll:
+		m_lstQubits.AddItem(0);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "mixPauli";
+		break;
+
+	case EBasicOperation::EBO_Noise_TwoQubitDephaseing:
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "dephase";
+		break;
+
+	case EBasicOperation::EBO_Noise_TwoQubitDepolarising:
+		m_lstQubits.AddItem(0);
+		m_lstQubits.AddItem(1);
+		m_fClassicalParameter = m_fClassicalParameter;
+		m_lstOperations.AddItem(op_h);
+		m_sName = "depolar";
+		break;
 	default:
 		break;
 	}
@@ -368,6 +433,15 @@ QLGate QLGate::CreateControlled() const
 			return ret;
 		}
 		case EBasicOperation::EBO_CC:
+		case EBasicOperation::EBO_Noise_Damping:
+		case EBasicOperation::EBO_Noise_Dephaseing:
+		case EBasicOperation::EBO_Noise_Depolarising:
+		case EBasicOperation::EBO_Noise_MixPauliX:
+		case EBasicOperation::EBO_Noise_MixPauliY:
+		case EBasicOperation::EBO_Noise_MixPauliZ:
+		case EBasicOperation::EBO_Noise_MixPauliAll:
+		case EBasicOperation::EBO_Noise_TwoQubitDephaseing:
+		case EBasicOperation::EBO_Noise_TwoQubitDepolarising:
 			appCrucial("Not supported!");
 			break;
 		default:
@@ -450,9 +524,22 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 				newone.m_lstQubits.AddItem(lstMappingQubits[m_lstQubits[j]]);
 			}
 			newone.m_fClassicalParameter = m_bDagger ? -m_fClassicalParameter : m_fClassicalParameter;
+			if (EBasicOperation::EBO_Noise_Damping == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_Dephaseing == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_Depolarising == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_MixPauliX == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_MixPauliY == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_MixPauliZ == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_MixPauliAll == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_TwoQubitDephaseing == newone.m_eOperation && m_bDagger
+			 || EBasicOperation::EBO_Noise_TwoQubitDepolarising == newone.m_eOperation && m_bDagger)
+			{
+				appParanoiac(_T("dagger of noise simulation not support!\n"));
+				newone.m_fClassicalParameter = m_fClassicalParameter;
+			}
 			if (EBasicOperation::EBO_CC == newone.m_eOperation && m_bDagger)
 			{
-				printf("dagger of controlled collapse not support!\n");
+				appParanoiac(_T("dagger of controlled collapse not support!\n"));
 				newone.m_fClassicalParameter = m_fClassicalParameter;
 			}
 
@@ -559,6 +646,98 @@ Real QLGate::PerformBasicOperation(const Qureg& reg, const SBasicOperation& op)
 	case EBasicOperation::EBO_CC:
 		ret = static_cast<Real>(collapseToOutcome(reg, op.m_lstQubits[0], static_cast<INT>(op.m_fClassicalParameter)));
 		break;
+
+	case EBasicOperation::EBO_Noise_Damping:
+		if (reg.isDensityMatrix)
+		{
+			mixDamping(reg, op.m_lstQubits[0], op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_Dephaseing:
+		if (reg.isDensityMatrix)
+		{
+			mixDephasing(reg, op.m_lstQubits[0], op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_Depolarising:
+		if (reg.isDensityMatrix)
+		{
+			mixDepolarising(reg, op.m_lstQubits[0], op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_MixPauliX:
+		if (reg.isDensityMatrix)
+		{
+			mixPauli(reg, op.m_lstQubits[0], op.m_fClassicalParameter, F(0.0), F(0.0));
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_MixPauliY:
+		if (reg.isDensityMatrix)
+		{
+			mixPauli(reg, op.m_lstQubits[0], F(0.0), op.m_fClassicalParameter, F(0.0));
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_MixPauliZ:
+		if (reg.isDensityMatrix)
+		{
+			mixPauli(reg, op.m_lstQubits[0], F(0.0), F(0.0), op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_MixPauliAll:
+		if (reg.isDensityMatrix)
+		{
+			mixPauli(reg, op.m_lstQubits[0], op.m_fClassicalParameter, op.m_fClassicalParameter, op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_TwoQubitDephaseing:
+		if (reg.isDensityMatrix)
+		{
+			mixTwoQubitDephasing(reg, op.m_lstQubits[0], op.m_lstQubits[1], op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+	case EBasicOperation::EBO_Noise_TwoQubitDepolarising:
+		if (reg.isDensityMatrix)
+		{
+			mixTwoQubitDepolarising(reg, op.m_lstQubits[0], op.m_lstQubits[1], op.m_fClassicalParameter);
+		}
+		else
+		{
+			appDetailed(_T("Noise gate encountered, but the state is pure, ignored...\n"));
+		}
+		break;
+
 	default:
 		printf("not supported type!\n");
 		break;
@@ -981,6 +1160,19 @@ void QLGate::PrintOneOp(const SBasicOperation& op, BYTE qubitCount)
 		break;
 	case EBasicOperation::EBO_CC:
 		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("m"));
+		break;
+	case EBasicOperation::EBO_Noise_Damping:
+	case EBasicOperation::EBO_Noise_Dephaseing:
+	case EBasicOperation::EBO_Noise_Depolarising:
+	case EBasicOperation::EBO_Noise_MixPauliX:
+	case EBasicOperation::EBO_Noise_MixPauliY:
+	case EBasicOperation::EBO_Noise_MixPauliZ:
+	case EBasicOperation::EBO_Noise_MixPauliAll:
+		PrintBasicSingle(op.m_lstQubits[0], qubitCount, sName, _T("N"));
+		break;
+	case EBasicOperation::EBO_Noise_TwoQubitDephaseing:
+	case EBasicOperation::EBO_Noise_TwoQubitDepolarising:
+		PrintBasicTwo(op.m_lstQubits[0], op.m_lstQubits[1], qubitCount, sName, _T("N"));
 		break;
 	default:
 		appCrucial(_T("not supported!\n"));

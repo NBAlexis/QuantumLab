@@ -49,6 +49,7 @@
     <ClInclude Include="QuantumLab.h" />
     <ClInclude Include="QuantumLabPCH.h" />
     <ClInclude Include="Simulator\QLSimulator.h" />
+    <ClInclude Include="Simulator\QLSimulatorDensityMatrix.h" />
     <ClInclude Include="Simulator\QLSimulatorMatrix.h" />
     <ClInclude Include="Simulator\QLSimulatorMeasure.h" />
     <ClInclude Include="Simulator\QLSimulatorVector.h" />
@@ -88,6 +89,7 @@
     <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />
     <ClCompile Include="Simulator\QLSimulator.cpp" />
+    <ClCompile Include="Simulator\QLSimulatorDensityMatrix.cpp" />
     <ClCompile Include="Simulator\QLSimulatorMatrix.cpp" />
     <ClCompile Include="Simulator\QLSimulatorMeasure.cpp" />
     <ClCompile Include="Simulator\QLSimulatorVector.cpp" />

@@ -115,6 +115,9 @@
     <ClCompile Include="Circuit\Hamitonian\CLattice1D.cpp">
       <Filter>Circuit\Hamitonian</Filter>
     </ClCompile>
+    <ClCompile Include="Simulator\QLSimulatorDensityMatrix.cpp">
+      <Filter>Simulator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="Circuit\Hamitonian\CLattice.h">
       <Filter>Circuit\Hamitonian</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulator\QLSimulatorDensityMatrix.h">
+      <Filter>Simulator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,12 @@
 __BEGIN_NAMESPACE
 
 
-extern QLGate QLAPI CreateSwapTest(BYTE vectorQubitNum);
+extern QLGate QLAPI CreateSwapTest(TArray<QLComplex> v1, TArray<QLComplex> v2);
+
+/**
+* when v1 and v2 are real vectors
+*/
+extern QLGate QLAPI CreateSwapTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2);
 
 
 __END_NAMESPACE

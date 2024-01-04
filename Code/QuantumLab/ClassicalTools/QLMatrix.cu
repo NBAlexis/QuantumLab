@@ -360,7 +360,7 @@ QLMatrix::QLMatrix(UINT uiX, UINT uiY, QLComplex* buffer)
     m_pData->m_pData = buffer;
 }
 
-QLMatrix QLMatrix::CopyCreate(UINT uiX, UINT uiY, QLComplex* buffer)
+QLMatrix QLMatrix::CopyCreate(UINT uiX, UINT uiY, const QLComplex* buffer)
 {
     QLComplex* pCopyBuffer = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * uiX * uiY));
     memcpy(pCopyBuffer, buffer, sizeof(QLComplex) * uiX * uiY);

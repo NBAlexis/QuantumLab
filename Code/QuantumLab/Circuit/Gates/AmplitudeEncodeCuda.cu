@@ -29,6 +29,17 @@ _kernelAE_VtoAbsAndPhase(const QLComplex * __restrict__ v, Real* absBuffer, Real
     }
 }
 
+__global__ void _QL_LAUNCH_BOUND
+_kernelAE_VtoAbs(const QLComplex* __restrict__ v, Real* absBuffer, UINT uiMax)
+{
+    const UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
+
+    if (idx < uiMax)
+    {
+        absBuffer[idx] = _cuCabsf(v[idx]);
+    }
+}
+
 /**
 * when level = n
 * calculate 1 << (lengthPower - 1 - n) angles
@@ -93,6 +104,49 @@ _kernelAE_Rotations(Real* YLst, Real* ZLst, Real* absBuffer, Real* phaseBuffer, 
         {
             ZLst[putStart] = phaseBuffer[uiLeft] - phaseBuffer[uiRight];
             phaseBuffer[uiLeft] = F(0.5) * (phaseBuffer[uiLeft] + phaseBuffer[uiRight]);
+        }
+    }
+}
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelAE_RotationsReal(Real* YLst, Real* absBuffer, UINT lengthPower, UINT vectorCount, UINT uiLevel)
+{
+    const UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
+    const UINT uiVLen = 1U << lengthPower;
+
+    if (lengthPower == uiLevel)
+    {
+        //only record the total phase
+        return;
+    }
+
+    const UINT numberOfDegrees = 1U << (lengthPower - uiLevel - 1);
+    const UINT uiIdOfV = idx / numberOfDegrees;
+
+    if (uiIdOfV < vectorCount)
+    {
+        const UINT uiIdInV = idx % numberOfDegrees;
+
+        const UINT uiLeft = uiIdOfV * uiVLen + uiIdInV * (1U << (uiLevel + 1));
+        const UINT uiRight = uiLeft + (1U << uiLevel);
+        UINT putStart = (1U << lengthPower) - (1U << (lengthPower - uiLevel));
+        putStart = vectorCount * putStart + uiIdOfV * numberOfDegrees + uiIdInV;
+
+        const Real cs = absBuffer[uiLeft];
+        const Real sn = absBuffer[uiRight];
+        YLst[putStart] = _atan2(sn, cs) * F(2.0);
+
+        if (1 != numberOfDegrees)
+        {
+            absBuffer[uiLeft] = absBuffer[uiLeft] * absBuffer[uiLeft] + absBuffer[uiRight] * absBuffer[uiRight];
+            if (absBuffer[uiLeft] > _QL_FLT_EPSILON)
+            {
+                absBuffer[uiLeft] = _sqrt(absBuffer[uiLeft]);
+            }
+            else
+            {
+                absBuffer[uiLeft] = F(0.0);
+            }
         }
     }
 }
@@ -181,6 +235,27 @@ void QLAPI CalculateDegrees(Real* absBuffer, Real* phaseBuffer, UINT vectorCount
     }
 }
 
+void QLAPI CalculateDegreesReal(Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY)
+{
+    for (UINT i = 0; i <= vectorPower; ++i)
+    {
+        if (i != vectorPower)
+        {
+            UINT uiLen2 = vectorCount * (1U << (vectorPower - i - 1));
+            UINT iBlock2 = uiLen2 > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen2, _QL_LAUNCH_MAX_THREAD) : 1;
+            UINT iThread2 = uiLen2 > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen2, iBlock2) : uiLen2;
+            _kernelAE_RotationsReal << <iBlock2, iThread2 >> > (deviceY, absBuffer, vectorPower, vectorCount, i);
+        }
+        else
+        {
+            UINT uiLen2 = vectorCount;
+            UINT iBlock2 = uiLen2 > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen2, _QL_LAUNCH_MAX_THREAD) : 1;
+            UINT iThread2 = uiLen2 > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen2, iBlock2) : uiLen2;
+            _kernelAE_RotationsReal << <iBlock2, iThread2 >> > (deviceY, absBuffer, vectorPower, vectorCount, i);
+        }
+    }
+}
+
 void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ)
 {
     UINT vectorLength = 1U << vectorPower;
@@ -191,6 +266,16 @@ void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* pha
     CalculateDegrees(absBuffer, phaseBuffer, vectorCount, vectorPower, deviceY, deviceZ);
 }
 
+void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY)
+{
+    UINT vectorLength = 1U << vectorPower;
+    UINT uiLen = vectorCount * vectorLength;
+    UINT iBlock1 = uiLen > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT iThread1 = uiLen > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen, iBlock1) : uiLen;
+    _kernelAE_VtoAbs << <iBlock1, iThread1 >> > (deviceV, absBuffer, uiLen);
+    CalculateDegreesReal(absBuffer, vectorCount, vectorPower, deviceY);
+}
+
 void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ, Real* hostY, Real* hostZ)
 {
     CalculateDegrees(deviceV, absBuffer, phaseBuffer, vectorCount, vectorPower, deviceY, deviceZ);
@@ -198,6 +283,14 @@ void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* pha
 
     checkCudaErrors(cudaMemcpy(hostY, deviceY, sizeof(Real) * uiLen, cudaMemcpyDeviceToHost));
     checkCudaErrors(cudaMemcpy(hostZ, deviceZ, sizeof(Real) * uiLen, cudaMemcpyDeviceToHost));
+}
+
+void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* hostY)
+{
+    CalculateDegreesReal(deviceV, absBuffer, vectorCount, vectorPower, deviceY);
+    UINT uiLen = vectorCount * (1U << vectorPower);
+
+    checkCudaErrors(cudaMemcpy(hostY, deviceY, sizeof(Real) * uiLen, cudaMemcpyDeviceToHost));
 }
 
 /**
@@ -254,6 +347,43 @@ QLGate QLAPI ExchangeToYZGate(UINT vectorPower, Real* hostY, Real* hostZ, UBOOL 
         bit0.AddItem(static_cast<BYTE>(vectorPower - 1));
         retGate.AppendGate(ph, bit0);
     }
+    return retGate;
+}
+
+/**
+* If the vector is real vector
+*/
+QLGate QLAPI ExchangeToYGate(UINT vectorPower, Real* hostY)
+{
+    QLGate retGate;
+    retGate.AddQubits(static_cast<BYTE>(vectorPower));
+    retGate.m_sName = _T("AE");
+
+    UINT vectorLength = (1U << vectorPower);
+    UINT idx = vectorLength - 2;
+    for (UINT i = 0; i < vectorPower; ++i)
+    {
+        TArray<BYTE> bits;
+        for (UINT j = 0; j < i + 1; ++j)
+        {
+            //we need
+            //3, 32, 321, 3210 
+            bits.AddItem(static_cast<BYTE>(vectorPower - 1 - j));
+        }
+        if (1 == bits.Num())
+        {
+            QLGate ry(EBasicOperation::EBO_RY, hostY[idx]);
+            retGate.AppendGate(ry, bits);
+            idx = idx - 2;
+        }
+        else
+        {
+            QLGate fry = FRy(hostY + idx, static_cast<UINT>(bits.Num()));
+            idx = idx - (1U << (i + 1));
+            retGate.AppendGate(fry, bits);
+        }
+    }
+
     return retGate;
 }
 
@@ -403,6 +533,33 @@ QLGate QLAPI AmplitudeEncodeOneVector(const QLComplex* hostv, UINT vectorPower, 
 
     free(YHostBuffer);
     free(ZHostBuffer);
+
+    return ret;
+}
+
+QLGate QLAPI AmplitudeEncodeOneVectorReal(const QLComplex* hostv, UINT vectorPower)
+{
+    UINT vLength = 1U << vectorPower;
+
+    QLComplex* v = NULL;
+    Real* absBuffer = NULL;
+    Real* YBuffer = NULL;
+    checkCudaErrors(cudaMalloc((void**)&v, sizeof(QLComplex) * vLength));
+    checkCudaErrors(cudaMalloc((void**)&absBuffer, sizeof(Real) * vLength));
+    checkCudaErrors(cudaMalloc((void**)&YBuffer, sizeof(Real) * vLength));
+    checkCudaErrors(cudaMemcpy(v, hostv, sizeof(QLComplex) * vLength, cudaMemcpyHostToDevice));
+
+    Real* YHostBuffer = (Real*)malloc(sizeof(Real) * vLength);
+
+    CalculateDegreesReal(v, absBuffer, 1, vectorPower, YBuffer, YHostBuffer);
+
+    checkCudaErrors(cudaFree(v));
+    checkCudaErrors(cudaFree(absBuffer));
+    checkCudaErrors(cudaFree(YBuffer));
+
+    QLGate ret = ExchangeToYGate(vectorPower, YHostBuffer);
+
+    free(YHostBuffer);
 
     return ret;
 }
