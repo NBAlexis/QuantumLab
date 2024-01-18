@@ -20,9 +20,14 @@ enum class ESimulatorType : UINT
 
 };
 
+typedef void (*OnGateCall)(UINT numberOfGate, Real fProb, const SBasicOperation& sOp);
+
 class QLAPI QLSimulatorParameters
 {
 public:
+
+    QLSimulatorParameters() : m_pCallBack(NULL) {}
+
     virtual ~QLSimulatorParameters() {}
 
     virtual UINT BuildZeroStart(BYTE byQubit, Real* pReal, Real* pImag) const
@@ -35,6 +40,8 @@ public:
 
         return uiVectorLength;
     }
+
+    OnGateCall m_pCallBack;
 };
 
 class QLAPI QLSimulatorOutput

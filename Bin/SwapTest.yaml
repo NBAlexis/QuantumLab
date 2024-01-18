@@ -1,25 +1,24 @@
 # ########################
-FileName1 : ../Debug/SwapTest.csv
-FileName2 : ../Debug/SwapTest.csv
-MeasureRepeat : 100
-ConjugateDot : 0
-Complex : 0
+FileName1 : v1.csv
+FileName2 : v1.csv
+MeasureRepeat : 10000
+Complex : 1
 
 DampingAfterGate : 0.0
 DepolarisingAfterGate : 0.0
 DephasingAfterGate : 0.0
-MixPauliAfterGate : 0.0
-TwoQubitDephasing : 0.0
-TwoQubitDepolarising : 0.0
+MixPauliAfterGate : 0.0001
+TwoQubitDephasing : 0.001
+TwoQubitDepolarising : 0.001
 
-DampingBeforeMeasure : 0.0
+DampingBeforeMeasure : 0.01
 DepolarisingBeforeMeasure : 0.0
 DephasingBeforeMeasure : 0.0
 MixPauliBeforeMeasure : 0.0
 
-# ClassicalResSaveFileName : ../classicalres.csv
-# QuantumResSaveFileName : ../quantumres.csv
-# AveragePuritySaveFileName : ../purity.csv
-# AverageFidelitySaveFileName : ../fidelity.csv
+ClassicalResSaveFileName : ../classicalres.csv
+QuantumResSaveFileName : ../quantumres.csv
+AveragePuritySaveFileName : ../purity.csv
+AverageFidelitySaveFileName : ../fidelity.csv
 
 

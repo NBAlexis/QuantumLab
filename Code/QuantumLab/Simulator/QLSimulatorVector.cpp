@@ -31,15 +31,23 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
 
     //This is a lazy slow implement, I need to use cuda to improve it
     LONGLONG veclen = 1LL << param->m_byQubitCount;
-    QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex)* veclen));
-    if (NULL == res)
-    {
-        appCrucial("buffer not created!");
-        return;
-    }
+    //QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex)* veclen));
+    //if (NULL == res)
+    //{
+    //    appCrucial("buffer not created!");
+    //    return;
+    //}
 
     syncQuESTEnv(evn);
-    param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
+    if (param->m_bHasInitial)
+    {
+        memcpy(vec.stateVec.real, param->m_pRealWavefunction, sizeof(Real) * veclen);
+        memcpy(vec.stateVec.imag, param->m_pImageWavefunction, sizeof(Real) * veclen);
+    }
+    else
+    {
+        param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
+    }
     copyStateToGPU(vec);
 
     for (SIZE_T i = 0; i < opssize; ++i)
@@ -49,29 +57,54 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
         {
             output->m_fProbability *= fProba;
         }
+
+        if (NULL != param->m_pCallBack)
+        {
+            (*param->m_pCallBack)(static_cast<UINT>(i), fProba, ops[static_cast<INT>(i)]);
+        }
     }
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);
 
-    for (LONGLONG line2 = 0; line2 < veclen; ++line2)
+    QLSimulatorOutputVector* outputVector = dynamic_cast<QLSimulatorOutputVector*>(output);
+    QLComplex* res = NULL;
+    if (NULL != outputVector && !outputVector->m_bOutputToBuffer)
     {
-        res[line2].x = static_cast<Real>(vec.stateVec.real[line2]);
-        res[line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
+        res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * veclen));
+        for (LONGLONG line2 = 0; line2 < veclen; ++line2)
+        {
+            res[line2].x = static_cast<Real>(vec.stateVec.real[line2]);
+            res[line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
+        }
+    }
+    
+    if (NULL != outputVector)
+    {
+        if (outputVector->m_bOutputToBuffer)
+        {
+            memcpy(outputVector->m_pRealBuffer, vec.stateVec.real, sizeof(Real) * veclen);
+            memcpy(outputVector->m_pImageBuffer, vec.stateVec.imag, sizeof(Real) * veclen);
+        }
     }
 
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 
-    QLMatrix resmtr(static_cast<UINT>(veclen), 1, res);
-    if (param->m_bPrint)
+    if (NULL != outputVector && !outputVector->m_bOutputToBuffer)
     {
-        resmtr.Print();
-    }
+        QLMatrix resmtr(static_cast<UINT>(veclen), 1, res);
+        if (NULL != outputVector)
+        {
+            if (!outputVector->m_bOutputToBuffer)
+            {
+                outputVector->m_OutputMatrix = resmtr;
+            }
+        }
 
-    QLSimulatorOutputVector* outputVector= dynamic_cast<QLSimulatorOutputVector*>(output);
-    if (NULL != outputVector)
-    {
-        outputVector->m_OutputMatrix = resmtr;
+        if (param->m_bPrint)
+        {
+            resmtr.Print();
+        }
     }
 }
 

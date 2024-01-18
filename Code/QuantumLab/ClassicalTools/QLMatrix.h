@@ -88,7 +88,8 @@ public:
 
     QLMatrix(UINT uiX, UINT uiY);
 
-    //do NOT release the buffer
+    //do NOT release the buffer, let QLMatrix do it
+    //If you need to release the buffer, or you use stack bufferm use CopyCreate
     QLMatrix(UINT uiX, UINT uiY, QLComplex* buffer);
 
     QLMatrix(const QLMatrix& other);

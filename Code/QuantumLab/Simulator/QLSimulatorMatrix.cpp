@@ -58,7 +58,12 @@ void QLSimulatorMatrix::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
 
         for (SIZE_T i = 0; i < opssize; ++i)
         {
-            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+            const Real fProba = QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+
+            if (NULL != param->m_pCallBack)
+            {
+                (*param->m_pCallBack)(static_cast<UINT>(i), fProba, ops[static_cast<INT>(i)]);
+            }
         }
         syncQuESTEnv(evn);
         copyStateFromGPU(vec);

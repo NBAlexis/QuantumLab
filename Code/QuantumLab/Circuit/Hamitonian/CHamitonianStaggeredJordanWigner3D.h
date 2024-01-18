@@ -42,7 +42,9 @@ private:
 };
 
 /**
-* f \bar{psi} \psi
+* \bar{psi} \psi
+* 
+* coefficient = m
 */
 class QLAPI CHamitonianStaggeredJordanWigner1DPsibarPsi : public CHamitonianTerm
 {
@@ -71,24 +73,6 @@ public:
     }
 
     TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
-};
-
-/**
-* \bar{psi} \gamma _1 \psi = -(c/4) (yx - xy)
-*
-*/
-class QLAPI CHamitonianStaggeredJordanWigner1DPsibarG1Psi : public CHamitonianTerm
-{
-public:
-
-    CHamitonianStaggeredJordanWigner1DPsibarG1Psi(Real fCoeff, EPauliType eType) : CHamitonianTerm(fCoeff), m_eOperator(eType)
-    {
-
-    }
-
-    TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const override;
-
-    EPauliType m_eOperator;
 };
 
 /**

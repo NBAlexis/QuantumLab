@@ -116,7 +116,17 @@ add_library(QuantumLab STATIC
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/QuantumPhaseEstimate.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/SimpleGates.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/SwapTest.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianList.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauli.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauliNeighbour.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauliPlaqutte.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianStaggeredJordanWigner1D.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianTerm.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CLattice.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CLattice1D.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CLattice2D.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/QLGate.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/Grover.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/HHL.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/QKMeans.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ClassicalTools/GPUKmeans/GPUKmeans.h
@@ -127,6 +137,7 @@ add_library(QuantumLab STATIC
     ${PROJECT_SOURCE_DIR}/QuantumLab/QuantumLab.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/QuantumLabPCH.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulator.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorDensityMatrix.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorMatrix.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorMeasure.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorVector.h
@@ -136,11 +147,14 @@ add_library(QuantumLab STATIC
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/CNMD5.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/CSV.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/CYAMLParser.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/EnumGather.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/MemStack.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/STDStringFunctions.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/TArray.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/THashMap.h
     ${PROJECT_SOURCE_DIR}/QuantumLab/ToolClass/Tracer.h
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/AmplitudeEncodeCuda.cu
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CLattice2D.cu
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/QKMeans.cu
     ${PROJECT_SOURCE_DIR}/QuantumLab/ClassicalTools/GPUKmeans/GPUKmeans.cu
     ${PROJECT_SOURCE_DIR}/QuantumLab/ClassicalTools/QLMatrix.cu
@@ -155,11 +169,20 @@ add_library(QuantumLab STATIC
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/QuantumPhaseEstimate.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/SimpleGates.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Gates/SwapTest.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianList.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauli.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauliNeighbour.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianPauliPlaqutte.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianStaggeredJordanWigner1D.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CHamitonianTerm.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Hamitonian/CLattice1D.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/QLGate.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/Grover.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Circuit/Subroutine/HHL.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/ClassicalTools/QuantumDataViewer.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/QuantumLabPCH.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulator.cpp
+    ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorDensityMatrix.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorMatrix.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorMeasure.cpp
     ${PROJECT_SOURCE_DIR}/QuantumLab/Simulator/QLSimulatorVector.cpp
@@ -200,7 +223,14 @@ target_compile_options(QuantumLab PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-gencode ar
 
 include_directories(${PROJECT_SOURCE_DIR}/Application/SimpleTest)
 add_executable(SimpleTest 
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/AmplitudeEncodeTest.h
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/GateTest.h
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/SimpleTest.h
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/SimulatorTest.h
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/AmplitudeEncodeTest.cpp
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/GateTest.cpp
     ${PROJECT_SOURCE_DIR}/Application/SimpleTest/SimpleTest.cpp
+    ${PROJECT_SOURCE_DIR}/Application/SimpleTest/SimulatorTest.cpp
     )
 
 
@@ -218,6 +248,7 @@ target_link_libraries(SimpleTest QuantumLab)
 include_directories(${PROJECT_SOURCE_DIR}/Application/QKMeans)
 add_executable(QKMeans 
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.h
+    ${PROJECT_SOURCE_DIR}/Application/QKMeans/CircuitTest.cpp
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/ClassicalKmeans.cpp
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/QKMeans.cpp
     ${PROJECT_SOURCE_DIR}/Application/QKMeans/QuantumKmeans.cpp
@@ -228,3 +259,40 @@ target_include_directories(QKMeans PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST
 
 target_compile_features(QKMeans PUBLIC cxx_std_14)
 target_link_libraries(QKMeans QuantumLab)
+
+
+
+# ==================== 
+# SwapTest 
+# =================
+
+include_directories(${PROJECT_SOURCE_DIR}/Application/SwapTest)
+add_executable(SwapTest 
+    ${PROJECT_SOURCE_DIR}/Application/SwapTest/SwapTest.h
+    ${PROJECT_SOURCE_DIR}/Application/SwapTest/SwapTest.cpp
+    )
+
+
+target_include_directories(SwapTest PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
+
+target_compile_features(SwapTest PUBLIC cxx_std_14)
+target_link_libraries(SwapTest QuantumLab)
+
+
+
+# ==================== 
+# FermionSimulation 
+# =================
+
+include_directories(${PROJECT_SOURCE_DIR}/Application/FermionSimulation)
+add_executable(FermionSimulation 
+    ${PROJECT_SOURCE_DIR}/Application/FermionSimulation/FermionSimulation.h
+    ${PROJECT_SOURCE_DIR}/Application/FermionSimulation/FermionSimulation.cpp
+    ${PROJECT_SOURCE_DIR}/Application/FermionSimulation/Fermion1D.cpp
+    )
+
+
+target_include_directories(FermionSimulation PRIVATE ${CMAKE_SOURCE_DIR}/../QuEST340/QuEST/include)
+
+target_compile_features(FermionSimulation PUBLIC cxx_std_14)
+target_link_libraries(FermionSimulation QuantumLab)

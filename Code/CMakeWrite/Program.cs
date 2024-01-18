@@ -309,8 +309,8 @@ set_target_properties({0} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)", m_sName);
             string[][] sLibLinkWith = { new string[]{ }, new []{ "QuEST" } };
             string[] sLibNames = { "QuEST", "QuantumLab" };
 
-            string[][] sAppLinkWith = { new[] { "QuantumLab" }, new[] { "QuantumLab" } };
-            string[] sApplicationName = { "SimpleTest", "QKMeans" };
+            string[][] sAppLinkWith = { new[] { "QuantumLab" }, new[] { "QuantumLab" }, new[] { "QuantumLab" }, new[] { "QuantumLab" } };
+            string[] sApplicationName = { "SimpleTest", "QKMeans", "SwapTest", "FermionSimulation" };
             EArch eDefaultArch = EArch.EArcSM61;
 
             string sContent = MakeCMake(eDefaultArch);

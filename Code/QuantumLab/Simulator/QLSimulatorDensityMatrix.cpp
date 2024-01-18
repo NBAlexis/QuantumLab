@@ -36,7 +36,7 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
 
     syncQuESTEnv(evn);
 
-    LONGLONG bufferlength = param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
+    //LONGLONG bufferlength = param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
 
     copyStateToGPU(vec);
 
@@ -63,6 +63,11 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
         if (NULL != output)
         {
             output->m_fProbability *= fProba;
+        }
+
+        if (NULL != param->m_pCallBack)
+        {
+            (*param->m_pCallBack)(static_cast<UINT>(i), fProba, ops[static_cast<INT>(i)]);
         }
 
         if (param->m_bMeasureFidelity)

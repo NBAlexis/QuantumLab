@@ -12,7 +12,7 @@
 
 __BEGIN_NAMESPACE
 
-Real CHamitonianTerm::OneTermMeasure(const TArray<BYTE>& pauliType, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat)
+Real CHamitonianTerm::OneTermMeasure(const TArray<BYTE>& pauliType, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, INT iRepeat)
 {
     PauliProduct prod(pauliType, F(1.0));
     QLGate projection = prod.Project();
@@ -34,12 +34,40 @@ Real CHamitonianTerm::OneTermMeasure(const TArray<BYTE>& pauliType, const Real* 
     {
         QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
     }
-    syncQuESTEnv(evn);
-    copyStateFromGPU(vec);
 
     UINT uiOdd = 0;
     UINT uiEven = 0;
-    for (UINT i = 0; i < uiRepeat; ++i)
+
+    if (iRepeat <= 0)
+    {
+        TArray<INT> tomeasure;
+        for (INT qubit = 0; qubit < static_cast<INT>(projection.m_lstQubits.Num()); ++qubit)
+        {
+            tomeasure.AddItem(qubit);
+        }
+        Real* resprob = (Real*)(malloc(sizeof(Real) * veclen));
+        calcProbOfAllOutcomes(resprob, vec, tomeasure.GetData(), tomeasure.Num());
+        Real fRes = F(0.0);
+        for (UINT measureRes = 0; measureRes < veclen; ++measureRes)
+        {
+            if (measureRes & 1)
+            {
+                fRes -= resprob[measureRes];
+            }
+            else
+            {
+                fRes += resprob[measureRes];
+            }
+        }
+        destroyQureg(vec, evn);
+        destroyQuESTEnv(evn);
+        return fRes;
+    }
+
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    for (INT i = 0; i < iRepeat; ++i)
     {
         if (0 != i)
         {
@@ -91,15 +119,15 @@ QLGate CHamitonianTerm::BuildCircuit(const CLattice* pLattice, Real fTrotterTime
     return ret;
 }
 
-Real CHamitonianTerm::Measure(const CLattice* pLattice, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat) const
+Real CHamitonianTerm::Measure(const CLattice* pLattice, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, INT iRepeat) const
 {
     const TArray<PauliProduct> allTerms = GetAllTerms(pLattice);
-    UINT uiControllerCount = pLattice->GetControllerCount();
+    //UINT uiControllerCount = pLattice->GetControllerCount();
 
     Real ret = F(0.0);
     for (INT i = 0; i < allTerms.Num(); ++i)
     {
-        ret += allTerms[i].m_fCoefficient * OneTermMeasure(allTerms[i].m_lstPauliType, hostWaveFunctionReal, hostWaveFunctionImagin, uiRepeat);
+        ret += allTerms[i].m_fCoefficient * OneTermMeasure(allTerms[i].m_lstPauliType, hostWaveFunctionReal, hostWaveFunctionImagin, iRepeat);
     }
 
     return ret;

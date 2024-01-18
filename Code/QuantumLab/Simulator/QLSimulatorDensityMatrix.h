@@ -18,7 +18,8 @@ class QLAPI QLSimulatorParametersDensityMatrix : public QLSimulatorParameters
 public:
 
     QLSimulatorParametersDensityMatrix()
-        : m_MasterGate()
+        : QLSimulatorParameters()
+        , m_MasterGate()
         , m_byQubitCount(0)
         , m_bPrint(TRUE)
 

@@ -172,7 +172,7 @@ INT CLattice2D::MapOutSideLink(INT x, INT y, INT dir, INT iReverse, UINT& linkIn
     }
     dir = dir - 1;
 
-    if (x < 0 || x >= static_cast<INT>(m_uiX))
+    if (x < 0 || x >= m_uiX)
     {
         switch (m_eBoundary)
         {
@@ -200,7 +200,7 @@ INT CLattice2D::MapOutSideLink(INT x, INT y, INT dir, INT iReverse, UINT& linkIn
         }
     }
 
-    if (y < 0 || y >= static_cast<INT>(m_uiY))
+    if (y < 0 || y >= m_uiY)
     {
         switch (m_eBoundary)
         {
@@ -257,19 +257,19 @@ TArray<CLatticeSiteData> CLattice2D::GetPlaquttes() const
             UINT site = 0;
 
             INT ireverse = MapOutSideLink(x, y, 1, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x + 1, y, 2, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x + 1, y + 1, -1, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x, y + 1, -2, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ret.AddItem(onePlaq);
@@ -289,19 +289,19 @@ TArray<CLatticeSiteData> CLattice2D::GetCrosses() const
             UINT site = 0;
 
             INT ireverse = MapOutSideLink(x, y, 1, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x, y, 2, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x, y, -1, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ireverse = MapOutSideLink(x, y, -2, 1, site);
-            onePlaq.m_lstSites.AddItem(static_cast<BYTE>(site));
+            onePlaq.m_lstSites.AddItem(site);
             onePlaq.m_lstDirectionOfLinks.AddItem(ireverse);
 
             ret.AddItem(onePlaq);
@@ -547,7 +547,7 @@ void CLattice2D::DrawSitePrint(BYTE* grid, const CLatticeSiteData& link, UBOOL b
     UINT uiY1 = link.m_lstSites[0] % m_uiY;
 
     UINT uiX2 = link.m_lstSites[1] / m_uiY;
-    //UINT uiY2 = link.m_lstSites[1] % m_uiY;
+    UINT uiY2 = link.m_lstSites[1] % m_uiY;
     CCString sSiteNumber1 = _T("");
     sSiteNumber1.Format(_T("%d"), link.m_lstSites[0]);
     CCString sSiteNumber2 = _T("");

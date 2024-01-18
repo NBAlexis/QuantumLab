@@ -1,0 +1,30 @@
+# ########################
+# EFJ_Simulation, EFJ_Measure
+JobType : EFJ_Measure
+
+JobSimulation:
+
+    Spacing : 1.0
+    Mass : 1.0
+    G0 : 1.0
+    G1 : 1.0
+    F1sq : 1.0
+    Time : 1.0
+    Site : 4
+    DecomposeStep : 2
+    iMaxStep : 10
+    SaveFile : test_%d.csv
+
+JobMeasure:
+
+    Spacing : 1.0
+    Mass : 1.0
+    G0 : 1.0
+    G1 : 1.0
+    F1sq : 1.0
+    Time : 1.0
+    Site : 4
+    Repeat : -1
+    SaveFile : test_9.csv
+
+

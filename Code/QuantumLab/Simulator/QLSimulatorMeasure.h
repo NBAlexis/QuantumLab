@@ -18,7 +18,8 @@ class QLAPI QLSimulatorParametersMeasure : public QLSimulatorParameters
 public:
 
     QLSimulatorParametersMeasure()
-        : m_MasterGate()
+        : QLSimulatorParameters()
+        , m_MasterGate()
         , m_byQubitCount(0)
         , m_bPrint(TRUE)
         , m_iRepeat(1000)

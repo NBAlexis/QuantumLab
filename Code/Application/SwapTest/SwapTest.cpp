@@ -159,32 +159,33 @@ int main()
     __FetchIntWithDefault(_T("Complex"), 1);
     UBOOL bComplex = (0 != iValues);
 
-    TArray<QLComplex> expectedoutput;
-    TArray<QLComplex> output;
-    TArray<QLComplex> averagePurity;
-    TArray<QLComplex> averageFidelity;
+    QLComplex* expectedoutput = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
+    QLComplex* output = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
+    QLComplex* averagePurity = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
+    QLComplex* averageFidelity = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
     UINT iNow = 0;
     for (INT i = 0; i < static_cast<INT>(m1.Y()); ++i)
     {
         for (INT j = 0; j < static_cast<INT>(m2.Y()); ++j)
         {
+            UINT idx1 = i * m2.Y() + j;
+            UINT idx2 = j * m2.Y() + i;
             if (bSameFile)
             {
                 if (i == j)
                 {
-                    expectedoutput.AddItem(_make_cuComplex(F(1.0), F(0.0)));
-                    output.AddItem(_make_cuComplex(F(1.0), F(0.0)));
-                    averagePurity.AddItem(_make_cuComplex(F(1.0), F(0.0)));
-                    averageFidelity.AddItem(_make_cuComplex(F(1.0), F(0.0)));
+                    expectedoutput[idx1] = _make_cuComplex(F(1.0), F(0.0));
+                    output[idx1] = _make_cuComplex(F(1.0), F(0.0));
+                    averagePurity[idx1] = _make_cuComplex(F(1.0), F(0.0));
+                    averageFidelity[idx1] = _make_cuComplex(F(1.0), F(0.0));
                     continue;
                 }
                 else if (j < i)
                 {
-                    UINT idx = j * m2.Y() + i;
-                    expectedoutput.AddItem(expectedoutput[idx]);
-                    output.AddItem(output[idx]);
-                    averagePurity.AddItem(averagePurity[idx]);
-                    averageFidelity.AddItem(averageFidelity[idx]);
+                    expectedoutput[idx1] = expectedoutput[idx2];
+                    output[idx1] = output[idx2];
+                    averagePurity[idx1] = averagePurity[idx2];
+                    averageFidelity[idx1] = averageFidelity[idx2];
                     continue;
                 }
             }
@@ -206,22 +207,25 @@ int main()
 
             TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam, iRealMeasure);
 
-            expectedoutput.AddItem(_make_cuComplex(fClassical, F(0.0)));
-            output.AddItem(_make_cuComplex(quantumRes[2], F(0.0)));
-            averagePurity.AddItem(_make_cuComplex(quantumRes[0], F(0.0)));
-            averageFidelity.AddItem(_make_cuComplex(quantumRes[1], F(0.0)));
+            expectedoutput[idx1] = _make_cuComplex(fClassical, F(0.0));
+            output[idx1] = _make_cuComplex(quantumRes[2], F(0.0));
+            averagePurity[idx1] = _make_cuComplex(quantumRes[0], F(0.0));
+            averageFidelity[idx1] = _make_cuComplex(quantumRes[1], F(0.0));
         }
     }
 
-    QLMatrix expm = QLMatrix::CopyCreate(m1.Y(), m2.Y(), expectedoutput.GetData());
-    QLMatrix resm = QLMatrix::CopyCreate(m1.Y(), m2.Y(), output.GetData());
-    QLMatrix purity = QLMatrix::CopyCreate(m1.Y(), m2.Y(), averagePurity.GetData());
-    QLMatrix fidelity = QLMatrix::CopyCreate(m1.Y(), m2.Y(), averageFidelity.GetData());
+    QLMatrix expm(m1.Y(), m2.Y(), expectedoutput);
+    QLMatrix resm(m1.Y(), m2.Y(), output);
+    QLMatrix purity(m1.Y(), m2.Y(), averagePurity);
+    QLMatrix fidelity(m1.Y(), m2.Y(), averageFidelity);
 
-    expm.Print("ClassicalResult");
-    resm.Print("QuantumResult");
-    purity.Print("AveragePurity");
-    fidelity.Print("AverageFidelity");
+    if (m1.Y() * m2.Y() < 10000)
+    {
+        expm.Print("ClassicalResult");
+        resm.Print("QuantumResult");
+        purity.Print("AveragePurity");
+        fidelity.Print("AverageFidelity");
+    }
 
     __FetchStringWithDefault(_T("ClassicalResSaveFileName"), _T(""));
     if (!sValues.IsEmpty())

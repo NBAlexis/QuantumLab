@@ -45,6 +45,8 @@ public:
 class QLAPI CLattice
 {
 public:
+
+    virtual ~CLattice() {}
     
     virtual TArray<CLatticeSiteData> GetSites() const = 0;
     virtual TArray<CLatticeSiteData> GetNeighbourPairs() const = 0;

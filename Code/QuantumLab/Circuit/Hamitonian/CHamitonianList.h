@@ -28,6 +28,8 @@ public:
     virtual ~CHamitonianList();
 
     QLGate BuildSimulationCircuit(Real fTime, UINT uiTrotterStep) const;
+    Real Measure(const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, INT iRepeat) const;
+
     void SetDecomposeType(ETimeDecomposeType eDecompose)
     {
         m_eDecompose = eDecompose;
@@ -54,25 +56,51 @@ public:
 };
 
 /**
-* psibar (i gamma1 partial1 + m) psi - g (psibar psi)^2 - mu psibar gamma0 psi
+* a [psibar (i gamma1 partial1 + m) psi 
+* + m psibar psi
+* + g0 psibar gamma0 psi
+* + g1 psibar gamma1 psi
+* + f1sq (psibar psi)^2]
+* 
+* Note that
+* g5 is not implemented
+* g5.g0 = -g1
+* g5.g1 = -g0
+* 
+* g5sq = f1sq = -g1sq
+* g0sq = f1sq + g0
 */
-class QLAPI CHamitonianNJL1D : public CHamitonianList
+struct QLAPI SJordanWeigner1DTerms
+{
+    Real m_fLatticeSpacing;
+    Real m_fMass;
+    Real m_fG0;
+    Real m_fG1;
+    Real m_f1Sq;
+
+    UBOOL m_bHasMass;
+    UBOOL m_bHasG0;
+    UBOOL m_bHasG1;
+    UBOOL m_bHasF1sq;
+};
+
+class QLAPI CHamitonianFermion1D : public CHamitonianList
 {
 public:
 
-    CHamitonianNJL1D(UINT uiSiteCount, Real fMass, Real fMu, Real fg, Real fLatticeSpacing = F(1.0));
-    void SetLatticeSpacing(Real fa);
-    void SetMass(Real fm);
-    void SetChemicalPotential(Real fMu);
-    void SetContactCoupling(Real fg);
+    CHamitonianFermion1D(UINT uiSiteCount, const SJordanWeigner1DTerms& param);
+
+    SJordanWeigner1DTerms m_sParam;
+    Real m_fLatticeSpacing;
 
 protected:
 
     QLGate BuildSimulationCircuitABCBA(Real fTime, UINT uiTrotterStep) const override;
 
-private:
+    void QLGateA(QLGate& gate, Real fTime, UINT uiControllerCount) const;
+    void QLGateB(QLGate& gate, Real fTime, UINT uiControllerCount) const;
+    void QLGateC(QLGate& gate, Real fTime, UINT uiControllerCount) const;
 
-    Real m_fG;
 };
 
 

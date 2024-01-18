@@ -18,7 +18,8 @@ class QLAPI QLSimulatorParametersMatrix : public QLSimulatorParameters
 public:
 
     QLSimulatorParametersMatrix()
-        : m_MasterGate()
+        : QLSimulatorParameters()
+        , m_MasterGate()
         , m_byQubitCount(0)
         , m_bPrint(TRUE)
     {

@@ -15,7 +15,7 @@ __BEGIN_NAMESPACE
 QLGate QLAPI CreateSwapTest(TArray<QLComplex> v1, TArray<QLComplex> v2)
 {
     UINT l = static_cast<UINT>(v1.Num() > v2.Num() ? v1.Num() : v2.Num());
-    BYTE qubitForEachVector = MostSignificantPowerTwo(l);
+    BYTE qubitForEachVector = static_cast<BYTE>(MostSignificantPowerTwo(l));
     for (UINT i = 0; i < (1U << qubitForEachVector); ++i)
     {
         if (v1.Num() <= static_cast<INT>(i))
@@ -70,7 +70,7 @@ QLGate QLAPI CreateSwapTest(TArray<QLComplex> v1, TArray<QLComplex> v2)
 QLGate QLAPI CreateSwapTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2)
 {
     UINT l = static_cast<UINT>(v1.Num() > v2.Num() ? v1.Num() : v2.Num());
-    BYTE qubitForEachVector = MostSignificantPowerTwo(l);
+    BYTE qubitForEachVector = static_cast<BYTE>(MostSignificantPowerTwo(l));
     for (UINT i = 0; i < (1U << qubitForEachVector); ++i)
     {
         if (v1.Num() <= static_cast<INT>(i))

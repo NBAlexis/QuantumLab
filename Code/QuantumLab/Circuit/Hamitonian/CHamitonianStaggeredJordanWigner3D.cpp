@@ -144,46 +144,6 @@ TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DPsibarG0Psi::GetAllTerms(
 }
 
 /**
-* \bar{psi} \gamma _1 \psi = -(c/4) (yx - xy)
-* 
-* when pauliType = y, it is -(c/4) yx
-* otherwise, it is (c/4) xy
-*/
-TArray<PauliProduct> CHamitonianStaggeredJordanWigner1DPsibarG1Psi::GetAllTerms(const CLattice* pLattice) const
-{
-    Real fCoeff = m_fCoefficient * ((EPauliType::EPT_Y == m_eOperator) ? F(-0.25) : F(0.25));
-
-    TArray<CLatticeSiteData> pairs = pLattice->GetNeighbourPairs();
-    UINT uiControllerCount = pLattice->GetControllerCount();
-
-    TArray<PauliProduct> ret;
-
-    for (INT i = 0; i < pairs.Num(); ++i)
-    {
-        TArray<BYTE> pauliProduct;
-        for (UINT uiQubit = 0; uiQubit < uiControllerCount; ++uiQubit)
-        {
-            if (static_cast<UINT>(pairs[i].m_lstSites[0]) == uiQubit)
-            {
-                pauliProduct.AddItem(static_cast<BYTE>(m_eOperator));
-            }
-            else if (static_cast<UINT>(pairs[i].m_lstSites[1]) == uiQubit)
-            {
-                pauliProduct.AddItem(static_cast<BYTE>((EPauliType::EPT_Y == m_eOperator) ? EPauliType::EPT_X : EPauliType::EPT_Y));
-            }
-            else
-            {
-                pauliProduct.AddItem(static_cast<BYTE>(EPauliType::EPT_I));
-            }
-        }
-
-        ret.AddItem(PauliProduct(pauliProduct, fCoeff));
-    }
-
-    return ret;
-}
-
-/**
 *   -g/4a[\sum _{n=0,N-2}(1+sz(n))(1+sz(n+1))  + (1+sz(N-1))(1+sz(0)) - 2\sum _{n=0,N-1}(1+sz(n))]
 * = -g/4a[\sum _{n=0,N-2}(1+sz(n)+sz(n+1)+sz(n)sz(n+1))  + (1+sz(N-1)+sz(0)+sz(0)sz(N-1)) - 2\sum _{n=0,N-1}(1+sz(n))]
 * = -g/4a[\sum _{n=0,N-2}(1+sz(n) + 1+sz(n+1) +sz(n)sz(n+1) - 1)  + (1+sz(N-1) +1+sz(0) +sz(0)sz(N-1) - 1) - 2\sum _{n=0,N-1}(1+sz(n))]

@@ -18,9 +18,13 @@ class QLAPI QLSimulatorParametersVector : public QLSimulatorParameters
 public:
 
     QLSimulatorParametersVector()
-        : m_MasterGate()
+        : QLSimulatorParameters()
+        , m_MasterGate()
         , m_byQubitCount(0)
         , m_bPrint(TRUE)
+        , m_bHasInitial(FALSE)
+        , m_pRealWavefunction(NULL)
+        , m_pImageWavefunction(NULL)
     {
         
     }
@@ -29,14 +33,27 @@ public:
     QLGate m_MasterGate;
     BYTE m_byQubitCount;
     UBOOL m_bPrint;
+
+    UBOOL m_bHasInitial;
+    Real* m_pRealWavefunction;
+    Real* m_pImageWavefunction;
 };
 
 class QLAPI QLSimulatorOutputVector : public QLSimulatorOutput
 {
 public:
+    QLSimulatorOutputVector() 
+        : m_bOutputToBuffer(FALSE) 
+        , m_pRealBuffer(NULL)
+        , m_pImageBuffer(NULL)
+    {
+    }
 
     //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
     QLMatrix m_OutputMatrix;
+    UBOOL m_bOutputToBuffer;
+    Real* m_pRealBuffer;
+    Real* m_pImageBuffer;
 };
 
 class QLAPI QLSimulatorVector : public QLSimulator

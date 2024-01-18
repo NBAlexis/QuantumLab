@@ -18,6 +18,7 @@ class QLAPI CHamitonianTerm
 public:
 
     CHamitonianTerm(Real fCoeff) : m_fCoefficient(fCoeff) {}
+    virtual ~CHamitonianTerm() {}
 
     virtual TArray<PauliProduct> GetAllTerms(const CLattice* pLattice) const = 0;
 
@@ -46,9 +47,12 @@ public:
         return prod.OneStepGate(fTrotterTime);
     }
 
-    inline static Real OneTermMeasure(const TArray<BYTE>& pauliType, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat);
+    /**
+    * when iRepeat <= 0, measure exact
+    */
+    inline static Real OneTermMeasure(const TArray<BYTE>& pauliType, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, INT iRepeat);
 
-    virtual Real Measure(const CLattice* pLattice, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, UINT uiRepeat) const;
+    virtual Real Measure(const CLattice* pLattice, const Real* hostWaveFunctionReal, const Real* hostWaveFunctionImagin, INT iRepeat) const;
 
     Real m_fCoefficient;
 };
