@@ -1,6 +1,11 @@
 # ########################
-# EQKJ_TestDifferentDimension
-KMeansJob : EQKJ_TestDifferentDimension
+# EQKJ_Kmeans
+# EQKJ_TestBuildStateOnce
+# EQKJ_TestBuildStateFromFile
+# EQKJ_TestQKmeans2D
+# EQKJ_TestQKNN2D
+# EQKJ_TestQKNN3D
+KMeansJob : EQKJ_TestQKNN2D
 
 # ########################
 # GPU Kmeans
@@ -21,11 +26,47 @@ GPUKmeans:
 
 CircuitTestDim:
 
-    CSVFileName : q8.csv
-    AmplitudeSave : aq8_16.csv
-    MeasureSave : mq8_16.csv
-    Count : 4
-    Repeat : 8
+    LoadFile : q8.csv
+    MeasureSave : q8_16.csv
+    DimList :      [4, 8, 16, 32, 64, 128, 256, 512, 1024]
+    AARepeatList : [1, 2,  3,  4,  6,   8,  12,  17,   25]
+    CountList : [4, 8, 16, 32, 64, 128, 256]
+    VectorCount : 16
+    AA : 1
+    Repeat : 10
+
+QKMeans2D:
+
+    LoadFile : p2d.csv
+    KFileHead : k2d
+    CenterFileHead : c2d
+    RepeatFileHead : r2d
+    K : 4
+    Hit : 1
+    Iteration : 10
+
+QKNN2D:
+
+    TrainingCluster : k2dk4traing.csv
+    TrainingSet : p2dk4traing.csv
+    TestSet : p2dk4test.csv
+    TestSave : k2dtestres1-10.csv
+    RepeatSave : r2dtestres1-10.csv
+    MaxCluster : 4
+    PointHit : 1
+    KHit : 10
+
+QKNN3D:
+
+    TrainingCluster : k3dk8traing.csv
+    TrainingSet : p3dk8traing.csv
+    TestSet : p3dk8test.csv
+    TestSave : k3dtestres1-5.csv
+    RepeatSave : r3dtestres1-5.csv
+    MaxCluster : 8
+    PointHit : 1
+    KHit : 5
+
 
 # ########################
 # Quantum Kmeans

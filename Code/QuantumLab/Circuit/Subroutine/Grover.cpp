@@ -12,33 +12,9 @@
 
 __BEGIN_NAMESPACE
 
-/**
-*
-* 
-*/
-QLGate QLAPI GroverS0Gate(BYTE numberOfQubits)
-{
-    QLGate ret;
-    return ret;
-}
 
 /**
-* 1 - 2|n><n| = diag(1,...,1,-1,1,...1) where -1 is at position n
-* we need numberOfQubits + 1 qubits, where the last one is ancilla
-* we asumme ancilla is at |0>-|1> already
-* 
-* ===========================================
-* 1-step apply not to encode n on the qubits
-* 
-* 2-step apply hadard on ancilla
-* 
-* 3-step apply cn-NOT
-* 
-* 4-step apply not to encode n on the qubits again
-* 
-* Assume 2 ancilla
-* bit numberOfQubits:  |0>-|1> to do the phase kick back
-* bit numberOfQubits+1: Zeroed ancilla for CNOT
+*
 */
 QLGate QLAPI GroverSXGate(BYTE numberOfQubits, UINT elementToFlip, UBOOL bUseAncilla)
 {
@@ -98,6 +74,51 @@ QLGate QLAPI GroverSXGate(BYTE numberOfQubits, UINT elementToFlip, UBOOL bUseAnc
     }
 
     return ret;
+}
+
+/**
+*
+*/
+QLGate QLAPI AmplitudeAmplification(QLGate agate, TArray<BYTE> subspaceQubits, UINT elementToFlip, UINT uiRepeat, UBOOL bUseAncilla, UINT uiInitialState)
+{
+    QLGate totalWithAA;
+    UINT totalQubits = agate.GetQubitCount() + (bUseAncilla ? 2 : 1);
+    totalWithAA.AddQubits(static_cast<BYTE>(totalQubits));
+    TArray<BYTE> addAQubits;
+    addAQubits.Append(ByteSequnce, agate.GetQubitCount());
+    TArray<BYTE> sxQubits;
+    sxQubits.Append(ByteSequnce, agate.GetQubitCount() + (bUseAncilla ? 2 : 1));
+    QLGate s0Gate = GroverSXGate(agate.GetQubitCount(), uiInitialState, bUseAncilla);
+
+    QLGate s0GateSubspace = GroverSXGate(static_cast<BYTE>(subspaceQubits.Num()), 0, bUseAncilla);
+    subspaceQubits.AddItem(agate.GetQubitCount());
+    if (bUseAncilla)
+    {
+        subspaceQubits.AddItem(agate.GetQubitCount() + 1);
+    }
+
+    QLGate x(EBasicOperation::EBO_X);
+    QLGate h(EBasicOperation::EBO_H);
+    TArray<BYTE> ancillaQubit;
+    ancillaQubit.AddItem(agate.GetQubitCount());
+    totalWithAA.AppendGate(agate, addAQubits);
+    totalWithAA.AppendGate(x, ancillaQubit);
+    totalWithAA.AppendGate(h, ancillaQubit);
+
+    for (UINT i = 0; i < uiRepeat; ++i)
+    {
+        totalWithAA.AppendGate(s0GateSubspace, subspaceQubits);
+        agate.Dagger();
+        totalWithAA.AppendGate(agate, addAQubits);
+        totalWithAA.AppendGate(s0Gate, sxQubits);
+        agate.Dagger();
+        totalWithAA.AppendGate(agate, addAQubits);
+    }
+
+    totalWithAA.AppendGate(h, ancillaQubit);
+    totalWithAA.AppendGate(x, ancillaQubit);
+
+    return totalWithAA;
 }
 
 __END_NAMESPACE

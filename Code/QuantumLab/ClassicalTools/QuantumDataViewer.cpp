@@ -80,6 +80,85 @@ QLMatrix QLAPI ShowStateVectorDetail(const QLComplex* statedata, TArray<BYTE> in
     return ret;
 }
 
+QLMatrix QLAPI ShowStateVectorDetail(const Qureg& vec, TArray<BYTE> index, UBOOL bNormalize)
+{
+    UINT uiLen = 1UL << static_cast<UINT>(index.Num());
+    QLComplex* stateData = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex)* uiLen));
+
+    for (UINT idx = 0; idx < uiLen; ++idx)
+    {
+        stateData[idx] = _make_cuComplex(vec.stateVec.real[idx], vec.stateVec.imag[idx]);
+    }
+    
+    QLMatrix ret = ShowStateVectorDetail(stateData, index, bNormalize);
+    appSafeFree(stateData);
+    return ret;
+}
+
+QLMatrix QLAPI ShowStateVectorDetail(const QLComplex* statedata, BYTE count, BYTE idx0, ...)
+{
+    va_list arg;
+    {
+        va_start(arg, idx0);
+        TArray<BYTE> idx;
+        idx.AddItem(idx0);
+        for (BYTE i = 1; i < count; ++i)
+        {
+            idx.AddItem(va_arg(arg, BYTE));
+        }
+
+        QLMatrix ret = ShowStateVectorDetail(statedata, idx);
+        va_end(arg);
+
+        return ret;
+    }
+}
+
+QLMatrix QLAPI ShowStateVectorDetail(const Qureg& vec, BYTE count, BYTE idx0, ...)
+{
+    va_list arg;
+    {
+        va_start(arg, idx0);
+        TArray<BYTE> idx;
+        idx.AddItem(idx0);
+        for (BYTE i = 1; i < count; ++i)
+        {
+            idx.AddItem(va_arg(arg, BYTE));
+        }
+
+        QLMatrix ret = ShowStateVectorDetail(vec, idx);
+        va_end(arg);
+
+        return ret;
+    }
+}
+
+void QLAPI HostBufferViewer(const Real* buffer, UINT w, UINT h)
+{
+    appPushLogDate(FALSE);
+
+    for (UINT y = 0; y < h; ++y)
+    {
+        for (UINT x = 0; x < w; ++x)
+        {
+            appGeneral(_T("%f\t"), buffer[y * w + x]);
+        }
+        appGeneral(_T("\n"));
+    }
+
+    appPopLogDate();
+}
+
+void QLAPI DeviceBufferViewer(const Real* buffer, UINT w, UINT h)
+{
+    Real* pHostBuffer = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
+    checkCudaErrors(cudaMemcpy(pHostBuffer, buffer, sizeof(Real) * w * h, cudaMemcpyDeviceToHost));
+
+    HostBufferViewer(pHostBuffer, w, h);
+
+    appSafeFree(pHostBuffer);
+}
+
 __END_NAMESPACE
 
 

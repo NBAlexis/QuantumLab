@@ -25,6 +25,8 @@ extern TArray<Real> QLAPI ReadCSVAR(const CCString& fileName, UINT& w, UINT& h);
 
 extern TArray<FLOAT> QLAPI ReadCSVAF(const CCString& fileName, UINT& w, UINT& h);
 
+extern TArray<INT> QLAPI ReadCSVAI(const CCString& fileName, UINT& w, UINT& h);
+
 extern void QLAPI SaveCSVAR(const Real* m, UINT w, UINT h, const CCString& fileName);
 
 extern void QLAPI SaveCSVAI(const INT* m, UINT w, UINT h, const CCString& fileName);

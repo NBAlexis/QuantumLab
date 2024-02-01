@@ -56,6 +56,60 @@ _kernelReduceMax(const T * __restrict__ arr, UINT* idxbuffer, UINT uiJump, UINT 
     }
 }
 
+template<class T>
+__global__ void
+_QL_LAUNCH_BOUND
+_kernelReduceMin(const T* __restrict__ arr, UINT* idxbuffer, UINT uiJump, UINT uiMax)
+{
+    const UINT uiIdTo = (threadIdx.x + blockIdx.x * blockDim.x) * (uiJump << 1);
+    const UINT uiIdFrom = uiIdTo + uiJump;
+    if (uiIdFrom < uiMax)
+    {
+        if (1 == uiJump)
+        {
+            idxbuffer[uiIdFrom] = uiIdFrom;
+            idxbuffer[uiIdTo] = uiIdTo;
+        }
+
+        if (arr[idxbuffer[uiIdFrom]] < arr[idxbuffer[uiIdTo]])
+        {
+            idxbuffer[uiIdTo] = idxbuffer[uiIdFrom];
+        }
+    }
+}
+
+template<class T>
+__global__ void
+_QL_LAUNCH_BOUND
+_kernelReduceMax(T* arr, UINT uiJump, UINT uiMax)
+{
+    const UINT uiIdTo = (threadIdx.x + blockIdx.x * blockDim.x) * (uiJump << 1);
+    const UINT uiIdFrom = uiIdTo + uiJump;
+    if (uiIdFrom < uiMax)
+    {
+        if (arr[uiIdTo] < arr[uiIdFrom])
+        {
+            arr[uiIdTo] = arr[uiIdFrom];
+        }
+    }
+}
+
+template<class T>
+__global__ void
+_QL_LAUNCH_BOUND
+_kernelReduceMin(T* arr, UINT uiJump, UINT uiMax)
+{
+    const UINT uiIdTo = (threadIdx.x + blockIdx.x * blockDim.x) * (uiJump << 1);
+    const UINT uiIdFrom = uiIdTo + uiJump;
+    if (uiIdFrom < uiMax)
+    {
+        if (arr[uiIdTo] > arr[uiIdFrom])
+        {
+            arr[uiIdTo] = arr[uiIdFrom];
+        }
+    }
+}
+
 __global__ void
 _QL_LAUNCH_BOUND
 _kernelReduceComp(QLComplex* arr, UINT uiJump, UINT uiMax)
@@ -158,7 +212,61 @@ UINT ReduceMaxT(const T* value, UINT* idxBuffer, UINT count)
         _kernelReduceMax << <iBlock, iThread >> > (value, idxBuffer, iJump, count);
     }
     UINT result[1];
-    cudaMemcpy(result, value, sizeof(UINT), cudaMemcpyDeviceToHost);
+    cudaMemcpy(result, idxBuffer, sizeof(UINT), cudaMemcpyDeviceToHost);
+    return result[0];
+}
+
+template<class T>
+UINT ReduceMinT(const T* value, UINT* idxBuffer, UINT count)
+{
+    const UINT iRequiredDim = (count + 1) >> 1;
+    const UINT iPower = GetReduceDim(iRequiredDim);
+    for (UINT i = 0; i <= iPower; ++i)
+    {
+        UINT iJump = 1 << i;
+        const UINT iThreadNeeded = 1 << (iPower - i);
+        UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+        UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+        _kernelReduceMin << <iBlock, iThread >> > (value, idxBuffer, iJump, count);
+    }
+    UINT result[1];
+    cudaMemcpy(result, idxBuffer, sizeof(UINT), cudaMemcpyDeviceToHost);
+    return result[0];
+}
+
+template<class T>
+T ReduceMaxT(T* value, UINT count)
+{
+    const UINT iRequiredDim = (count + 1) >> 1;
+    const UINT iPower = GetReduceDim(iRequiredDim);
+    for (UINT i = 0; i <= iPower; ++i)
+    {
+        UINT iJump = 1 << i;
+        const UINT iThreadNeeded = 1 << (iPower - i);
+        UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+        UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+        _kernelReduceMax << <iBlock, iThread >> > (value, iJump, count);
+    }
+    T result[1];
+    cudaMemcpy(result, value, sizeof(T), cudaMemcpyDeviceToHost);
+    return result[0];
+}
+
+template<class T>
+T ReduceMinT(T* value, UINT count)
+{
+    const UINT iRequiredDim = (count + 1) >> 1;
+    const UINT iPower = GetReduceDim(iRequiredDim);
+    for (UINT i = 0; i <= iPower; ++i)
+    {
+        UINT iJump = 1 << i;
+        const UINT iThreadNeeded = 1 << (iPower - i);
+        UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+        UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+        _kernelReduceMin << <iBlock, iThread >> > (value, iJump, count);
+    }
+    T result[1];
+    cudaMemcpy(result, value, sizeof(T), cudaMemcpyDeviceToHost);
     return result[0];
 }
 
@@ -175,6 +283,16 @@ extern QLAPI INT ReduceSum(INT* value, UINT count)
 extern QLAPI UINT ReduceSum(UINT* value, UINT count)
 {
     return ReduceSumT(value, count);
+}
+
+extern QLAPI Real ReduceMin(Real* value, UINT count)
+{
+    return ReduceMinT(value, count);
+}
+
+extern QLAPI Real ReduceMax(Real* value, UINT count)
+{
+    return ReduceMaxT(value, count);
 }
 
 #if _QL_DOUBLEFLOAT
@@ -219,7 +337,7 @@ QLComplex ReduceSum(QLComplex* value, UINT count)
 * sum _{if cndition[n] = conditionEqual} value[n * stride + offset]
 * work space must has length >= (len(v) + 1) / 2
 */
-FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace)
+Real ConditionalSum(const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace)
 {
     UINT iThreadNeeded = Ceil(count, 2);
     UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;

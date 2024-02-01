@@ -29,6 +29,10 @@ static inline UINT GetReduceDim(UINT uiLength)
 */
 extern QLAPI Real ReduceSum(Real* value, UINT count);
 
+extern QLAPI Real ReduceMin(Real* value, UINT count);
+
+extern QLAPI Real ReduceMax(Real* value, UINT count);
+
 extern QLAPI INT ReduceSum(INT* value, UINT count);
 
 extern QLAPI UINT ReduceSum(UINT* value, UINT count);
@@ -50,8 +54,10 @@ extern QLAPI QLComplex ReduceSum(QLComplex* value, UINT count);
 /**
 * sum _{if cndition[n] = conditionEqual} value[n * stride + offset]
 * work space must has length >= (len(v) + 1) / 2
+* 
+* count is len(value) and len(condition)
 */
-extern QLAPI FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace);
+extern QLAPI Real ConditionalSum(const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace);
 
 extern QLAPI void ConditionalSum(Real* deviceRes, const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace);
 

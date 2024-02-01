@@ -308,6 +308,64 @@ TArray<FLOAT> QLAPI ReadCSVAF(const CCString& fileName, UINT& w, UINT& h)
     return all;
 }
 
+TArray<INT> QLAPI ReadCSVAI(const CCString& fileName, UINT& w, UINT& h)
+{
+    std::ifstream file(fileName);
+    if (!file.good())
+    {
+        appWarning(_T("file not exist: %s\n"), fileName.c_str());
+        w = 0;
+        h = 0;
+        return TArray<INT>();
+    }
+
+    const SIZE_T buf_size = 1U << 20;
+    static TCHAR buf[buf_size];
+    memset(buf, 0, sizeof(TCHAR) * buf_size);
+    INT leny = 0;
+    INT lenx = 0;
+    TArray<INT> all;
+    while (file.getline(buf, buf_size))
+    {
+        CCString sLine(buf);
+        TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
+
+        if (0 != lenx)
+        {
+            if (leny != sep.Num())
+            {
+                appCrucial(_T("CSV file format not good!\n"));
+                file.close();
+                w = 0;
+                h = 0;
+                return TArray<INT>();
+            }
+        }
+
+        if (0 == lenx)
+        {
+            leny = sep.Num();
+        }
+
+        TArray<INT> oneLine;
+        for (INT i = 0; i < leny; ++i)
+        {
+            INT real = appStoI(sep[i]);
+            all.AddItem(real);
+        }
+
+        ++lenx;
+        memset(buf, 0, sizeof(TCHAR) * buf_size);
+    }
+
+    file.close();
+
+    w = static_cast<UINT>(leny);
+    h = static_cast<UINT>(lenx);
+
+    return all;
+}
+
 void QLAPI SaveCSVAR(const Real* m, UINT w, UINT h, const CCString& fileName)
 {
     std::ofstream file(fileName);

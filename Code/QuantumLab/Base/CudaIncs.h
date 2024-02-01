@@ -70,6 +70,9 @@ exit(EXIT_FAILURE);
 
 #endif
 
+#define __DECOMPOSE(length, blockvar, threadvar) \
+blockvar = (length) > _QL_LAUNCH_MAX_THREAD ? Ceil(length, _QL_LAUNCH_MAX_THREAD) : 1; \
+threadvar = (length) > _QL_LAUNCH_MAX_THREAD ? Ceil(length, blockvar) : (length);
 
 
 #pragma endregion Includes

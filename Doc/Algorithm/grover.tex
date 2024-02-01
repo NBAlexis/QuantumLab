@@ -1,5 +1,77 @@
 Grover算法和amplitude amplification。
 
+
+\subsection{原理}
+
+假设有一个circuit可以生产
+\begin{equation}
+\begin{split}
+&A|0\rangle _a|00\rangle _b = |\phi _1\rangle _a |00\rangle _b+|\phi _2\rangle _a |10\rangle _b+|\phi _3\rangle _a |01\rangle _b+|\phi _4\rangle _a |11\rangle _b\\
+\end{split}
+\end{equation}
+而，我们想要的是
+\begin{equation}
+\begin{split}
+&|\phi _1\rangle _a |00\rangle _b\\
+\end{split}
+\end{equation}
+
+第一步，另
+\begin{equation}
+\begin{split}
+&|\psi _ 1\rangle  = |\phi _1\rangle _a |00\rangle _b\\
+&|\psi _ 0\rangle  = |\phi _2\rangle _a |10\rangle _b+|\phi _3\rangle _a |01\rangle _b+|\phi _4\rangle _a |11\rangle _b\\
+\end{split}
+\end{equation}
+有$\langle \psi _0 | \psi _1 \rangle = 0$，它们是正交的。
+
+
+我们可以把$|\psi\rangle = A|0\rangle _a|00\rangle _b$重新写成，
+\begin{equation}
+\begin{split}
+&A|0\rangle _a|00\rangle _b =|\psi\rangle= a|\psi _ 1\rangle+b |\psi _ 0\rangle\\
+&=\sin(\theta)|\psi _ 1\rangle + \cos (\theta)|\psi _ 0\rangle\\
+\end{split}
+\end{equation}
+
+另
+\begin{equation}
+\begin{split}
+&S_{\psi}=1-2|\psi\rangle \langle \psi|\\
+&S_0^b=1-2|00\rangle \langle 00|\\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split}
+&S_0^b|\psi\rangle=-\sin(\theta)|\psi _1\rangle + \cos (\theta) |\psi _0\rangle\\
+&S_{\psi}S_0^b|\psi\rangle=-\sin(\theta)|\psi _1\rangle + \cos (\theta) |\psi _0\rangle -2|\psi\rangle \langle \psi|\left(-\sin(\theta)|\psi _1\rangle + \cos (\theta) |\psi _0\rangle\right)\\
+&=-\sin(\theta)|\psi _1\rangle + \cos (\theta) |\psi _0\rangle -2|\psi\rangle \left(-\sin^2(\theta) + \cos^2 (\theta) \right)\\
+&=-\sin(3\theta)|\psi _1\rangle - \cos(3\theta) |\psi _0\rangle\\
+\end{split}
+\end{equation}
+
+更一般的情况，如果$Q=-S_{\psi}S_0^b$，那么
+\begin{equation}
+\begin{split}
+&Q^n |\psi\rangle = \sin((2n+1)\theta)|\psi _1\rangle + \cos((2n+1)\theta) |\psi _0\rangle\\
+\end{split}
+\end{equation}
+
+注意到，这个过程中，我们没有破坏$\psi _1$。
+
+
+\subsection{如何实现$S_0$}
+
+\subsection{如何实现$S_{\psi}$}
+
+\begin{equation}
+\begin{split}
+&1-2|psi\rangle \langle \psi | = AA^{\dagger} - 2 A|0\rangle \langle 0|A^{\dagger}\\
+&=A(1-2|0\rangle \langle 0 |)A^{\dagger}\\
+\end{split}
+\end{equation}
+
 \subsection{Oracle}
 
 Oracle的作用是实现
@@ -23,16 +95,3 @@ Oracle的作用是实现
 \end{equation}
 
 注意$f(x)=1-2|x\rangle \langle x|$
-
-假定$A|0\rangle _A |0\rangle _B = a|\phi _1\rangle _A |0\rangle _B+b\sum _{n\neq 0}|\phi _n\rangle _A |n\rangle _B=a|\Phi _1\rangle+b|\Phi _2\rangle$，且只有$|\phi _1\rangle$是我们需要的。
-\begin{equation}
-\begin{split}
-&\left(1-2|\Phi\rangle \langle \Phi|\right)\left(1-2|\Phi_1\rangle \langle \Phi_1|\right)A|0\rangle _A |0\rangle _B\\
-&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(1-2|\Phi_1\rangle \langle \Phi_1|\right)\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)\\
-&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)-2|\Phi_1\rangle \langle \Phi_1|\left(a|\Phi _1\rangle+b|\Phi _2\rangle\right)\right)\\
-&=\left(1-2|\Phi\rangle \langle \Phi|\right)\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)\\
-&=\left(\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)-2|\Phi\rangle \left(a\langle \Phi _1|+b\langle \Phi _2| \right)\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)\right)\\
-&=\left(\left(-a|\Phi _1\rangle+b|\Phi _2\rangle \right)-2(-a^2+b^2)|\Phi\rangle \right)\\
-&=a\left(b^2-a^2-1\right)|\Phi _1\rangle+b\left(1-a^2+b^2\right)|\Phi _2\rangle\\
-\end{split}
-\end{equation}

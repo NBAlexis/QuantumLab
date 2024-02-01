@@ -37,25 +37,32 @@ public:
     ~QLQuantumKmeans();
 
     /**
-    * We do not use extra CPU to judge, but the CSV is required that, w=Power 2 and each vector is already normalized.
-    */
-    void LoadFile(const CCString& sReferenceCSV, const CCString& sTestCSV);
-
-    UBOOL ReferenceLoaded() const { return m_uiVectorDim > 0; }
-
-    UBOOL TestLoaded() const { return m_uiTestVectorCount > 0; }
-
-    /**
     * Build <v|u_i>|i>
     *
     *
     */
-    static void TestCircuitBuildState(const CCString& sReferenceCSV, const CCString& sAmplitudeSave, const CCString& sMeasureRate, UINT vectorCount, UINT testRepeat);
+    static void TestCircuitBuildState(const CCString& sReferenceCSV, const CCString& sAmplitudeSave, const CCString& sMeasureRate, UINT vectorCount, UINT testRepeat, UINT aaRepeat);
+
+    static TArray<QLComplex> TestCircuitBuildState(UINT vectorDim, UINT vectorCount, UINT testRepeat, UINT aaRepeat);
 
     /**
-    * Build <v|u_i>|i> once
+    * test the circuit to build sum_i <vi|u>|i>, with amplitude amplification
     */
     static void TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QLMatrix& hostU, UINT vectorCount, UINT vectorDim);
+
+    static void Kmeans2D(const CCString& sPoints, const CCString& sSaveK, 
+        const CCString& sSaveCenter, const CCString& sRepeat,
+        BYTE k, UINT iteration, UINT uiMinHit);
+
+    static void KNN2D(
+        const CCString& sTrainingPoints, const CCString& sTestPoints,
+        const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
+        UINT kHit, UINT uiMaxCluster);
+
+    static void KNN3D(
+        const CCString& sTrainingPoints, const CCString& sTestPoints,
+        const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
+        UINT kHit, UINT uiMaxCluster);
 
 protected:
 
@@ -67,13 +74,17 @@ protected:
     
 
     UINT m_uiVectorDim;
-    UINT m_uiReferenceVectorCount;
-    UINT m_uiTestVectorCount;
+    UINT m_uiVectorCount;
+    UINT m_uiK;
 
-    Real* m_pDeviceReferenceVectorsAbs;
-    Real* m_pDeviceReferenceVectorsPhase;
-    Real* m_pDeviceTestVectorsAbs;
-    Real* m_pDeviceTestVectorsPhase;
+    QLMatrix m_pOrignalPoints;
+
+
+    Real* m_pDevicePointAbs;
+    Real* m_pDevicePointPhase;
+
+    Real* m_pDeviceCenterAbs;
+    Real* m_pDeviceCenterPhase;
 
     Real* m_pWorkingSpaceAbsBuffer;
     Real* m_pWorkingSpacePhaseBuffer;

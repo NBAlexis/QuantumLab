@@ -20,6 +20,17 @@ __BEGIN_NAMESPACE
 */
 extern QLMatrix QLAPI ShowStateVectorDetail(const QLComplex* statedata, TArray<BYTE> index, UBOOL bNormalize = TRUE);
 
+extern QLMatrix QLAPI ShowStateVectorDetail(const struct Qureg& vec, TArray<BYTE> index, UBOOL bNormalize = TRUE);
+
+extern QLMatrix QLAPI ShowStateVectorDetail(const QLComplex* statedata, BYTE count, BYTE idx0, ...);
+
+extern QLMatrix QLAPI ShowStateVectorDetail(const struct Qureg& vec, BYTE count, BYTE idx0, ...);
+
+extern void QLAPI HostBufferViewer(const Real* buffer, UINT w, UINT h);
+
+extern void QLAPI DeviceBufferViewer(const Real* buffer, UINT w, UINT h);
+
+
 __END_NAMESPACE
 
 

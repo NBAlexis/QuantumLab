@@ -57,7 +57,9 @@ extern void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer
 * suppose abs and phase are already calculated
 */
 extern void QLAPI CalculateDegrees(Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+extern void QLAPI CalculateDegreesForEach(Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
 extern void QLAPI CalculateDegreesReal(Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY);
+extern void QLAPI CalculateDegreesRealForEach(Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY);
 
 /**
 *
@@ -75,7 +77,7 @@ extern QLGate QLAPI ExchangeToYGate(UINT vectorPower, Real* hostY);
 *
 */
 extern QLGate QLAPI ExchangeToYZGate(UINT vectorCountPower, UINT vectorPower, Real* hostY, Real* hostZ, UBOOL bHasPhase);
-
+extern QLGate QLAPI ExchangeToYGate(UINT vectorCountPower, UINT vectorPower, Real* hostY);
 
 /**
 * the gate to build |phi>

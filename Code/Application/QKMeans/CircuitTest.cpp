@@ -60,31 +60,6 @@ static Real testVi2[72] = {
 
 void TestProbabilityDifferentDimension(CParameters& params)
 {
-    //CCString sValues;
-    //INT iValues;
-
-    //CCString sFileName;
-    //__FetchStringWithDefault(_T("CSVFileName"), _T(""));
-    //sFileName = sValues;
-
-    //CCString sAmplitudeFileName;
-    //__FetchStringWithDefault(_T("AmplitudeSave"), _T(""));
-    //sAmplitudeFileName = sValues;
-
-    //CCString sMeasureFileName;
-    //__FetchStringWithDefault(_T("MeasureSave"), _T(""));
-    //sMeasureFileName = sValues;
-
-    //UINT uiCount = 0;
-    //UINT uiRepeat = 0;
-    //__FetchIntWithDefault(_T("Count"), 0);
-    //uiCount = static_cast<UINT>(iValues);
-
-    //__FetchIntWithDefault(_T("Repeat"), 0);
-    //uiRepeat = static_cast<UINT>(iValues);
-
-    //QLQuantumKmeans::TestCircuitBuildState(sFileName, sAmplitudeFileName, sMeasureFileName, uiCount, uiRepeat);
-
     QLComplex vi[VectorCount * VectorDim];
     QLComplex u[VectorDim];
     for (UINT y = 0; y < VectorCount; ++y)
@@ -106,6 +81,116 @@ void TestProbabilityDifferentDimension(CParameters& params)
 
     //vim.Print("vim");
     //um.Print("um");
+
+    QLQuantumKmeans::TestCircuitBuildStateOnce(vim, um, VectorCount, VectorDim);
+}
+
+void TestProbabilityToBuildStateFromFile(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sLoadFileName;
+    __FetchStringWithDefault(_T("LoadFile"), _T(""));
+    sLoadFileName = sValues;
+
+    CCString sMeasureFileName;
+    __FetchStringWithDefault(_T("MeasureSave"), _T(""));
+    sMeasureFileName = sValues;
+
+    UINT uiCount = 4;
+    __FetchIntWithDefault(_T("VectorCount"), 0);
+    uiCount = static_cast<UINT>(iValues);
+
+    UINT uiAA = 0;
+    __FetchIntWithDefault(_T("AA"), 0);
+    uiAA = static_cast<UINT>(iValues);
+
+    UINT uiRepeat = 0;
+    __FetchIntWithDefault(_T("Repeat"), 0);
+    uiRepeat = static_cast<UINT>(iValues);
+
+    QLQuantumKmeans::TestCircuitBuildState(sLoadFileName, _T(""), sMeasureFileName, uiCount, uiRepeat, uiAA);
+}
+
+void TestProbabilityToBuildStateRandom(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sMeasureFileName;
+    __FetchStringWithDefault(_T("MeasureSave"), _T(""));
+    sMeasureFileName = sValues;
+
+    TArray<INT> dimlist;
+    TArray<INT> aalist;
+    TArray<INT> countlist;
+
+    if (!params.FetchValueArrayINT(_T("DimList"), dimlist))
+    {
+        appCrucial(_T("DimList not found\n"));
+        return;
+    }
+
+    if (!params.FetchValueArrayINT(_T("AARepeatList"), aalist))
+    {
+        appCrucial(_T("AARepeatList not found\n"));
+        return;
+    }
+
+    if (!params.FetchValueArrayINT(_T("CountList"), countlist))
+    {
+        appCrucial(_T("CountList not found\n"));
+        return;
+    }
+
+    UINT uiRepeat = 0;
+    __FetchIntWithDefault(_T("Repeat"), 0);
+    uiRepeat = static_cast<UINT>(iValues);
+
+    TArray<QLComplex> successrate;
+
+    for (INT countIdx = 0; countIdx < countlist.Num(); ++countIdx)
+    {
+        for (INT dimIdx = 0; dimIdx < dimlist.Num(); ++dimIdx)
+        {
+            TArray<QLComplex> successrate_for_this =
+                QLQuantumKmeans::TestCircuitBuildState(
+                    static_cast<UINT>(dimlist[dimIdx]),
+                    static_cast<UINT>(countlist[countIdx]),
+                    uiRepeat,
+                    static_cast<UINT>(aalist[dimIdx]));
+
+            successrate.Append(successrate_for_this);
+        }
+    }
+
+    QLMatrix resmtr = QLMatrix::CopyCreate(uiRepeat, countlist.Num() * dimlist.Num(), successrate.GetData());
+    resmtr.Print();
+
+    SaveCSVR(resmtr, sMeasureFileName);
+}
+
+void TestCircuitBuildStateOnce(CParameters& params)
+{
+    QLComplex vi[VectorCount * VectorDim];
+    QLComplex u[VectorDim];
+    for (UINT y = 0; y < VectorCount; ++y)
+    {
+        for (UINT x = 0; x < VectorDim; ++x)
+        {
+            UINT idx = y * VectorDim + x;
+            vi[idx] = _make_cuComplex(VectorData[2 * idx], VectorData[2 * idx + 1]);
+        }
+    }
+    const UINT idxStart = 2 * VectorCount * VectorDim;
+    for (UINT x = 0; x < VectorDim; ++x)
+    {
+        u[x] = _make_cuComplex(VectorData[idxStart + 2 * x], VectorData[idxStart + 2 * x + 1]);
+    }
+
+    QLMatrix vim = QLMatrix::CopyCreate(VectorCount, VectorDim, vi);
+    QLMatrix um = QLMatrix::CopyCreate(1, VectorDim, u);
 
     QLQuantumKmeans::TestCircuitBuildStateOnce(vim, um, VectorCount, VectorDim);
 }
