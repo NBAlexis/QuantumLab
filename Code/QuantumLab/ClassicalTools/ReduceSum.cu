@@ -311,6 +311,12 @@ extern QLAPI void ReduceSum(Real* res, Real* value, UINT count)
 {
     ReduceSumT(res, value, count);
 }
+#if _QL_DOUBLEFLOAT
+extern QLAPI void ReduceSum(FLOAT* res, FLOAT* value, UINT count)
+{
+    ReduceSumT(res, value, count);
+}
+#endif
 
 /**
 * reduce sum
@@ -358,6 +364,30 @@ void ConditionalSum(Real* pDeviceRes, const Real* value, BYTE byStride, BYTE off
 
     ReduceSum(pDeviceRes, workSpace, iThreadNeeded);
 }
+
+#if _QL_DOUBLEFLOAT
+FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace)
+{
+    UINT iThreadNeeded = Ceil(count, 2);
+    UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+
+    _kernelConditionalReduceReal << <iBlock, iThread >> > (value, workSpace, byStride, offset, count, condition, conditionEqual);
+
+    return ReduceSum(workSpace, iThreadNeeded);
+}
+
+void ConditionalSum(FLOAT* pDeviceRes, const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace)
+{
+    UINT iThreadNeeded = Ceil(count, 2);
+    UINT iBlock = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT iThread = iThreadNeeded > _QL_LAUNCH_MAX_THREAD ? Ceil(iThreadNeeded, iBlock) : iThreadNeeded;
+
+    _kernelConditionalReduceReal << <iBlock, iThread >> > (value, workSpace, byStride, offset, count, condition, conditionEqual);
+
+    ReduceSum(pDeviceRes, workSpace, iThreadNeeded);
+}
+#endif
 
 /**
 * sum _{if cndition[n] = conditionEqual} 1

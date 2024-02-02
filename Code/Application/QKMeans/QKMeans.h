@@ -20,16 +20,12 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_TestQKmeans2D,
     EQKJ_TestQKNN2D,
     EQKJ_TestQKNN3D,
+    EQKJ_TestFitPointSet,
     EQKJ_TestAnomalyDetection
     )
 
 
 extern void ClassicalKMeans(CParameters& yamlFile);
-extern void QuantumKMeans(CParameters& yamlFile);
-
-extern void TestDistance();
-extern void TestProbalityToBuild();
-extern void TestProbalityMeanP6();
 
 /**
 * 
@@ -61,6 +57,11 @@ extern void TestKMeans2D(CParameters& params);
 */
 extern void TestKNN2D(CParameters& params);
 extern void TestKNN3D(CParameters& params);
+
+/**
+* Fit point set
+*/
+extern void TestFitPointSet(CParameters& params);
 
 #endif //#ifndef _QL_QKMEANS_H_
 

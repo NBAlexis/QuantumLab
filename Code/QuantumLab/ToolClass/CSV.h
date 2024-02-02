@@ -15,6 +15,8 @@ __BEGIN_NAMESPACE
 
 extern QLMatrix QLAPI ReadCSV(const CCString& fileName);
 
+extern TArray<QLComplex> QLAPI ReadCSVA(const CCString& fileName, UINT& w, UINT& h);
+
 extern void QLAPI SaveCSV(const QLMatrix& m, const CCString& fileName);
 
 extern QLMatrix QLAPI ReadCSVR(const CCString& fileName);

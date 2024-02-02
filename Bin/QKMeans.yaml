@@ -5,7 +5,8 @@
 # EQKJ_TestQKmeans2D
 # EQKJ_TestQKNN2D
 # EQKJ_TestQKNN3D
-KMeansJob : EQKJ_TestQKNN2D
+# EQKJ_TestFitPointSet
+KMeansJob : EQKJ_TestFitPointSet
 
 # ########################
 # GPU Kmeans
@@ -67,6 +68,15 @@ QKNN3D:
     PointHit : 1
     KHit : 5
 
+FitWaveFunction:
+
+    PointFile : p2dk4set.csv
+    AnsatzFile : ansatz2dk4.csv
+    HistoryFile : fithist.csv
+    AnsatzLevel : 10
+    MaxStep : 10000
+    LearnRate : 0.01
+    Goal : 0.1
 
 # ########################
 # Quantum Kmeans

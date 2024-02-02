@@ -71,6 +71,7 @@ public:
 
     void Simulate(QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const override;
 
+    static QLMatrix ShowState(const QLGate& gate);
 };
 
 

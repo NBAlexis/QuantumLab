@@ -19,6 +19,9 @@
     <ClInclude Include="Base\QLFloat.h" />
     <ClInclude Include="Base\QLSetup.h" />
     <ClInclude Include="Base\STLExport.h" />
+    <ClInclude Include="Circuit\Ansatz\CAnsatz.h" />
+    <ClInclude Include="Circuit\Ansatz\CFHEA.h" />
+    <ClInclude Include="Circuit\Ansatz\CTwoLocal.h" />
     <ClInclude Include="Circuit\Gates\AmplitudeEncode.h" />
     <ClInclude Include="Circuit\Gates\CnUGate.h" />
     <ClInclude Include="Circuit\Gates\CSDDecompose.h" />
@@ -42,6 +45,9 @@
     <ClInclude Include="Circuit\Subroutine\HHL.h" />
     <ClInclude Include="Circuit\Subroutine\QKMeans.h" />
     <ClInclude Include="ClassicalTools\GPUKmeans\GPUKmeans.h" />
+    <ClInclude Include="ClassicalTools\Optimizer\CAdam.h" />
+    <ClInclude Include="ClassicalTools\Optimizer\CGradientDesend.h" />
+    <ClInclude Include="ClassicalTools\Optimizer\COptimizer.h" />
     <ClInclude Include="ClassicalTools\QLMatrix.h" />
     <ClInclude Include="ClassicalTools\QLRandom.h" />
     <ClInclude Include="ClassicalTools\QuantumDataViewer.h" />
@@ -65,8 +71,11 @@
     <ClInclude Include="ToolClass\TArray.h" />
     <ClInclude Include="ToolClass\THashMap.h" />
     <ClInclude Include="ToolClass\Tracer.h" />
+    <ClInclude Include="Variational\CStateBuilder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Circuit\Ansatz\CFHEA.cpp" />
+    <ClCompile Include="Circuit\Ansatz\CTwoLocal.cpp" />
     <ClCompile Include="Circuit\Gates\AmplitudeEncode.cpp" />
     <ClCompile Include="Circuit\Gates\CnUGate.cpp" />
     <ClCompile Include="Circuit\Gates\CSDDecompose.cpp" />
@@ -86,7 +95,9 @@
     <ClCompile Include="Circuit\QLGate.cpp" />
     <ClCompile Include="Circuit\Subroutine\Grover.cpp" />
     <ClCompile Include="Circuit\Subroutine\HHL.cpp" />
-    <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp" />
+    <ClCompile Include="ClassicalTools\Optimizer\CAdam.cpp" />
+    <ClCompile Include="ClassicalTools\Optimizer\CGradientDesend.cpp" />
+    <ClCompile Include="ClassicalTools\Optimizer\COptimizer.cpp" />
     <ClCompile Include="QuantumLabPCH.cpp" />
     <ClCompile Include="Simulator\QLSimulator.cpp" />
     <ClCompile Include="Simulator\QLSimulatorDensityMatrix.cpp" />
@@ -97,6 +108,7 @@
     <ClCompile Include="ToolClass\CSV.cpp" />
     <ClCompile Include="ToolClass\CYAMLParser.cpp" />
     <ClCompile Include="ToolClass\Tracer.cpp" />
+    <ClCompile Include="Variational\CStateBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Circuit\Gates\AmplitudeEncodeCuda.cu" />
@@ -105,6 +117,7 @@
     <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu" />
     <CudaCompile Include="ClassicalTools\QLMatrix.cu" />
     <CudaCompile Include="ClassicalTools\QLRandom.cu" />
+    <CudaCompile Include="ClassicalTools\QuantumDataViewer.cu" />
     <CudaCompile Include="ClassicalTools\ReduceSum.cu" />
   </ItemGroup>
   <ItemGroup>

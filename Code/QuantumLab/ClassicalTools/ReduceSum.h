@@ -44,6 +44,9 @@ extern QLAPI DOUBLE ReduceSum(DOUBLE* value, UINT count);
 #endif
 
 extern QLAPI void ReduceSum(Real* deviceRes, Real* value, UINT count);
+#if _QL_DOUBLEFLOAT
+extern QLAPI void ReduceSum(FLOAT* deviceRes, FLOAT* value, UINT count);
+#endif
 
 /**
 * reduce sum
@@ -60,6 +63,11 @@ extern QLAPI QLComplex ReduceSum(QLComplex* value, UINT count);
 extern QLAPI Real ConditionalSum(const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace);
 
 extern QLAPI void ConditionalSum(Real* deviceRes, const Real* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, Real* workSpace);
+
+#if _QL_DOUBLEFLOAT
+extern QLAPI FLOAT ConditionalSum(const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace);
+extern QLAPI void ConditionalSum(FLOAT* deviceRes, const FLOAT* value, BYTE byStride, BYTE offset, const BYTE* condition, BYTE conditionEqual, UINT count, FLOAT* workSpace);
+#endif
 
 /**
 * sum _{if cndition[n] = conditionEqual} 1

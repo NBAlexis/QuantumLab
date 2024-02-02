@@ -1128,7 +1128,7 @@ void QLQuantumKmeans::Kmeans2D(
     TArray<BYTE> frybits;
     for (BYTE i = 0; i < kPower + 1; ++i)
     {
-        frybits.AddItem(kPower - i);
+        frybits.AddItem(static_cast<BYTE>(kPower - i));
     }
 
     QuESTEnv evn = createQuESTEnv();
@@ -1156,7 +1156,7 @@ void QLQuantumKmeans::Kmeans2D(
         for (UINT uiV = 0; uiV < h; ++uiV)
         {
             QLGate wholeCircuit;
-            wholeCircuit.AddQubits(kPower + 1);
+            wholeCircuit.AddQubits(static_cast<BYTE>(kPower + 1));
             for (BYTE hadIdx = 0; hadIdx < kPower; ++hadIdx)
             {
                 wholeCircuit.AppendGate(had, hadIdx + 1);
@@ -1249,7 +1249,7 @@ void QLQuantumKmeans::Kmeans2D(
                         }
                     }
                     hitCount[measureRes] = hitCount[measureRes] + 1;
-                    if (hitCount[measureRes] >= uiMinHit)
+                    if (hitCount[measureRes] >= static_cast<INT>(uiMinHit))
                     {
                         bHasHit = TRUE;
                         pHostKBuffer[uiV] = static_cast<BYTE>(measureRes);
@@ -1431,7 +1431,7 @@ void QLQuantumKmeans::KNN2D(const CCString& sTrainingPoints, const CCString& sTe
     TArray<BYTE> frybits;
     for (BYTE i = 0; i < kPower + 1; ++i)
     {
-        frybits.AddItem(kPower - i);
+        frybits.AddItem(static_cast<BYTE>(kPower - i));
     }
 
     //INT* pointHitCount = reinterpret_cast<INT*>(malloc(sizeof(INT) * h1));
@@ -1446,7 +1446,7 @@ void QLQuantumKmeans::KNN2D(const CCString& sTrainingPoints, const CCString& sTe
     for (UINT uiV = 0; uiV < h2; ++uiV)
     {
         QLGate wholeCircuit;
-        wholeCircuit.AddQubits(kPower + 1);
+        wholeCircuit.AddQubits(static_cast<BYTE>(kPower + 1));
         for (BYTE hadIdx = 0; hadIdx < kPower; ++hadIdx)
         {
             wholeCircuit.AppendGate(had, hadIdx + 1);
@@ -1523,7 +1523,7 @@ void QLQuantumKmeans::KNN2D(const CCString& sTrainingPoints, const CCString& sTe
 
                 UINT thisHit = orignalPointsCluster[measureRes];
                 hitCount[thisHit] = hitCount[thisHit] + 1;
-                if (hitCount[thisHit] >= kHit)
+                if (hitCount[thisHit] >= static_cast<INT>(kHit))
                 {
                     bHasHit = TRUE;
                     clusterAssignment.AddItem(thisHit);
@@ -1573,8 +1573,8 @@ void QLQuantumKmeans::KNN3D(const CCString& sTrainingPoints, const CCString& sTe
     const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
     UINT kHit, UINT uiMaxCluster)
 {
-    UINT uiBlock = 0;
-    UINT uiThread = 0;
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
     UINT w1, h1;
     UINT w2, h2;
     TArray<Real> orignalPointsArrayTraining = ReadCSVAR(sTrainingPoints, w1, h1);
@@ -1621,7 +1621,7 @@ void QLQuantumKmeans::KNN3D(const CCString& sTrainingPoints, const CCString& sTe
     for (UINT uiV = 0; uiV < h2; ++uiV)
     {
         QLGate wholeCircuit;
-        wholeCircuit.AddQubits(kPower + 2);
+        wholeCircuit.AddQubits(static_cast<BYTE>(kPower + 2));
         QLGate amplitudeVi = ExchangeToYGate(kPower, 2, pHostTrainingY);
         wholeCircuit.AppendGate(amplitudeVi, amplitudeVi.m_lstQubits);
 
@@ -1695,7 +1695,7 @@ void QLQuantumKmeans::KNN3D(const CCString& sTrainingPoints, const CCString& sTe
                 //{
                     UINT thisHit = orignalPointsCluster[measureRes];
                     hitCount[thisHit] = hitCount[thisHit] + 1;
-                    if (hitCount[thisHit] >= kHit)
+                    if (hitCount[thisHit] >= static_cast<INT>(kHit))
                     {
                         bHasHit = TRUE;
                         clusterAssignment.AddItem(thisHit);

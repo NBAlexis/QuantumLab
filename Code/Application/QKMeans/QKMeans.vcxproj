@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="CircuitTest.cpp" />
     <ClCompile Include="ClassicalKmeans.cpp" />
+    <ClCompile Include="QAnomalyDetection.cpp" />
     <ClCompile Include="QKMeans.cpp" />
     <ClCompile Include="QuantumKmeans.cpp" />
   </ItemGroup>

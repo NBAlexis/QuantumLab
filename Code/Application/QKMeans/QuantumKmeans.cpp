@@ -10,11 +10,6 @@
 
 #include "QKMeans.h"
 
-void QuantumKMeans(CParameters& params)
-{
-
-}
-
 void TestKMeans2D(CParameters& params)
 {
     CCString sValues;

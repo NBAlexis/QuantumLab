@@ -77,6 +77,77 @@ QLMatrix QLAPI ReadCSV(const CCString& fileName)
     return ret;
 }
 
+TArray<QLComplex> QLAPI ReadCSVA(const CCString& fileName, UINT &w, UINT &h)
+{
+    TArray<QLComplex> all;
+    std::ifstream file(fileName);
+    if (!file.good())
+    {
+        appWarning(_T("file not exist: %s\n"), fileName.c_str());
+        w = 0;
+        h = 0;
+        return all;
+    }
+
+    const SIZE_T buf_size = 1U << 20;
+    static TCHAR buf[buf_size];
+    memset(buf, 0, sizeof(TCHAR) * buf_size);
+    INT leny = 0;
+    INT lenx = 0;
+    
+    while (file.getline(buf, buf_size))
+    {
+        CCString sLine(buf);
+        TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
+
+        if (0 != (sep.Num() & 1))
+        {
+            appCrucial(_T("CSV file format not good!\n"));
+            file.close();
+            w = leny;
+            h = lenx;
+            return all;
+        }
+        if (0 != lenx)
+        {
+            if (leny * 2 != sep.Num())
+            {
+                appCrucial(_T("CSV file format not good!\n"));
+                file.close();
+                w = leny;
+                h = lenx;
+                return all;
+            }
+        }
+
+        if (0 == lenx)
+        {
+            leny = sep.Num() / 2;
+        }
+
+        for (INT i = 0; i < leny; ++i)
+        {
+#if _QL_DOUBLEFLOAT
+            Real real = appStoD(sep[2 * i]);
+            Real img = appStoD(sep[2 * i + 1]);
+#else
+            Real real = appStoF(sep[2 * i]);
+            Real img = appStoF(sep[2 * i + 1]);
+#endif
+            all.AddItem(_make_cuComplex(real, img));
+        }
+
+        ++lenx;
+        memset(buf, 0, sizeof(TCHAR) * buf_size);
+    }
+
+    file.close();
+
+    w = leny;
+    h = lenx;
+    return all;
+}
+
 void QLAPI SaveCSV(const QLMatrix& m, const CCString& fileName)
 {
     std::ofstream file(fileName);

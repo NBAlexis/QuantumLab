@@ -28,6 +28,15 @@
     <Filter Include="Circuit\Hamitonian">
       <UniqueIdentifier>{1a9086c9-4b22-4706-bd1f-af6705d8968c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Circuit\Ansatz">
+      <UniqueIdentifier>{c94fb1e3-3627-4625-95ff-e63ff5e5d8eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ClassicalTools\Optimizer">
+      <UniqueIdentifier>{627d4d78-39f3-4772-a4eb-ac1c9a26e618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Variational">
+      <UniqueIdentifier>{1b891676-4b28-4fe4-ad10-b8537160cbed}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Circuit\QLGate.cpp">
@@ -79,9 +88,6 @@
     <ClCompile Include="Circuit\Subroutine\HHL.cpp">
       <Filter>Circuit\Subroutine</Filter>
     </ClCompile>
-    <ClCompile Include="ClassicalTools\QuantumDataViewer.cpp">
-      <Filter>ClassicalTools</Filter>
-    </ClCompile>
     <ClCompile Include="ToolClass\CSV.cpp">
       <Filter>ToolClass</Filter>
     </ClCompile>
@@ -117,6 +123,24 @@
     </ClCompile>
     <ClCompile Include="Simulator\QLSimulatorDensityMatrix.cpp">
       <Filter>Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Ansatz\CFHEA.cpp">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicalTools\Optimizer\CGradientDesend.cpp">
+      <Filter>ClassicalTools\Optimizer</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicalTools\Optimizer\COptimizer.cpp">
+      <Filter>ClassicalTools\Optimizer</Filter>
+    </ClCompile>
+    <ClCompile Include="Variational\CStateBuilder.cpp">
+      <Filter>Variational</Filter>
+    </ClCompile>
+    <ClCompile Include="Circuit\Ansatz\CTwoLocal.cpp">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClCompile>
+    <ClCompile Include="ClassicalTools\Optimizer\CAdam.cpp">
+      <Filter>ClassicalTools\Optimizer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -278,6 +302,27 @@
     <ClInclude Include="Simulator\QLSimulatorDensityMatrix.h">
       <Filter>Simulator</Filter>
     </ClInclude>
+    <ClInclude Include="Circuit\Ansatz\CAnsatz.h">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Ansatz\CFHEA.h">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\Optimizer\CGradientDesend.h">
+      <Filter>ClassicalTools\Optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\Optimizer\COptimizer.h">
+      <Filter>ClassicalTools\Optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="Variational\CStateBuilder.h">
+      <Filter>Variational</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Ansatz\CTwoLocal.h">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassicalTools\Optimizer\CAdam.h">
+      <Filter>ClassicalTools\Optimizer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">
@@ -300,6 +345,9 @@
     </CudaCompile>
     <CudaCompile Include="Circuit\Hamitonian\CLattice2D.cu">
       <Filter>Circuit\Hamitonian</Filter>
+    </CudaCompile>
+    <CudaCompile Include="ClassicalTools\QuantumDataViewer.cu">
+      <Filter>ClassicalTools</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

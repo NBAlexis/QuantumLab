@@ -1659,7 +1659,7 @@ void QLMatrix::CombinedCSD(QLMatrix& u, QLMatrix& cs, QLMatrix& v, const QLMatri
     
     //const UINT outX = v.m_uiY;
     //const UINT outY = u.m_uiY;
-    const UINT csX = v.m_uiX;
+    //const UINT csX = v.m_uiX;
     const UINT csY = u.m_uiX;
 
     assert(c.m_uiX == c.m_uiY);
@@ -1667,7 +1667,7 @@ void QLMatrix::CombinedCSD(QLMatrix& u, QLMatrix& cs, QLMatrix& v, const QLMatri
     assert(c.m_uiX == s.m_uiX);
 
     assert(c.m_uiX == uiXSep);
-    assert(uiXSep * 2 <= csX);
+    assert(uiXSep * 2 <= v.m_uiX);
     assert(c.m_uiY <= uiYSep);
     assert(c.m_uiY + uiYSep <= csY);
 

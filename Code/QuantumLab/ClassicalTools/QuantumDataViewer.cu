@@ -12,6 +12,22 @@
 
 __BEGIN_NAMESPACE
 
+#pragma region kernel
+
+__global__ void _QL_LAUNCH_BOUND
+_kernelStateVectorToAmp(QLComplex* buffer, const Real* __restrict__ real, const Real* __restrict__ imag, UINT uiMax)
+{
+    UINT idx = (threadIdx.x + blockIdx.x * blockDim.x);
+    if (idx < uiMax)
+    {
+        buffer[idx] = _make_cuComplex(real[idx], imag[idx]);
+    }
+}
+
+
+#pragma endregion
+
+
 /**
 * upLimit: the full list of upper
 * lowerLimit: the full list of lower
@@ -149,6 +165,22 @@ void QLAPI HostBufferViewer(const Real* buffer, UINT w, UINT h)
     appPopLogDate();
 }
 
+void QLAPI HostBufferViewer(const QLComplex* buffer, UINT w, UINT h)
+{
+    appPushLogDate(FALSE);
+
+    for (UINT y = 0; y < h; ++y)
+    {
+        for (UINT x = 0; x < w; ++x)
+        {
+            appGeneral(_T("%s,\t"), appPrintComplex(buffer[y * w + x].x, buffer[y * w + x].y).c_str());
+        }
+        appGeneral(_T("\n"));
+    }
+
+    appPopLogDate();
+}
+
 void QLAPI DeviceBufferViewer(const Real* buffer, UINT w, UINT h)
 {
     Real* pHostBuffer = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
@@ -157,6 +189,34 @@ void QLAPI DeviceBufferViewer(const Real* buffer, UINT w, UINT h)
     HostBufferViewer(pHostBuffer, w, h);
 
     appSafeFree(pHostBuffer);
+}
+
+QLMatrix QLAPI StateToMatrix(const struct Qureg& vec)
+{
+    UINT veclen = 1UL << static_cast<UINT>(vec.numQubitsInStateVec);
+
+    Real* pReal = NULL;
+    Real* pImag = NULL;
+    QLComplex* pAmp = NULL;
+    checkCudaErrors(cudaMalloc((void**)&pReal, sizeof(Real) * veclen));
+    checkCudaErrors(cudaMalloc((void**)&pImag, sizeof(Real) * veclen));
+    checkCudaErrors(cudaMalloc((void**)&pAmp, sizeof(QLComplex) * veclen));
+    checkCudaErrors(cudaMemcpy(pReal, vec.stateVec.real, sizeof(Real) * veclen, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(pImag, vec.stateVec.imag, sizeof(Real) * veclen, cudaMemcpyHostToDevice));
+    
+    UINT block = 0;
+    UINT thread = 0;
+    __DECOMPOSE(veclen, block, thread);
+    _kernelStateVectorToAmp << <block, thread >> > (pAmp, pReal, pImag, veclen);
+
+    QLComplex* pHostAmp = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * veclen));
+    checkCudaErrors(cudaMemcpy(pHostAmp, pAmp, sizeof(QLComplex) * veclen, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(pReal));
+    checkCudaErrors(cudaFree(pImag));
+    checkCudaErrors(cudaFree(pAmp));
+
+    return QLMatrix(veclen, 1, pHostAmp);
 }
 
 __END_NAMESPACE

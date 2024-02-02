@@ -108,6 +108,31 @@ void QLSimulatorVector::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
     }
 }
 
+QLMatrix QLSimulatorVector::ShowState(const QLGate& gate)
+{
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(gate.m_lstQubits.Num(), evn);
+    UINT veclen = 1UL << static_cast<UINT>(gate.m_lstQubits.Num());
+    memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+    memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+    vec.stateVec.real[0] = F(1.0);
+    copyStateToGPU(vec);
+    TArray<SBasicOperation> ops = gate.GetOperation(gate.m_lstQubits);
+    SIZE_T opssize = ops.Num();
+    for (SIZE_T i = 0; i < opssize; ++i)
+    {
+        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    QLMatrix state = StateToMatrix(vec);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+    return state;
+}
+
 __END_NAMESPACE
 
 

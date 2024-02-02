@@ -77,6 +77,14 @@
 #include "Circuit/Gates/PauliSimulate.h"
 #include "Circuit/Gates/SwapTest.h"
 
+#include "Circuit/Ansatz/CAnsatz.h"
+#include "Circuit/Ansatz/CFHEA.h"
+#include "Circuit/Ansatz/CTwoLocal.h"
+
+#include "ClassicalTools/Optimizer/COptimizer.h"
+#include "ClassicalTools/Optimizer/CGradientDesend.h"
+#include "ClassicalTools/Optimizer/CAdam.h"
+
 #include "Circuit/Subroutine/HHL.h"
 #include "Circuit/Subroutine/QKMeans.h"
 #include "Circuit/Subroutine/Grover.h"
@@ -90,6 +98,8 @@
 #include "Circuit/Hamitonian/CHamitonianPauliPlaqutte.h"
 #include "Circuit/Hamitonian/CHamitonianStaggeredJordanWigner1D.h"
 #include "Circuit/Hamitonian/CHamitonianList.h"
+
+#include "Variational/CStateBuilder.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

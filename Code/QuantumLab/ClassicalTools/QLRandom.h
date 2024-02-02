@@ -200,6 +200,9 @@ public:
         return _make_cuComplex(_cos(arg), _sin(arg));
     }
 
+    /**
+    * 0 - 1 random
+    */
     __host__ __inline__ Real GetRandomF()
     {
         if (ERandom::ER_Schrage == m_eRandomType)
@@ -213,7 +216,7 @@ public:
     }
 
     FLOAT* m_deviceBuffer;
-    Real m_hostBuffer[1];
+    FLOAT m_hostBuffer[1];
     curandGenerator_t m_HGen;
     ERandom m_eRandomType;
     UINT m_uiMaxThread;
@@ -308,6 +311,12 @@ public:
 };
 
 //extern QLRandomInitializer GRandom;
+extern QLAPI QLRandom* _hostRandomPointer;
+
+inline Real RandomF()
+{
+    return _hostRandomPointer->GetRandomF();
+}
 
 __END_NAMESPACE
 

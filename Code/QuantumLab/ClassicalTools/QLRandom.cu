@@ -179,6 +179,8 @@ QLRandomInitializer::QLRandomInitializer(ERandom eRandom, UINT uiSeed)
     checkCudaErrors(cudaMemcpyToSymbol(__r, &m_pDeviceRandom, sizeof(QLRandom*)));
 
     printf("random initialed\n");
+
+    _hostRandomPointer = m_pRandom;
 }
 
 QLRandomInitializer::~QLRandomInitializer()
@@ -189,7 +191,7 @@ QLRandomInitializer::~QLRandomInitializer()
 
 __constant__ QLRandom* __r;
 //QLRandomInitializer GRandom;
-
+QLRandom* _hostRandomPointer = NULL;
 
 __END_NAMESPACE
 

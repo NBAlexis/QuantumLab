@@ -101,6 +101,19 @@ int main()
             }
         }
         break;
+    case EQKJ_TestFitPointSet:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
+            {
+                TestFitPointSet(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("FitWaveFunction not found!\n"));
+            }
+        }
+        break;
     default:
         break;
     }

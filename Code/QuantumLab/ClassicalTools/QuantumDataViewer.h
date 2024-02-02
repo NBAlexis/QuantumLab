@@ -26,7 +26,11 @@ extern QLMatrix QLAPI ShowStateVectorDetail(const QLComplex* statedata, BYTE cou
 
 extern QLMatrix QLAPI ShowStateVectorDetail(const struct Qureg& vec, BYTE count, BYTE idx0, ...);
 
+extern QLMatrix QLAPI StateToMatrix(const struct Qureg& vec);
+
 extern void QLAPI HostBufferViewer(const Real* buffer, UINT w, UINT h);
+
+extern void QLAPI HostBufferViewer(const QLComplex* buffer, UINT w, UINT h);
 
 extern void QLAPI DeviceBufferViewer(const Real* buffer, UINT w, UINT h);
 
