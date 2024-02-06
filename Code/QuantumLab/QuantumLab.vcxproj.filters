@@ -61,9 +61,6 @@
     <ClCompile Include="Circuit\Gates\CnUGate.cpp">
       <Filter>Circuit\Gates</Filter>
     </ClCompile>
-    <ClCompile Include="Circuit\Gates\FRGate.cpp">
-      <Filter>Circuit\Gates</Filter>
-    </ClCompile>
     <ClCompile Include="Circuit\Gates\CSDDecompose.cpp">
       <Filter>Circuit\Gates</Filter>
     </ClCompile>
@@ -348,6 +345,9 @@
     </CudaCompile>
     <CudaCompile Include="ClassicalTools\QuantumDataViewer.cu">
       <Filter>ClassicalTools</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Circuit\Gates\FRGate.cu">
+      <Filter>Circuit\Gates</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

@@ -64,6 +64,18 @@ public:
         const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
         UINT kHit, UINT uiMaxCluster);
 
+    static void KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sSaveK, const CCString& sRepeat, UINT kHit);
+
+    static void KNNAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sScore, 
+        BYTE ansatzQubits, UINT uiAnsatzLevel, UINT uiRepeat);
+
+    static void KNNAE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, UINT uiRepeat);
+
+    static void QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate, 
+        Real minX, Real maxX, Real minY, Real maxY);
+
+    static void QAnomaly3D(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sSaveScore);
+
 protected:
 
     /**

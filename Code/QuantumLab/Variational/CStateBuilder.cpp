@@ -65,7 +65,8 @@ Real CStateBuilder::LossFunction(const QLGate& ansatzGate)
     return F(1.0) - _cuCabsf(ansatzState.VectorDot(m_StateToFit));
 }
 
-void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep)
+void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, 
+    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal)
 {
     UINT w, h;
     TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
@@ -75,15 +76,17 @@ void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const 
     QLGate aegate = AmplitudeEncodeVectors(points.GetData(), hpower, wpower, FALSE);
     BYTE byQubit = static_cast<BYTE>(aegate.m_lstQubits.Num());
 
-    CTwoLocal ansatz(byQubit, uiLevel, ESingleLayer::RYRZ, ELinkLayer::CRX, ELinkStyle::SCA);
-    QLGate ansatzGate = ansatz.BuildStateWithParam();
+    ESingleLayer eSingle = ESingleLayer::RYRZ;
+    ELinkLayer eLinker = ELinkLayer::CZ;
+    if (bOnlyReal)
+    {
+        eSingle = ESingleLayer::RY;
+    }
 
+    CTwoLocal ansatz(byQubit, uiLevel, eSingle, eLinker, ELinkStyle::SCA);
     CAdam optimizer(&ansatz, NULL, fLearnRate);
-
     CStateBuilder builder(aegate, fGoal);
-
     TArray<Real> history = builder.Fit(&optimizer, uiMaxStep);
-
     ansatz.SaveParameters(sAnsatzFile);
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }

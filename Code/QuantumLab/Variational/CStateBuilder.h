@@ -33,7 +33,8 @@ protected:
     Real m_fGoal;
 };
 
-extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep);
+extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, 
+    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
 
 __END_NAMESPACE
 

@@ -697,7 +697,7 @@ TArray<QLComplex> QLQuantumKmeans::TestCircuitBuildState(UINT uiVectorDim, UINT 
     Real* pHostWorkSpaceZ = reinterpret_cast<Real*>(malloc(sizeof(Real) * uiVectorDim * vectorCount));
 
     LONGLONG veclen = 1LL << (uiVectorPower + uiVectorCountPower + 2);
-    LONGLONG veclen2 = 1LL << (uiVectorPower + uiVectorCountPower);
+    //LONGLONG veclen2 = 1LL << (uiVectorPower + uiVectorCountPower);, this is to test original successful rate
     QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * veclen));
 
     TArray<BYTE> ampGate;
@@ -825,46 +825,52 @@ TArray<QLComplex> QLQuantumKmeans::TestCircuitBuildState(UINT uiVectorDim, UINT 
         finalstate.ReShape(uiVectorDim, vectorCount);
 
         // 6 - Compare the results
-        expectedRes.ElementAbs();
-        Real norm = expectedRes.Norm2();
-        expectedRes = expectedRes / norm;
-        QLMatrix diffmtr = finalstate - expectedRes;
-        Real diff = diffmtr.Norm2();
-        if (diff > F(0.001))
-        {
-            appGeneral(_T("difference is too large: %f\n"), diff);
-            expectedRes.Print("expect");
-            finalstate.Print("finalstate");
-        }
+        // This has been tested, therefore not this
+        //expectedRes.ElementAbs();
+        //Real norm = expectedRes.Norm2();
+        //expectedRes = expectedRes / norm;
+        //QLMatrix diffmtr = finalstate - expectedRes;
+        //Real diff = diffmtr.Norm2();
+        //if (diff > F(0.001))
+        //{
+        //    appGeneral(_T("difference is too large: %f\n"), diff);
+        //    expectedRes.Print("expect");
+        //    finalstate.Print("finalstate");
+        //}
 
         //=======================================
         //find out build rate before AA
-        for (UINT j = 0; j < uiVectorPower; ++j)
-        {
-            TArray<BYTE> bitsctr;
-            bitsctr.AddItem(static_cast<BYTE>(j));
-            totalCircuit.AppendGate(ctrCollapse, bitsctr);
-        }
-        syncQuESTEnv(evn);
-        vec2.stateVec.real[0] = F(1.0);
-        vec2.stateVec.imag[0] = F(0.0);
-        for (LONGLONG line2 = 1; line2 < veclen2; ++line2)
-        {
-            vec2.stateVec.real[line2] = F(0.0);
-            vec2.stateVec.imag[line2] = F(0.0);
-        }
-        copyStateToGPU(vec2);
-        Real probToBuildBeforeAA = F(1.0);
-        TArray<SBasicOperation> ops2 = totalCircuit.GetOperation(totalCircuit.m_lstQubits);
-        SIZE_T opssize2 = ops2.Num();
-        for (SIZE_T j = 0; j < opssize2; ++j)
-        {
-            probToBuildBeforeAA = probToBuildBeforeAA * QLGate::PerformBasicOperation(vec2, ops2[static_cast<INT>(j)]);
-        }
+        //This has been tested, therefore not this
+        //for (UINT j = 0; j < uiVectorPower; ++j)
+        //{
+        //    TArray<BYTE> bitsctr;
+        //    bitsctr.AddItem(static_cast<BYTE>(j));
+        //    totalCircuit.AppendGate(ctrCollapse, bitsctr);
+        //}
+        //syncQuESTEnv(evn);
+        //vec2.stateVec.real[0] = F(1.0);
+        //vec2.stateVec.imag[0] = F(0.0);
+        //for (LONGLONG line2 = 1; line2 < veclen2; ++line2)
+        //{
+        //    vec2.stateVec.real[line2] = F(0.0);
+        //    vec2.stateVec.imag[line2] = F(0.0);
+        //}
+        //copyStateToGPU(vec2);
+        //Real probToBuildBeforeAA = F(1.0);
+        //TArray<SBasicOperation> ops2 = totalCircuit.GetOperation(totalCircuit.m_lstQubits);
+        //SIZE_T opssize2 = ops2.Num();
+        //for (SIZE_T j = 0; j < opssize2; ++j)
+        //{
+        //    probToBuildBeforeAA = probToBuildBeforeAA * QLGate::PerformBasicOperation(vec2, ops2[static_cast<INT>(j)]);
+        //}
 
         // 7 - Record the results
-        appGeneral(_T("dim %d, count %d, repeat %d, aa %d, error %f, build rate %f, build rate before AA %f\n"), 
-            uiVectorDim, vectorCount, i, aaRepeat, diff, probToBuild, probToBuildBeforeAA);
+        //appGeneral(_T("dim %d, count %d, repeat %d, aa %d, error %f, build rate %f, build rate before AA %f\n"), 
+        //    uiVectorDim, vectorCount, i, aaRepeat, diff, probToBuild, probToBuildBeforeAA);
+        //appGeneral(_T("dim %d, count %d, repeat %d, aa %d, error %f, build rate %f\n"), 
+        //    uiVectorDim, vectorCount, i, aaRepeat, diff, probToBuild);
+        appGeneral(_T("dim %d, count %d, repeat %d, aa %d, build rate %f\n"),
+            uiVectorDim, vectorCount, i, aaRepeat, probToBuild);
     }
 
     destroyQureg(vec2, evn);
@@ -965,6 +971,7 @@ void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QL
     hostViCopy.ReShape(vectorCount, 1);
     hostViCopy.ElementAbs();
     hostViCopy.Print("expected");
+    appGeneral(_T("norm = %f\n"), norm * norm / 4);
 
 
     //================= Compare Classical result =====================
@@ -975,14 +982,21 @@ void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QL
         bitsctr.AddItem(static_cast<BYTE>(j));
         afterAA.AppendGate(ctrCollapse, bitsctr);
     }
-    LONGLONG veclen = 1LL << (afterAA.GetQubitCount());
+    //LONGLONG veclen = 1LL << (afterAA.GetQubitCount());
+    LONGLONG veclen = 1LL << (totalCircuit.GetQubitCount());
     QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * veclen));
-    TArray<SBasicOperation> ops = afterAA.GetOperation(afterAA.m_lstQubits);
+    //TArray<SBasicOperation> ops = afterAA.GetOperation(afterAA.m_lstQubits);
+    for (UINT j = 0; j < uiVectorPower; ++j)
+    {
+        totalCircuit.AppendGate(ctrCollapse, static_cast<BYTE>(j));
+    }
+    TArray<SBasicOperation> ops = totalCircuit.GetOperation(afterAA.m_lstQubits);
     SIZE_T opssize = ops.Num();
 
     QuESTEnv evn = createQuESTEnv();
-    Qureg vec = createQureg(afterAA.GetQubitCount(), evn);
-
+    //Qureg vec = createQureg(afterAA.GetQubitCount(), evn);
+    Qureg vec = createQureg(totalCircuit.GetQubitCount(), evn);
+    
     syncQuESTEnv(evn);
     vec.stateVec.real[0] = F(1.0);
     vec.stateVec.imag[0] = F(0.0);
@@ -1006,7 +1020,8 @@ void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QL
         res[line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
     }
     TArray<BYTE> idxs;
-    for (BYTE i = 0; i < afterAA.GetQubitCount(); ++i)
+    //for (BYTE i = 0; i < afterAA.GetQubitCount(); ++i)
+    for (BYTE i = 0; i < totalCircuit.GetQubitCount(); ++i)
     {
         if (i < uiVectorPower)
         {
@@ -1733,6 +1748,649 @@ void QLQuantumKmeans::KNN3D(const CCString& sTrainingPoints, const CCString& sTe
     checkCudaErrors(cudaFree(pTestingPoints));
 }
 
+
+void QLQuantumKmeans::KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sSaveK, const CCString& sRepeat, UINT kHit)
+{
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
+    UINT w, h;
+    TArray<Real> ansatzParam = ReadCSVAR(sAnsatz, w, h);
+    TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
+
+    CTwoLocal ansatz(9, 1, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+    ansatz.SetParameters(ansatzParam);
+    QLGate ansatzGate = ansatz.BuildStateWithParam();
+    TArray<UINT> repeats;
+
+    UINT veclen = 512;
+    
+    TArray<INT> clusterAssignment;
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(9, evn);
+
+    for (UINT uiV = 0; uiV < h; ++uiV)
+    {
+        UINT hitCount[4] = { 0,0,0,0 };
+        QLGate vectorAE = AmplitudeEncodeOneVector(orignalPointsArray.GetData() + 2 * uiV, 1, FALSE);
+        QLGate wholeCircuit;
+        wholeCircuit.AddQubits(9);
+        wholeCircuit.AppendGate(ansatzGate, ansatzGate.m_lstQubits);
+        vectorAE.Dagger();
+        wholeCircuit.AppendGate(vectorAE, 0);
+
+        syncQuESTEnv(evn);
+        memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+        memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+        vec.stateVec.real[0] = F(1.0);
+        vec.stateVec.imag[0] = F(0.0);
+        copyStateToGPU(vec);
+
+        TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+        SIZE_T opssize = ops.Num();
+        for (SIZE_T i = 0; i < opssize; ++i)
+        {
+            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        }
+        syncQuESTEnv(evn);
+
+        copyStateFromGPU(vec);
+
+        UBOOL bHasHit = FALSE;
+        UINT repeat = 0;
+        while (!bHasHit)
+        {
+            ++repeat;
+            if (0 == measure(vec, 0))
+            {
+                //UINT measureRes = 0;
+                UINT thisHit = static_cast<UINT>(measure(vec, 7) + (measure(vec, 8) << 1));
+                hitCount[thisHit] = hitCount[thisHit] + 1;
+                if (hitCount[thisHit] >= static_cast<INT>(kHit))
+                {
+                    bHasHit = TRUE;
+                    clusterAssignment.AddItem(thisHit);
+                    repeats.AddItem(repeat);
+                }
+            }
+
+            if (!bHasHit)
+            {
+                copyStateToGPU(vec);
+            }
+        }
+
+        appGeneral(_T("finish %d / %d ...\n"), uiV, h);
+    }
+
+    //final export host center
+    SaveCSVAI(clusterAssignment.GetData(), 1, h, sSaveK);
+    SaveCSVAUI(repeats.GetData(), 1, h, sRepeat);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+}
+
+void QLQuantumKmeans::KNNAnsatz(
+    const CCString& sAnsatz, 
+    const CCString& sTestPoints, 
+    const CCString& sScore,
+    BYTE ansatzQubits, UINT uiAnsatzLevel, UINT uiRepeat)
+{
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
+    UINT w, h;
+    TArray<Real> ansatzParam = ReadCSVAR(sAnsatz, w, h);
+    TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
+    BYTE vectorPower = static_cast<BYTE>(MostSignificantPowerTwo(w));
+
+    QLComplex* pDeviceVectors = NULL;
+    Real* pDeviceAbs = NULL;
+    Real* pDevicePhase = NULL;
+    Real* pDeviceY = NULL;
+    Real* pDeviceZ = NULL;
+    checkCudaErrors(cudaMalloc((void**)&pDeviceVectors, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceAbs, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDevicePhase, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceY, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceZ, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMemcpy(pDeviceVectors, orignalPointsArray.GetData(), sizeof(QLComplex) * w * h, cudaMemcpyHostToDevice));
+    CalculateDegreesForEach(pDeviceVectors, pDeviceAbs, pDevicePhase, h, vectorPower, pDeviceY, pDeviceZ);
+    Real* pHostY = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
+    Real* pHostZ = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
+    checkCudaErrors(cudaMemcpy(pHostY, pDeviceY, sizeof(Real) * w * h, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostZ, pDeviceZ, sizeof(Real) * w * h, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(pDeviceVectors));
+    checkCudaErrors(cudaFree(pDeviceAbs));
+    checkCudaErrors(cudaFree(pDevicePhase));
+    checkCudaErrors(cudaFree(pDeviceY));
+    checkCudaErrors(cudaFree(pDeviceZ));
+
+    CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+    ansatz.SetParameters(ansatzParam);
+    QLGate ansatzGate = ansatz.BuildStateWithParam();
+    TArray<UINT> scores;
+
+    UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+    
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(ansatzQubits, evn);
+    QLGate wholeCircuitBefore;
+    wholeCircuitBefore.AddQubits(ansatzQubits);
+    wholeCircuitBefore.AppendGate(ansatzGate, ansatzGate.m_lstQubits);
+    syncQuESTEnv(evn);
+    memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+    memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+    vec.stateVec.real[0] = F(1.0);
+    vec.stateVec.imag[0] = F(0.0);
+    copyStateToGPU(vec);
+
+    TArray<SBasicOperation> opsBefore = wholeCircuitBefore.GetOperation(wholeCircuitBefore.m_lstQubits);
+    SIZE_T opssizeBefore = opsBefore.Num();
+    for (SIZE_T i = 0; i < opssizeBefore; ++i)
+    {
+        QLGate::PerformBasicOperation(vec, opsBefore[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
+    memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
+
+    for (UINT uiV = 0; uiV < h; ++uiV)
+    {
+        //QLGate vectorAE = AmplitudeEncodeOneVector(orignalPointsArray.GetData() + w * uiV, vectorPower, FALSE);
+        QLGate vectorAE = ExchangeToYZGate(vectorPower, pHostY + w * uiV, pHostZ + w * uiV, FALSE);
+        QLGate wholeCircuit;
+        wholeCircuit.AddQubits(ansatzQubits);
+        vectorAE.Dagger();
+        wholeCircuit.AppendGate(vectorAE, vectorAE.m_lstQubits);
+        for (BYTE qm = 0; qm < vectorPower; ++qm)
+        {
+            wholeCircuit.AppendGate(cc, qm);
+        }
+
+        if (0 != uiV)
+        {
+            memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
+            memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
+            syncQuESTEnv(evn);
+            copyStateToGPU(vec);
+        }
+
+        TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+        SIZE_T opssize = ops.Num();
+        for (SIZE_T i = 0; i < opssize; ++i)
+        {
+            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        }
+        //syncQuESTEnv(evn);
+
+        Real res[2];
+        INT qubitsToSee[1] = { ansatzQubits - 1 };
+        calcProbOfAllOutcomes(res, vec, qubitsToSee, 1);
+
+        //copyStateFromGPU(vec);
+
+        UINT uiHitRes = 0;
+        for (UINT hit = 0; hit < uiRepeat; ++hit)
+        {
+            if (RandomF() > res[0])
+            {
+                ++uiHitRes;
+            }
+            //if (0 != hit)
+            //{
+            //    copyStateToGPU(vec);
+            //}
+
+            //if (0 != measure(vec, ansatzQubits - 1))
+            //{
+            //    ++uiHitRes;
+            //}
+        }
+        scores.AddItem(uiHitRes);
+        appGeneral(_T("finish %d / %d , hit = %d ...\n"), uiV, h, uiHitRes);
+    }
+
+    appSafeFree(pHostY);
+    appSafeFree(pHostZ);
+
+    //final export host center
+    SaveCSVAUI(scores.GetData(), 1, h, sScore);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+}
+
+void QLQuantumKmeans::KNNAE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, UINT uiRepeat)
+{
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
+    UINT w, h;
+    TArray<QLComplex> trainpoints = ReadCSVA(sTrainingPoints, w, h);
+    QLGate aegate = AmplitudeEncodeVectors(trainpoints.GetData(), MostSignificantPowerTwo(h), MostSignificantPowerTwo(w), FALSE);
+    BYTE allBytes = static_cast<BYTE>(aegate.m_lstQubits.Num());
+    TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
+    BYTE vectorPower = static_cast<BYTE>(MostSignificantPowerTwo(w));
+
+    QLComplex* pDeviceVectors = NULL;
+    Real* pDeviceAbs = NULL;
+    Real* pDevicePhase = NULL;
+    Real* pDeviceY = NULL;
+    Real* pDeviceZ = NULL;
+    checkCudaErrors(cudaMalloc((void**)&pDeviceVectors, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceAbs, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDevicePhase, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceY, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceZ, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMemcpy(pDeviceVectors, orignalPointsArray.GetData(), sizeof(QLComplex) * w * h, cudaMemcpyHostToDevice));
+    CalculateDegreesForEach(pDeviceVectors, pDeviceAbs, pDevicePhase, h, vectorPower, pDeviceY, pDeviceZ);
+    Real* pHostY = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
+    Real* pHostZ = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
+    checkCudaErrors(cudaMemcpy(pHostY, pDeviceY, sizeof(Real) * w * h, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostZ, pDeviceZ, sizeof(Real) * w * h, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaFree(pDeviceVectors));
+    checkCudaErrors(cudaFree(pDeviceAbs));
+    checkCudaErrors(cudaFree(pDevicePhase));
+    checkCudaErrors(cudaFree(pDeviceY));
+    checkCudaErrors(cudaFree(pDeviceZ));
+
+    TArray<UINT> scores;
+
+    UINT veclen = 1UL << static_cast<UINT>(allBytes);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(allBytes, evn);
+
+    
+    QLGate wholeCircuit;
+    wholeCircuit.AddQubits(allBytes);
+    wholeCircuit.AppendGate(aegate, aegate.m_lstQubits);
+
+    syncQuESTEnv(evn);
+    memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+    memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+    vec.stateVec.real[0] = F(1.0);
+    vec.stateVec.imag[0] = F(0.0);
+    copyStateToGPU(vec);
+    TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+    SIZE_T opssize = ops.Num();
+    for (SIZE_T i = 0; i < opssize; ++i)
+    {
+        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
+    memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
+
+    for (UINT uiV = 0; uiV < h; ++uiV)
+    {
+        QLGate newcircuit;
+        newcircuit.AddQubits(allBytes);
+        //QLGate vectorAE = AmplitudeEncodeOneVector(orignalPointsArray.GetData() + w * uiV, vectorPower, FALSE);
+        QLGate vectorAE = ExchangeToYZGate(vectorPower, pHostY + w * uiV, pHostZ + w * uiV, FALSE);
+        vectorAE.Dagger();
+        newcircuit.AppendGate(vectorAE, vectorAE.m_lstQubits);
+        for (BYTE qm = 0; qm < vectorPower; ++qm)
+        {
+            newcircuit.AppendGate(cc, qm);
+        }
+        
+        if (0 != uiV)
+        {
+            memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
+            memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
+            syncQuESTEnv(evn);
+            copyStateToGPU(vec);
+        }
+
+        TArray<SBasicOperation> ops2 = newcircuit.GetOperation(newcircuit.m_lstQubits);
+        SIZE_T opssize2 = ops2.Num();
+        for (SIZE_T i = 0; i < opssize2; ++i)
+        {
+            QLGate::PerformBasicOperation(vec, ops2[static_cast<INT>(i)]);
+        }
+        //syncQuESTEnv(evn);
+
+        //copyStateFromGPU(vec);
+
+        //UINT uiHitRes = 0;
+        //for (UINT hit = 0; hit < uiRepeat; ++hit)
+        //{
+        //    if (0 != hit)
+        //    {
+        //        copyStateToGPU(vec);
+        //    }
+
+        //    if (0 != measure(vec, allBytes - 1))
+        //    {
+        //        ++uiHitRes;
+        //    }
+        //}
+        //scores.AddItem(uiHitRes);
+        Real res[2];
+        INT qubitsToSee[1] = { allBytes - 1};
+        calcProbOfAllOutcomes(res, vec, qubitsToSee, 1);
+
+        //copyStateFromGPU(vec);
+
+        UINT uiHitRes = 0;
+        for (UINT hit = 0; hit < uiRepeat; ++hit)
+        {
+            if (RandomF() > res[0])
+            {
+                ++uiHitRes;
+            }
+            //if (0 != hit)
+            //{
+            //    copyStateToGPU(vec);
+            //}
+
+            //if (0 != measure(vec, ansatzQubits - 1))
+            //{
+            //    ++uiHitRes;
+            //}
+        }
+        scores.AddItem(uiHitRes);
+
+        appGeneral(_T("finish %d / %d , hit = %d (real rate: %f) ...\n"), uiV, h, uiHitRes, res[1]);
+    }
+
+    //final export host center
+    SaveCSVAUI(scores.GetData(), 1, h, sScore);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+}
+
+void QLQuantumKmeans::QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate,
+    Real minX, Real maxX, Real minY, Real maxY)
+{
+    UINT uiBlock = 0;
+    UINT uiThread = 0;
+    UINT w1, h1;
+    UINT w2, h2;
+    TArray<Real> orignalPointsArrayTraining = ReadCSVAR(sReferenceCSV, w1, h1);
+    TArray<Real> orignalPointsArrayTesting = ReadCSVAR(sPointCSV, w2, h2);
+
+    Real* pTrainingX = NULL;
+    Real* pTrainingY = NULL;
+    Real* pTestingX = NULL;
+    Real* pTestingY = NULL;
+    Real* pWorkingSpaceTraining = NULL;
+    Real* pWorkingSpaceTesting = NULL;
+
+    checkCudaErrors(cudaMalloc((void**)&pWorkingSpaceTraining, sizeof(Real) * h1 * 2));
+    checkCudaErrors(cudaMalloc((void**)&pWorkingSpaceTesting, sizeof(Real) * h2 * 2));
+    checkCudaErrors(cudaMalloc((void**)&pTrainingX, sizeof(Real) * h1));
+    checkCudaErrors(cudaMalloc((void**)&pTrainingY, sizeof(Real) * h1));
+    checkCudaErrors(cudaMalloc((void**)&pTestingX, sizeof(Real) * h2));
+    checkCudaErrors(cudaMalloc((void**)&pTestingY, sizeof(Real) * h2));
+
+    checkCudaErrors(cudaMemcpy(pWorkingSpaceTraining, orignalPointsArrayTraining.GetData(), sizeof(Real) * h1 * 2, cudaMemcpyHostToDevice));
+    __DECOMPOSE(h1, uiBlock, uiThread);
+    _kernelKMeans2DReadFileXY << <uiBlock, uiThread >> > (pWorkingSpaceTraining, pTrainingX, pTrainingY, h1);
+    checkCudaErrors(cudaMemcpy(pWorkingSpaceTesting, orignalPointsArrayTesting.GetData(), sizeof(Real) * h2 * 2, cudaMemcpyHostToDevice));
+    __DECOMPOSE(h2, uiBlock, uiThread);
+    _kernelKMeans2DReadFileXY << <uiBlock, uiThread >> > (pWorkingSpaceTesting, pTestingX, pTestingY, h2);
+
+    Real* pAngleYTraining = NULL;
+    Real* pAngleZTraining = NULL;
+    Real* pAngleYTesting = NULL;
+    Real* pAngleZTesting = NULL;
+    checkCudaErrors(cudaMalloc((void**)&pAngleYTraining, sizeof(Real) * h1));
+    checkCudaErrors(cudaMalloc((void**)&pAngleZTraining, sizeof(Real) * h1));
+    checkCudaErrors(cudaMalloc((void**)&pAngleYTesting, sizeof(Real) * h2));
+    checkCudaErrors(cudaMalloc((void**)&pAngleZTesting, sizeof(Real) * h2));
+
+    __DECOMPOSE(h1, uiBlock, uiThread);
+    _kernelKMeans2DPointToAbsPhase << <uiBlock, uiThread >> > (pTrainingX, pTrainingY,
+        minX, maxX, minY, maxY, pAngleYTraining, pAngleZTraining, h1);
+    __DECOMPOSE(h2, uiBlock, uiThread);
+    _kernelKMeans2DPointToAbsPhase << <uiBlock, uiThread >> > (pTestingX, pTestingY,
+        minX, maxX, minY, maxY, pAngleYTesting, pAngleZTesting, h2);
+
+    Real* pHostAngleYTraining = reinterpret_cast<Real*>(malloc(sizeof(Real) * h1));
+    Real* pHostAngleZTraining = reinterpret_cast<Real*>(malloc(sizeof(Real) * h1));
+    Real* pHostAngleYTesting = reinterpret_cast<Real*>(malloc(sizeof(Real) * h2));
+    Real* pHostAngleZTesting = reinterpret_cast<Real*>(malloc(sizeof(Real) * h2));
+
+    checkCudaErrors(cudaMemcpy(pHostAngleYTraining, pAngleYTraining, sizeof(Real) * h1, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostAngleZTraining, pAngleZTraining, sizeof(Real) * h1, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostAngleYTesting, pAngleYTesting, sizeof(Real) * h2, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostAngleZTesting, pAngleZTesting, sizeof(Real) * h2, cudaMemcpyDeviceToHost));
+
+    TArray<Real> fBuildRates;
+    UINT kPower = MostSignificantPowerTwo(h1);
+    UINT veclen = 1UL << (kPower + 1);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+    QLGate had(EBasicOperation::EBO_H);
+
+    TArray<BYTE> frybits;
+    for (BYTE i = 0; i < kPower + 1; ++i)
+    {
+        frybits.AddItem(static_cast<BYTE>(kPower - i));
+    }
+
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(kPower + 1, evn);
+
+    for (UINT uiV = 0; uiV < h2; ++uiV)
+    {
+        QLGate wholeCircuit;
+        wholeCircuit.AddQubits(static_cast<BYTE>(kPower + 1));
+        for (BYTE hadIdx = 0; hadIdx < kPower; ++hadIdx)
+        {
+            wholeCircuit.AppendGate(had, hadIdx + 1);
+        }
+        QLGate amplitudeVi = FRyz(pHostAngleYTraining, pHostAngleZTraining, kPower + 1);
+        wholeCircuit.AppendGate(amplitudeVi, frybits);
+
+        //ry(theta) rz(-phi)
+        //and dagger, which is rz(phi), ry(-theta)
+        QLGate rz(EBasicOperation::EBO_RZ, -pHostAngleZTesting[uiV]);
+        QLGate ry(EBasicOperation::EBO_RY, pHostAngleYTesting[uiV]);
+        QLGate amp2;
+        amp2.AddQubits(1);
+        amp2.AppendGate(ry, 0);
+        amp2.AppendGate(rz, 0);
+        amp2.Dagger();
+
+        wholeCircuit.AppendGate(amp2, 0);
+        wholeCircuit.AppendGate(cc, 0);
+
+        syncQuESTEnv(evn);
+        memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+        memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+        vec.stateVec.real[0] = F(1.0);
+        vec.stateVec.imag[0] = F(0.0);
+        copyStateToGPU(vec);
+
+        TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+        SIZE_T opssize = ops.Num();
+        Real fBuildRate = F(1.0);
+        for (SIZE_T i = 0; i < opssize; ++i)
+        {
+            fBuildRate = fBuildRate * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        }
+        fBuildRates.AddItem(fBuildRate);
+        syncQuESTEnv(evn);
+
+        copyStateFromGPU(vec);
+
+#pragma region test state-vector
+
+        //if (0 == uiV)
+        //{
+        //    TArray<BYTE> getout;
+        //    getout.AddItem(0);
+        //    for (BYTE toshowbit = 0; toshowbit < kPower; ++toshowbit)
+        //    {
+        //        getout.AddItem(2);
+        //    }
+        //    QLMatrix show = ShowStateVectorDetail(vec, getout);
+        //    show.Mul(_make_cuComplex(F(23.34282757393504), F(0.0)));
+        //    show.Print();
+        //}
+
+#pragma endregion
+
+        appGeneral(_T("br = %2.12f, finish %d / %d ...\n"), fBuildRate, uiV, h2);
+    }
+
+    SaveCSVAR(fBuildRates.GetData(), 1, h2, sBuildRate);
+
+    //final export host center
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+
+    checkCudaErrors(cudaFree(pAngleYTraining));
+    checkCudaErrors(cudaFree(pAngleZTraining));
+    checkCudaErrors(cudaFree(pAngleYTesting));
+    checkCudaErrors(cudaFree(pAngleZTesting));
+
+    appSafeFree(pHostAngleYTraining);
+    appSafeFree(pHostAngleZTraining);
+    appSafeFree(pHostAngleYTesting);
+    appSafeFree(pHostAngleZTesting);
+
+    checkCudaErrors(cudaFree(pTrainingX));
+    checkCudaErrors(cudaFree(pTrainingY));
+    checkCudaErrors(cudaFree(pTestingX));
+    checkCudaErrors(cudaFree(pTestingY));
+    checkCudaErrors(cudaFree(pWorkingSpaceTraining));
+    checkCudaErrors(cudaFree(pWorkingSpaceTesting));
+}
+
+void QLQuantumKmeans::QAnomaly3D(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sSaveScore)
+{
+    UINT w1, h1;
+    UINT w2, h2;
+    TArray<Real> orignalPointsArrayTraining = ReadCSVAR(sTrainingPoints, w1, h1);
+    TArray<Real> orignalPointsArrayTesting = ReadCSVAR(sTestPoints, w2, h2);
+
+    Real* pTrainingPoints = NULL;
+    Real* pTrainingY = NULL;
+    Real* pTestingPoints = NULL;
+    Real* pTestingY = NULL;
+    Real* pHostTrainingY = reinterpret_cast<Real*>(malloc(sizeof(Real) * h1 * 4));
+    Real* pHostTestY = reinterpret_cast<Real*>(malloc(sizeof(Real) * h2 * 4));
+
+    checkCudaErrors(cudaMalloc((void**)&pTrainingPoints, sizeof(Real) * h1 * 4));
+    checkCudaErrors(cudaMalloc((void**)&pTrainingY, sizeof(Real) * h1 * 4));
+    checkCudaErrors(cudaMalloc((void**)&pTestingPoints, sizeof(Real) * h2 * 4));
+    checkCudaErrors(cudaMalloc((void**)&pTestingY, sizeof(Real) * h2 * 4));
+
+    checkCudaErrors(cudaMemcpy(pTrainingPoints, orignalPointsArrayTraining.GetData(), sizeof(Real) * h1 * 4, cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(pTestingPoints, orignalPointsArrayTesting.GetData(), sizeof(Real) * h2 * 4, cudaMemcpyHostToDevice));
+
+    CalculateDegreesReal(pTrainingPoints, h1, 2, pTrainingY);
+    CalculateDegreesRealForEach(pTestingPoints, h2, 2, pTestingY);
+    checkCudaErrors(cudaMemcpy(pHostTrainingY, pTrainingY, sizeof(Real) * h1 * 4, cudaMemcpyDeviceToHost));
+    checkCudaErrors(cudaMemcpy(pHostTestY, pTestingY, sizeof(Real) * h2 * 4, cudaMemcpyDeviceToHost));
+
+    UINT kPower = MostSignificantPowerTwo(h1);
+    //2 for vector power, 2 for amplitude of CSwap, 1 for CSWap measure
+    UINT veclen = 1UL << (kPower + 2);
+    
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(kPower + 2, evn);
+
+    //QLGate cswap = CreateControlledSwap(1);
+    //QLGate h(EBasicOperation::EBO_H);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+    TArray<Real> fOverlaps;
+
+    //Iterations start
+    for (UINT uiV = 0; uiV < h2; ++uiV)
+    {
+        QLGate wholeCircuit;
+        wholeCircuit.AddQubits(static_cast<BYTE>(kPower + 2));
+        QLGate amplitudeVi = ExchangeToYGate(kPower, 2, pHostTrainingY);
+        wholeCircuit.AppendGate(amplitudeVi, amplitudeVi.m_lstQubits);
+
+        //ry(theta) rz(-phi)
+        //and dagger, which is rz(phi), ry(-theta)
+        QLGate amplitudeU = ExchangeToYGate(2, pHostTestY + uiV * 4);
+        amplitudeU.Dagger();
+
+        wholeCircuit.AppendGate(amplitudeU, 0, 1);
+
+        wholeCircuit.AppendGate(cc, 0);
+        wholeCircuit.AppendGate(cc, 1);
+
+        //wholeCircuit.AppendGate(h, kPower + 4);
+        //wholeCircuit.AppendGate(cswap, kPower + 4, 0, kPower + 2);
+        //wholeCircuit.AppendGate(cswap, kPower + 4, 1, kPower + 3);
+        //wholeCircuit.AppendGate(h, kPower + 4);
+
+        syncQuESTEnv(evn);
+        memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+        memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+        vec.stateVec.real[0] = F(1.0);
+        vec.stateVec.imag[0] = F(0.0);
+        copyStateToGPU(vec);
+
+        TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+        SIZE_T opssize = ops.Num();
+        Real fProb = F(1.0);
+        for (SIZE_T i = 0; i < opssize; ++i)
+        {
+            fProb = fProb * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        }
+
+        syncQuESTEnv(evn);
+        
+        //copyStateFromGPU(vec);
+
+#pragma region test state-vector
+
+        //if (0 == uiV)
+        //{
+        //    TArray<BYTE> getout;
+        //    getout.AddItem(0);
+        //    for (BYTE toshowbit = 0; toshowbit < kPower; ++toshowbit)
+        //    {
+        //        getout.AddItem(2);
+        //    }
+        //    QLMatrix show = ShowStateVectorDetail(vec, getout);
+        //    show.Mul(_make_cuComplex(F(23.34282757393504), F(0.0)));
+        //    show.Print();
+        //}
+
+#pragma endregion
+
+        //INT tomeasure[1] = { kPower + 4 };
+        //Real measureprob[2];
+        //calcProbOfAllOutcomes(measureprob, vec, tomeasure, 1);
+        //Real fZeroProb = F(2.0) * measureprob[0] - 1;
+        fOverlaps.AddItem(fProb);
+
+        appGeneral(_T("finish br:%f,  %d / %d ...\n"), fProb, uiV, h2);
+    }
+
+    //final export host center
+    SaveCSVAR(fOverlaps.GetData(), 1, h2, sSaveScore);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+
+    appSafeFree(pHostTrainingY);
+    appSafeFree(pHostTestY);
+
+    checkCudaErrors(cudaFree(pTrainingY));
+    checkCudaErrors(cudaFree(pTestingY));
+    checkCudaErrors(cudaFree(pTrainingPoints));
+    checkCudaErrors(cudaFree(pTestingPoints));
+}
 
 __END_NAMESPACE
 

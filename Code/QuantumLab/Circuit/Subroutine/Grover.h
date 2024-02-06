@@ -2,7 +2,7 @@
 // FILENAME : Grover.h
 // 
 // DESCRIPTION:
-// 
+// quant-ph/0005055
 //
 // REVISION: [dd/mm/yy]
 //  [11/28/2023 nbale]

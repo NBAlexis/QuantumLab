@@ -100,6 +100,7 @@
 #include "Circuit/Hamitonian/CHamitonianList.h"
 
 #include "Variational/CStateBuilder.h"
+//#include "Variational/CBinaryClassfication.h"
 
 #include "Simulator/QLSimulator.h"
 #include "Simulator/QLSimulatorMatrix.h"

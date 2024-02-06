@@ -49,6 +49,19 @@ int main()
             }
         }
         break;
+    case EQKJ_TestBuildStateRandom:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("CircuitTestDim"), jobparam))
+            {
+                TestProbabilityToBuildStateRandom(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("CircuitTestDim not found!\n"));
+            }
+        }
+        break;
     case EQKJ_TestBuildStateFromFile:
         {
             CParameters jobparam;
@@ -111,6 +124,71 @@ int main()
             else
             {
                 appCrucial(_T("FitWaveFunction not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_QAnomaly2D:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QAnomaly2D"), jobparam))
+            {
+                QAnomaly2D(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QAnomaly2D not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_QAnomaly3D:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QAnomaly3D"), jobparam))
+            {
+                QAnomaly3D(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QAnomaly3D not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_TestQKNNAnsatz2D:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QKNN2DAnsatz"), jobparam))
+            {
+                TestKNN2DAnsatz(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QKNN2DAnsatz not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_TestQKNNAnsatz:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
+            {
+                TestKNNAnsatz(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QKNN2DAnsatz not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_TestQKNNAE:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
+            {
+                TestKNNAE(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QKNN2DAnsatz not found!\n"));
             }
         }
         break;

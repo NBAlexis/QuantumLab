@@ -20,9 +20,9 @@ Jordan Wigner变换，其2维对应了$SU(2)$规范理论，可能不太好实�
 进一步的计算需要用到下面这些关系，易验证：
 \begin{equation}
 \begin{split}
-\left\{\sigma ^{\pm}, \sigma ^z\right\}=0,\quad & \sigma ^{\pm}\sigma ^z = \pm \sigma ^{\pm}\\
+\left\{\sigma ^{\pm}, \sigma ^z\right\}=0,\quad & \sigma ^{\pm}\sigma ^z = \mp \sigma ^{\pm},\;\;\sigma ^z\sigma ^{\pm} = \pm \sigma ^{\pm}\\
 \left\{\sigma ^+, \sigma ^-\right\}=1, \quad & \sigma ^++\sigma ^- = \sigma ^x\\
-\sigma ^+\sigma ^- = \frac{1-\sigma ^z}{2} \quad & \sigma ^-\sigma ^+ = \frac{1+\sigma ^z}{2}\\
+\sigma ^+\sigma ^- = \frac{1+\sigma ^z}{2} \quad & \sigma ^-\sigma ^+ = \frac{1-\sigma ^z}{2}\\
 \sigma^+\sigma^+=\sigma^-\sigma^-=0 \quad & 
 \end{split}
 \end{equation}
@@ -282,6 +282,23 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 \end{equation}
 
 总结：
+原始的结果：（这中间的格点间距有些地方忽略，后面可以通过量纲还原回来）
+\textcolor[rgb]{0,0,1}{
+\begin{equation}
+\begin{split}
+&\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) = -\frac{i}{a^2} \sum _n \left(\chi^{\dagger}_n\chi _{n+1} - \chi ^{\dagger}_{n+1}\chi _n\right)\\
+&\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \chi^{\dagger} _n\chi _n\\
+&\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \chi^{\dagger} _n\chi _n\\
+&\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\sum _{even} \left(\chi ^{\dagger}_{2n}\chi _{2n+1}+\chi ^{\dagger}_{2n+1}\chi _{2n}\right)\\
+&\sum _h \bar{\psi}(h) \gamma _5 \psi(h) =\sum _{even} \left(\chi ^{\dagger}_{2n+1}\chi _{2n} - \chi ^{\dagger}_{2n}\chi _{2n+1}\right)\\
+&\sum _h (\bar{\psi}(h) \psi(h) )^2=\sum _{even}(\chi ^{\dagger}_{2n}\chi _{2n}-\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2\\
+&\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\sum _{even} (\chi ^{\dagger}_{2n}\chi _{2n}+\chi ^{\dagger}_{2n+1}\chi _{2n+1})^2\\
+&\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\sum _{even}(-\chi ^{\dagger}_{2n}\chi _{2n+1}-\chi ^{\dagger}_{2n+1}\chi _{2n})^2\\
+&\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\sum _{even}(\chi ^{\dagger}_{2n+1}\chi _{2n} - \chi ^{\dagger}_{2n}\chi _{2n+1})^2\\
+\end{split}
+\end{equation}
+}
+凑了高阶项后的结果：
 \textcolor[rgb]{0,0,1}{
 \begin{equation}
 \begin{split}
@@ -331,15 +348,17 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 
 \begin{equation}
 \begin{split}
-&\chi^{\dagger}_n\chi _n = \frac{1-\sigma ^z(n)}{2}\\
+&\chi^{\dagger}_n\chi _n = \frac{1+\sigma ^z(n)}{2}\\
 &\chi^{\dagger}_{n+1}\chi _n = \prod _{j=0}^n(i\sigma ^z(j)) \sigma ^+(n+1)\sigma ^-(n)\prod _{j=0}^{n-1}(-i\sigma ^z(j))\\
-&=(i\sigma ^z(n)) \sigma ^+(n+1)\sigma ^-(n)= i\sigma ^+(n+1)\sigma ^-(n)\\
-&\chi^{\dagger}_{0}\chi _{N-1} = \sigma ^+(0)\sigma ^-(N-1)\prod _{j=0}^{N-2}(-i\sigma ^z(j))=(-i)^{N-1}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
-&=i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&=(i\sigma ^z(n)) \sigma ^+(n+1)\sigma ^-(n)= -i\sigma ^+(n+1)\sigma ^-(n)\\
+&\chi^{\dagger}_{0}\chi _{N-1} = \sigma ^+(0)\sigma ^-(N-1)\prod _{j=0}^{N-2}(-i\sigma ^z(j))=(-i)^{N-1}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=0}^{N-2}(\sigma ^z(j))\\
+&=i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=0}^{N-2}(\sigma ^z(j))\\
+&=-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
 &\chi^{\dagger}_{n}\chi _{n+1}=\prod _{j=0}^{n-1}(i\sigma ^z(j)) \sigma ^+(n)\sigma ^-(n+1)\prod _{j=0}^{n}(-i\sigma ^z(j))\\
-&=-i\sigma ^+(n)\sigma^-(n+1)\\
-&\chi^{\dagger}_{N-1}\chi _{0}=\prod _{j=0}^{N-2}(i\sigma ^z(j)) \sigma ^+(N-1)\sigma ^-(0)=i^{N-1}\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
-&=-i(-1)^{\frac{N}{2}}\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&=\sigma ^+(n)\sigma^-(n+1)\left(-i \sigma ^z(n)\right)\\
+&=i\sigma ^+(n)\sigma^-(n+1)\\
+&\chi^{\dagger}_{N-1}\chi _{0}=\prod _{j=0}^{N-2}(i\sigma ^z(j)) \sigma ^+(N-1)\sigma ^-(0)=i^{N-1}\sigma _z(0)\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
+&=i(-1)^{\frac{N}{2}}\sigma ^-(0)\sigma ^+(N-1)\prod _{j=1}^{N-2}(\sigma ^z(j))\\
 \end{split}
 \end{equation}
 
@@ -373,9 +392,10 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 \begin{split}
 &a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) \\
 &= -\frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)-\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
-&a\sum _h \bar{\psi}(h) \psi(h) = -\frac{1}{2}\sum _{n=0} (-1)^n \sigma ^z(n)\\
-&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =-\frac{1}{2}\sum _{n=0} \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \frac{1+\sigma ^z(n)}{2}\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \frac{1 + \sigma ^z(n)}{2}\\
 &a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+&-\frac{1}{4}(-1)^{\frac{N}{2}}\left(\sigma ^y(N-1)\sigma ^x(0)-\sigma ^x(N-1)\sigma ^y(0)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
 &a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1-\sigma ^z(n)}{2}-\frac{(1-\sigma ^z(n))(1-\sigma ^z(n+1))}{4}\right)\\
 &=\frac{1}{a}\sum _n \left(\frac{-\sigma ^z(n)}{2}-\frac{-\sigma ^z(n)-\sigma ^z(n+1) + \sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
 &=-\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)\\

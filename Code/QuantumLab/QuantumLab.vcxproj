@@ -79,7 +79,6 @@
     <ClCompile Include="Circuit\Gates\AmplitudeEncode.cpp" />
     <ClCompile Include="Circuit\Gates\CnUGate.cpp" />
     <ClCompile Include="Circuit\Gates\CSDDecompose.cpp" />
-    <ClCompile Include="Circuit\Gates\FRGate.cpp" />
     <ClCompile Include="Circuit\Gates\PauliSimulate.cpp" />
     <ClCompile Include="Circuit\Gates\QuantumFFT.cpp" />
     <ClCompile Include="Circuit\Gates\QuantumPhaseEstimate.cpp" />
@@ -112,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Circuit\Gates\AmplitudeEncodeCuda.cu" />
+    <CudaCompile Include="Circuit\Gates\FRGate.cu" />
     <CudaCompile Include="Circuit\Hamitonian\CLattice2D.cu" />
     <CudaCompile Include="Circuit\Subroutine\QKMeans.cu" />
     <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu" />

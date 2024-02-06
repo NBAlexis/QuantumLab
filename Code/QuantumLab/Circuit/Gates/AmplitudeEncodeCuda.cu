@@ -398,6 +398,16 @@ void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* pha
     CalculateDegrees(absBuffer, phaseBuffer, vectorCount, vectorPower, deviceY, deviceZ);
 }
 
+void QLAPI CalculateDegreesForEach(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ)
+{
+    UINT vectorLength = 1U << vectorPower;
+    UINT uiLen = vectorCount * vectorLength;
+    UINT iBlock1 = uiLen > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen, _QL_LAUNCH_MAX_THREAD) : 1;
+    UINT iThread1 = uiLen > _QL_LAUNCH_MAX_THREAD ? Ceil(uiLen, iBlock1) : uiLen;
+    _kernelAE_VtoAbsAndPhase << <iBlock1, iThread1 >> > (deviceV, absBuffer, phaseBuffer, uiLen);
+    CalculateDegreesForEach(absBuffer, phaseBuffer, vectorCount, vectorPower, deviceY, deviceZ);
+}
+
 void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY)
 {
     UINT vectorLength = 1U << vectorPower;

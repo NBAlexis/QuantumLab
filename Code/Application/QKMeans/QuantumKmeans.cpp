@@ -86,6 +86,90 @@ void TestKNN2D(CParameters& params)
     QLQuantumKmeans::KNN2D(sTrainingPoints, sTestPoints, sTrainingClusters, sTestingClusters, sReepatFile, uiKHit, uiMaxCluster);
 }
 
+void TestKNN2DAnsatz(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sAnsatz;
+    __FetchStringWithDefault(_T("Ansatz"), _T(""));
+    sAnsatz = sValues;
+
+    CCString sTestPoints;
+    __FetchStringWithDefault(_T("TestSet"), _T(""));
+    sTestPoints = sValues;
+
+    CCString sTestingClusters;
+    __FetchStringWithDefault(_T("TestSave"), _T(""));
+    sTestingClusters = sValues;
+
+    CCString sReepatFile;
+    __FetchStringWithDefault(_T("RepeatSave"), _T(""));
+    sReepatFile = sValues;
+
+    UINT uiKHit = 2;
+    __FetchIntWithDefault(_T("KHit"), 2);
+    uiKHit = static_cast<UINT>(iValues);
+
+    QLQuantumKmeans::KNN2DAnsatz(sAnsatz, sTestPoints, sTestingClusters, sReepatFile, uiKHit);
+}
+
+void TestKNNAnsatz(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sAnsatz;
+    __FetchStringWithDefault(_T("Ansatz"), _T(""));
+    sAnsatz = sValues;
+
+    CCString sTestPoints;
+    __FetchStringWithDefault(_T("TestSet"), _T(""));
+    sTestPoints = sValues;
+
+    CCString sTestingClusters;
+    __FetchStringWithDefault(_T("TestSave"), _T(""));
+    sTestingClusters = sValues;
+
+    BYTE ansatzQubit = 0;
+    __FetchIntWithDefault(_T("AnsatzQubits"), 0);
+    ansatzQubit = static_cast<BYTE>(iValues);
+
+    UINT uiAnsatzLevel = 1;
+    __FetchIntWithDefault(_T("AnsatzLevel"), 1);
+    uiAnsatzLevel = static_cast<UINT>(iValues);
+
+    UINT uiRepeat = 100;
+    __FetchIntWithDefault(_T("Repeat"), 2);
+    uiRepeat = static_cast<UINT>(iValues);
+
+    QLQuantumKmeans::KNNAnsatz(sAnsatz, sTestPoints, sTestingClusters, ansatzQubit, uiAnsatzLevel, uiRepeat);
+}
+
+void TestKNNAE(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sPoints;
+    __FetchStringWithDefault(_T("PointSet"), _T(""));
+    sPoints = sValues;
+
+    CCString sTestPoints;
+    __FetchStringWithDefault(_T("TestSet"), _T(""));
+    sTestPoints = sValues;
+
+    CCString sTestingClusters;
+    __FetchStringWithDefault(_T("TestSave"), _T(""));
+    sTestingClusters = sValues;
+
+    UINT uiRepeat = 100;
+    __FetchIntWithDefault(_T("Repeat"), 2);
+    uiRepeat = static_cast<UINT>(iValues);
+
+    QLQuantumKmeans::KNNAE(sPoints, sTestPoints, sTestingClusters, uiRepeat);
+}
+
 void TestKNN3D(CParameters& params)
 {
     CCString sValues;
@@ -126,6 +210,61 @@ void TestKNN3D(CParameters& params)
     QLQuantumKmeans::KNN3D(sTrainingPoints, sTestPoints, sTrainingClusters, sTestingClusters, sReepatFile, uiKHit, uiMaxCluster);
 }
 
+
+void QAnomaly2D(CParameters& params)
+{
+    CCString sValues;
+    Real fValues;
+
+    CCString sPointFile;
+    __FetchStringWithDefault(_T("PointFile"), _T(""));
+    sPointFile = sValues;
+
+    CCString sReferenceFile;
+    __FetchStringWithDefault(_T("ReferenceFile"), _T(""));
+    sReferenceFile = sValues;
+
+    CCString sBuildRate;
+    __FetchStringWithDefault(_T("BuildRateSave"), _T(""));
+    sBuildRate = sValues;
+
+    Real fMinX = F(-5.0);
+    __FetchRealWithDefault(_T("MinX"), F(-5.0));
+    fMinX = fValues;
+
+    Real fMinY = F(-5.0);
+    __FetchRealWithDefault(_T("MinY"), F(-5.0));
+    fMinY = fValues;
+
+    Real fMaxX = F(5.0);
+    __FetchRealWithDefault(_T("MaxX"), F(5.0));
+    fMaxX = fValues;
+
+    Real fMaxY = F(5.0);
+    __FetchRealWithDefault(_T("MaxY"), F(5.0));
+    fMaxY = fValues;
+
+    QLQuantumKmeans::QAnomaly2D(sReferenceFile, sPointFile, sBuildRate, fMinX, fMaxX, fMinY, fMaxY);
+}
+
+void QAnomaly3D(CParameters& params)
+{
+    CCString sValues;
+
+    CCString sPointFile;
+    __FetchStringWithDefault(_T("PointFile"), _T(""));
+    sPointFile = sValues;
+
+    CCString sReferenceFile;
+    __FetchStringWithDefault(_T("ReferenceFile"), _T(""));
+    sReferenceFile = sValues;
+
+    CCString sBuildRate;
+    __FetchStringWithDefault(_T("BuildRateSave"), _T(""));
+    sBuildRate = sValues;
+
+    QLQuantumKmeans::QAnomaly3D(sReferenceFile, sPointFile, sBuildRate);
+}
 
 //=============================================================================
 // END OF FILE

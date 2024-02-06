@@ -51,6 +51,7 @@ extern void QLAPI NormalizeRealToComplex(const Real* deviceData, QLComplex* devi
 * absBuffer and vectorCount are middle result
 */
 extern void QLAPI CalculateDegrees(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
+extern void QLAPI CalculateDegreesForEach(const QLComplex* deviceV, Real* absBuffer, Real* phaseBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY, Real* deviceZ);
 extern void QLAPI CalculateDegreesReal(const QLComplex* deviceV, Real* absBuffer, UINT vectorCount, UINT vectorPower, Real* deviceY);
 
 /**

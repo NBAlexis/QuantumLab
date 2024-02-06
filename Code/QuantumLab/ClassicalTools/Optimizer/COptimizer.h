@@ -39,7 +39,7 @@ public:
     virtual Real Start() = 0;
     virtual Real Iteration() = 0;
 
-    TArray<Real> Optimize(Real fGoal, UINT uiMaxStep = 10000);
+    TArray<Real> Optimize(Real fGoal, UINT uiMaxStep = 10000, UBOOL bTurnToMinLoss = TRUE);
 
     void SetLossFunc(CLossFunction* pLoss)
     {

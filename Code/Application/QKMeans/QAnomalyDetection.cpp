@@ -36,6 +36,10 @@ void TestFitPointSet(CParameters& params)
     __FetchIntWithDefault(_T("MaxStep"), 10000);
     uiMaxStep = static_cast<UINT>(iValues);
 
+    UBOOL bOnlyReal = FALSE;
+    __FetchIntWithDefault(_T("OnlyReal"), 0);
+    bOnlyReal = (0 != iValues);
+
     Real fLearnRate = F(0.001);
     __FetchRealWithDefault(_T("LearnRate"), F(0.001));
     fLearnRate = fValues;
@@ -44,7 +48,7 @@ void TestFitPointSet(CParameters& params)
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
 
-    FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, fLearnRate, fGoal, uiMaxStep);
+    FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
 }
 
 //=============================================================================

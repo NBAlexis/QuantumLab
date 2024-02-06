@@ -1,12 +1,18 @@
 # ########################
 # EQKJ_Kmeans
 # EQKJ_TestBuildStateOnce
+# EQKJ_TestBuildStateRandom
 # EQKJ_TestBuildStateFromFile
 # EQKJ_TestQKmeans2D
 # EQKJ_TestQKNN2D
 # EQKJ_TestQKNN3D
 # EQKJ_TestFitPointSet
-KMeansJob : EQKJ_TestFitPointSet
+# EQKJ_QAnomaly2D
+# EQKJ_QAnomaly3D
+# EQKJ_TestQKNNAnsatz2D
+# EQKJ_TestQKNNAnsatz
+# EQKJ_TestQKNNAE
+KMeansJob : EQKJ_TestQKNNAE
 
 # ########################
 # GPU Kmeans
@@ -29,12 +35,13 @@ CircuitTestDim:
 
     LoadFile : q8.csv
     MeasureSave : q8_16.csv
-    DimList :      [4, 8, 16, 32, 64, 128, 256, 512, 1024]
-    AARepeatList : [1, 2,  3,  4,  6,   8,  12,  17,   25]
-    CountList : [4, 8, 16, 32, 64, 128, 256]
+    DimList :      [256, 256, 256, 32, 32, 32, 4, 4, 4]
+    # AARepeatList : [1, 2,  3,  4,  6,   8,  12,  17,   25]
+    AARepeatList : [12, 12, 12, 6, 6, 6, 1, 1, 1]
+    CountList : [256, 32, 4, 256, 32, 4, 256, 32, 4]
     VectorCount : 16
     AA : 1
-    Repeat : 10
+    Repeat : 1000
 
 QKMeans2D:
 
@@ -70,13 +77,48 @@ QKNN3D:
 
 FitWaveFunction:
 
-    PointFile : p2dk4set.csv
-    AnsatzFile : ansatz2dk4.csv
-    HistoryFile : fithist.csv
-    AnsatzLevel : 10
-    MaxStep : 10000
+    PointFile : gqgcwf1500.csv
+    AnsatzFile : angqgcwf1500.csv
+    HistoryFile : histgqgcwf1500.csv
+    AnsatzLevel : 30
+    MaxStep : 5000
     LearnRate : 0.01
-    Goal : 0.1
+    Goal : 0.01
+    OnlyReal : 0
+
+QKNN2DAnsatz:
+
+    Ansatz : ansatzd2k4.csv
+    TestSet : d2test.csv
+    TestSave : k2dtestres-10.csv
+    RepeatSave : r2dtestres-10.csv
+    KHit : 10
+
+QKNNAnsatz:
+
+    PointSet : gqgcwf1500.csv
+    Ansatz : angqgcwf1500.csv
+    TestSet : gqgctest1500-sm.csv
+    TestSave : gqgcsm1500.csv
+    AnsatzLevel : 30
+    AnsatzQubits : 13
+    Repeat : 1000
+
+QAnomaly2D:
+
+    PointFile : p2grid.csv
+    ReferenceFile : p2gaussian.csv
+    BuildRateSave : br2gaussian.csv
+    MinX : -5.0
+    MaxX : 5.0
+    MinY : -10.0
+    MaxY : 10.0
+
+QAnomaly3D:
+
+    PointFile : p3grid.csv
+    ReferenceFile : p3gaussian.csv
+    BuildRateSave : brgaussian.csv
 
 # ########################
 # Quantum Kmeans

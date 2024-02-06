@@ -115,6 +115,7 @@ void TestProbabilityToBuildStateFromFile(CParameters& params)
 
 void TestProbabilityToBuildStateRandom(CParameters& params)
 {
+    CSpliteAngleBufferHelper helper;
     CCString sValues;
     INT iValues;
 
@@ -152,20 +153,17 @@ void TestProbabilityToBuildStateRandom(CParameters& params)
 
     for (INT countIdx = 0; countIdx < countlist.Num(); ++countIdx)
     {
-        for (INT dimIdx = 0; dimIdx < dimlist.Num(); ++dimIdx)
-        {
-            TArray<QLComplex> successrate_for_this =
-                QLQuantumKmeans::TestCircuitBuildState(
-                    static_cast<UINT>(dimlist[dimIdx]),
-                    static_cast<UINT>(countlist[countIdx]),
-                    uiRepeat,
-                    static_cast<UINT>(aalist[dimIdx]));
+        TArray<QLComplex> successrate_for_this =
+            QLQuantumKmeans::TestCircuitBuildState(
+                static_cast<UINT>(dimlist[countIdx]),
+                static_cast<UINT>(countlist[countIdx]),
+                uiRepeat,
+                static_cast<UINT>(aalist[countIdx]));
 
-            successrate.Append(successrate_for_this);
-        }
+        successrate.Append(successrate_for_this);
     }
 
-    QLMatrix resmtr = QLMatrix::CopyCreate(uiRepeat, countlist.Num() * dimlist.Num(), successrate.GetData());
+    QLMatrix resmtr = QLMatrix::CopyCreate(uiRepeat, countlist.Num(), successrate.GetData());
     resmtr.Print();
 
     SaveCSVR(resmtr, sMeasureFileName);
@@ -191,6 +189,9 @@ void TestCircuitBuildStateOnce(CParameters& params)
 
     QLMatrix vim = QLMatrix::CopyCreate(VectorCount, VectorDim, vi);
     QLMatrix um = QLMatrix::CopyCreate(1, VectorDim, u);
+
+    //vim.Print(_T("vim"));
+    //um.Print(_T("um"));
 
     QLQuantumKmeans::TestCircuitBuildStateOnce(vim, um, VectorCount, VectorDim);
 }

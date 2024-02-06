@@ -58,6 +58,28 @@ inline UINT BitWiseInnerProduct(UINT a, UINT b)
     return Counting1Bit(a & b);
 }
 
+class QLAPI CSpliteAngleBufferHelper
+{
+    enum { _kMaxSupport = 20, };
+
+public:
+
+    CSpliteAngleBufferHelper();
+    ~CSpliteAngleBufferHelper();
+    TArray<Real> SpliteAngles(const Real* angles, UINT length);
+
+private:
+
+    void InitialBuffer();
+
+    UBOOL m_bHasBuffer;
+    Real* m_pDeviceBufferConst;
+    Real* m_pDeviceBuffer;
+    Real* m_pHostRes;
+};
+
+extern QLAPI CSpliteAngleBufferHelper* _splitAnglePointer;
+
 extern TArray<Real> QLAPI SpliteAngles(const TArray<Real>& angles, UINT length);
 extern TArray<Real> QLAPI SpliteAngles(const Real* angles, UINT length);
 

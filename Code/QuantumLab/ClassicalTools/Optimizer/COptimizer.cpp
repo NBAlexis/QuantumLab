@@ -54,23 +54,34 @@ TArray<Real> COptimizer::GetGradientsWithKnown(Real fLossNow) const
     return ret;
 }
 
-TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep)
+TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep, UBOOL bTurnToMinLoss)
 {
     TArray<Real> history;
     Real fLoss = Start();
     history.AddItem(fLoss);
     UINT step = 0;
+    Real fMinLoss = fLoss;
+    TArray<Real> minLossParam;
     while (fLoss > fGoal && step < uiMaxStep)
     {
         ++step;
         appGeneral(_T("optimizer iteration: step = %d, loss = %f\n"), step, fLoss);
         fLoss = Iteration();
         history.AddItem(fLoss);
+        if (fLoss < fMinLoss)
+        {
+            fMinLoss = fLoss;
+            minLossParam = m_pAnsatzToOptimize->GetParameters();
+        }
     }
 
     if (fLoss > fGoal)
     {
-        appGeneral(_T("optimizer failed with max step reached, loss = %f\n"), fLoss);
+        appGeneral(_T("optimizer failed with max step reached, loss = %f minloss = %f\n"), fLoss, fMinLoss);
+        if (bTurnToMinLoss)
+        {
+            m_pAnsatzToOptimize->SetParameters(minLossParam);
+        }
     }
     else
     {
