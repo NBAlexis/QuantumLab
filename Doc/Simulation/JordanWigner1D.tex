@@ -372,10 +372,10 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 
 \begin{equation}
 \begin{split}
-&\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n = -i \left(\sigma ^-(n)\sigma ^+(n+1)+\sigma ^+(n)\sigma ^- (n+1)\right)\\
-&=-\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\\
-&\chi^{\dagger}_n\chi_{n+1}+\chi^{\dagger}_{n+1}\chi _n = i\left(\sigma ^-(n)\sigma ^+(n+1)-\sigma ^+(n)\sigma ^- (n+1)\right) \\
-&= \frac{1}{2}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+&\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n = i \left(\sigma ^-(n)\sigma ^+(n+1)+\sigma ^+(n)\sigma ^- (n+1)\right)\\
+&=\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\\
+&\chi^{\dagger}_n\chi_{n+1}+\chi^{\dagger}_{n+1}\chi _n = i\left(\sigma ^+(n)\sigma ^-(n+1)-\sigma ^-(n)\sigma ^+ (n+1)\right) \\
+&= \frac{1}{2}\left(\sigma ^x(n)\sigma ^y(n+1)-\sigma ^y(n)\sigma ^x(n+1)\right)\\
 \end{split}
 \end{equation}
 
@@ -391,16 +391,16 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 \begin{equation}
 \begin{split}
 &a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) \\
-&= -\frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)-\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&= \frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)+\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
 &a\sum _h \bar{\psi}(h) \psi(h) = \sum _{n=0} (-1)^n \frac{1+\sigma ^z(n)}{2}\\
 &a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =\sum _{n=0} \frac{1 + \sigma ^z(n)}{2}\\
-&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
-&-\frac{1}{4}(-1)^{\frac{N}{2}}\left(\sigma ^y(N-1)\sigma ^x(0)-\sigma ^x(N-1)\sigma ^y(0)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
-&a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1-\sigma ^z(n)}{2}-\frac{(1-\sigma ^z(n))(1-\sigma ^z(n+1))}{4}\right)\\
-&=\frac{1}{a}\sum _n \left(\frac{-\sigma ^z(n)}{2}-\frac{-\sigma ^z(n)-\sigma ^z(n+1) + \sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
-&=-\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)\\
-&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1-\sigma ^z(n)}{2}+\frac{(1-\sigma ^z(n))(1-\sigma ^z(n+1))}{4}\right)\\
-&=\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)-\frac{1}{a}\sum _n \sigma ^z(n)\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
+&+\frac{(-1)^{\frac{N}{2}}}{4}\left(\sigma ^y(0)\sigma ^x(N-1)-\sigma ^x(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1+\sigma ^z(n)}{2}-\frac{(1+\sigma ^z(n))(1+\sigma ^z(n+1))}{4}\right)\\
+&=\frac{1}{a}\sum _n \left(\frac{1}{4}+\frac{\sigma ^z(n)}{2}-\frac{\sigma ^z(n)+\sigma ^z(n+1) + \sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
+&=\frac{1}{4a}\sum _n \left(1+\sigma ^z(n)\sigma ^z(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{1+\sigma ^z(n)}{2}+\frac{(1+\sigma ^z(n))(1+\sigma ^z(n+1))}{4}\right)\\
+&=\frac{1}{a}\sum _n \left(\frac{3}{4}+\sigma ^z(n)+\frac{\sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
 \end{split}
 \end{equation}
 
@@ -408,68 +408,58 @@ $\left\{c^{\dagger}(n), c^{\dagger}(m)\right\} =0$的证明略去了（可以直
 
 \begin{equation}
 \begin{split}
-&\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n\right)^2 = \left(-\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\right)^2\\
+&\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n\right)^2 = \left(\frac{i}{2}\left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)\right)^2\\
 &=-\frac{1}{4}\left(2+\sigma ^x(n)\sigma ^x(n+1)\sigma ^y(n)\sigma ^y(n+1)+\sigma ^y(n)\sigma ^y(n+1)\sigma ^x(n)\sigma ^x(n+1)\right)\\
 \end{split}
 \end{equation}
 
-由于$\sigma ^x\sigma ^y = -\sigma ^y\sigma ^x$，
+由于$\sigma ^x\sigma ^y = -\sigma ^y\sigma ^x = i \sigma ^z$，
 \begin{equation}
 \begin{split}
 &\left(\chi^{\dagger}_n\chi_{n+1}-\chi^{\dagger}_{n+1}\chi _n\right)^2 = -\frac{1}{4}\left(2+2\sigma ^x(n)\sigma ^y(n)\sigma ^x(n+1)\sigma ^y(n+1)\right)\\
-&= -\frac{1}{4}\left(-2\sigma ^z(n)\sigma ^z(n+1)\right)\\
-&=\frac{1}{2}\sigma ^z(n)\sigma ^z(n+1)\\
+&= -\frac{1}{4}\left(2-2\sigma ^z(n)\sigma ^z(n+1)\right)\\
+&=\frac{1}{2}\left(\sigma ^z(n)\sigma ^z(n+1)-1\right)\\
 \end{split}
 \end{equation}
-
-\begin{equation}
-\begin{split}
-&\left(\chi^{\dagger}_{N-1}\chi_{0}-\chi^{\dagger}_{0}\chi _{N-1}\right)^2 = \left(-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\right)^2\left(\prod _{j=1}^{N-2}\sigma ^z(j)\right)^2\\
-&=-\left(\sigma ^-(0)\sigma ^+(N-1)+\sigma ^+(0)\sigma ^-(N-1)\right)^2\\
-&=-\frac{1}{4}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)^2
-\end{split}
-\end{equation}
-
-所以这个可以与前面一项合并到一起。
+因为$N$是偶数，$\left(\chi^{\dagger}_{N-1}\chi_{0}-\chi^{\dagger}_{0}\chi _{N-1}\right)^2$可以与前面一项合并到一起。
 
 \begin{equation}
 \begin{split}
 &\left(\chi^{\dagger}_n\chi_{n+1}+\chi^{\dagger}_{n+1}\chi _n\right)^2 = \left(\frac{1}{2}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\right)^2\\
 &=\frac{1}{4}\left(2-\sigma ^y(n)\sigma ^x(n)\sigma ^x(n+1)\sigma ^y(n+1)-\sigma ^x(n)\sigma ^y(n)\sigma ^y(n+1)\sigma ^x(n+1)\right)\\
-&=\frac{1}{4}\left(2\sigma ^x(n)\sigma ^y(n)\sigma ^x(n+1)\sigma ^y(n+1)\right)\\
-&=-\frac{1}{2}\sigma ^z(n)\sigma ^z(n+1)\\
+&=\frac{1}{4}\left(2+2\sigma ^x(n)\sigma ^y(n)\sigma ^x(n+1)\sigma ^y(n+1)\right)\\
+&=\frac{1}{2}\left(1-\sigma ^z(n)\sigma ^z(n+1)\right)\\
 \end{split}
 \end{equation}
 
+于是
 \begin{equation}
 \begin{split}
-&\left(\chi^{\dagger}_{N-1}\chi_{0}+\chi^{\dagger}_{0}\chi _{N-1}\right)^2 = \left(-i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)+i(-1)^{\frac{N}{2}}\sigma ^+(0)\sigma ^-(N-1)\right)^2\left(\prod _{j=1}^{N-2}\sigma ^z(j)\right)^2\\
-&=-\left(\sigma ^-(0)\sigma ^+(N-1)-\sigma ^+(0)\sigma ^-(N-1)\right)^2\\
-&=-\left(\frac{-i}{2}\right)^2\left(\sigma ^y(0)\sigma ^x(N-1)-\sigma ^x(0)\sigma ^y(N-1)\right)^2
-\end{split}
-\end{equation}
-
-所以这一项也能合并，于是
-\begin{equation}
-\begin{split}
-&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\right)^2=\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
-&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}-\chi^{\dagger}_{n+1}\chi_{n}\right)^2=-\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}+\chi^{\dagger}_{n+1}\chi_{n}\right)^2=\frac{1}{4a}\sum _n \left(\sigma^z(n)\sigma^z(n+1)-1\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{2a}\sum _n \left(\chi^{\dagger}_{n}\chi_{n+1}-\chi^{\dagger}_{n+1}\chi_{n}\right)^2=\frac{1}{4a}\sum _n \left(1-\sigma^z(n)\sigma^z(n+1)\right)\\
 \end{split}
 \end{equation}
 
 \subsection{总结}
 
+量纲：$S\sim 1 = \int dx \mathcal{L}$，$\mathcal{L} \sim a^{-1}$
+
+$\mathcal{L} =m\bar{\psi}\psi \sim a^{-1}$
+
+$\psi$应该量纲为0。但我们用的时候$\psi \sim a^{-\frac{1}{2}}$，因此，这里也用这个量纲
+
 \begin{equation}
 \begin{split}
 &a\sum _h \bar{\psi}(h)i\gamma _1\partial _x \psi(h) \\
-&= -\frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)-\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
-&a\sum _h \bar{\psi}(h) \psi(h) = -\frac{1}{2}\sum _{n=0} (-1)^n \sigma ^z(n)\\
-&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) =-\frac{1}{2}\sum _{n=0} \sigma ^z(n)\\
-&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) =-\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)\\
-&a\sum _h (\bar{\psi}(h) \psi(h) )^2=-\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)\\
-&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{4a}\sum _n \left(\sigma ^z(n)\sigma ^z(n+1)\right)-\frac{1}{a}\sum _n \sigma ^z(n)\\
-&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
-&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=-\frac{1}{4a}\sum _n \sigma^z(n)\sigma^z(n+1)\\
+&= \frac{1}{2a} \sum _n^{N-2} \left(\sigma ^x(n)\sigma ^x(n+1)+\sigma ^y(n)\sigma ^y(n+1)\right)+\frac{(-1)^{\frac{N}{2}}}{2a}\left(\sigma ^x(0)\sigma ^x(N-1)+\sigma ^y(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&a\sum _h \bar{\psi}(h) \psi(h) =  \sum _{n=0} (-1)^n \frac{1+\sigma ^z(n)}{2}\\
+&a\sum _h \bar{\psi}(h) \gamma _0 \psi(h) = \sum _{n=0} \frac{1+\sigma ^z(n)}{2}\\
+&a\sum _h \bar{\psi}(h) \gamma _1 \psi(h) \\
+&=\frac{1}{4}\sum _{n}\left(\sigma ^y(n)\sigma ^x(n+1)-\sigma ^x(n)\sigma ^y(n+1)\right)+\frac{(-1)^{\frac{N}{2}}}{4}\left(\sigma ^y(0)\sigma ^x(N-1)-\sigma ^x(0)\sigma ^y(N-1)\right)\prod _{j=1}^{N-2}\sigma ^z(j)\\
+&a\sum _h (\bar{\psi}(h) \psi(h) )^2=\frac{1}{4a}\sum _n \left(1+\sigma^z(n)\sigma^z(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _0 \psi(h) )^2=\frac{1}{a}\sum _n \left(\frac{3}{4}+\sigma ^z(n)+\frac{\sigma ^z(n)\sigma ^z(n+1)}{4}\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _1 \psi(h) )^2=-\frac{1}{4a}\sum _n \left(1-\sigma^z(n)\sigma^z(n+1)\right)\\
+&a\sum _h (\bar{\psi}(h) \gamma _5 \psi(h) )^2=\frac{1}{4a}\sum _n \left(1-\sigma^z(n)\sigma^z(n+1)\right)\\
 \end{split}
 \end{equation}
 

@@ -1849,10 +1849,10 @@ void QLQuantumKmeans::KNNAnsatz(
     Real* pDeviceY = NULL;
     Real* pDeviceZ = NULL;
     checkCudaErrors(cudaMalloc((void**)&pDeviceVectors, sizeof(QLComplex) * w * h));
-    checkCudaErrors(cudaMalloc((void**)&pDeviceAbs, sizeof(QLComplex) * w * h));
-    checkCudaErrors(cudaMalloc((void**)&pDevicePhase, sizeof(QLComplex) * w * h));
-    checkCudaErrors(cudaMalloc((void**)&pDeviceY, sizeof(QLComplex) * w * h));
-    checkCudaErrors(cudaMalloc((void**)&pDeviceZ, sizeof(QLComplex) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceAbs, sizeof(Real) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDevicePhase, sizeof(Real) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceY, sizeof(Real) * w * h));
+    checkCudaErrors(cudaMalloc((void**)&pDeviceZ, sizeof(Real) * w * h));
     checkCudaErrors(cudaMemcpy(pDeviceVectors, orignalPointsArray.GetData(), sizeof(QLComplex) * w * h, cudaMemcpyHostToDevice));
     CalculateDegreesForEach(pDeviceVectors, pDeviceAbs, pDevicePhase, h, vectorPower, pDeviceY, pDeviceZ);
     Real* pHostY = reinterpret_cast<Real*>(malloc(sizeof(Real) * w * h));
@@ -1868,7 +1868,7 @@ void QLQuantumKmeans::KNNAnsatz(
     CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
     ansatz.SetParameters(ansatzParam);
     QLGate ansatzGate = ansatz.BuildStateWithParam();
-    TArray<UINT> scores;
+    UINT* scores = reinterpret_cast<UINT*>(malloc(sizeof(UINT) * h));
 
     UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);
     QLGate cc(EBasicOperation::EBO_CC, 0);
@@ -1894,10 +1894,13 @@ void QLQuantumKmeans::KNNAnsatz(
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);
 
-    Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
-    Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
-    memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
-    memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
+    Real res[2];
+    INT qubitsToSee[1] = { ansatzQubits - 1 };
+
+    //Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    //Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    //memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
+    //memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
 
     for (UINT uiV = 0; uiV < h; ++uiV)
     {
@@ -1914,8 +1917,8 @@ void QLQuantumKmeans::KNNAnsatz(
 
         if (0 != uiV)
         {
-            memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
-            memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
+            //memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
+            //memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
             syncQuESTEnv(evn);
             copyStateToGPU(vec);
         }
@@ -1927,9 +1930,6 @@ void QLQuantumKmeans::KNNAnsatz(
             QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
         }
         //syncQuESTEnv(evn);
-
-        Real res[2];
-        INT qubitsToSee[1] = { ansatzQubits - 1 };
         calcProbOfAllOutcomes(res, vec, qubitsToSee, 1);
 
         //copyStateFromGPU(vec);
@@ -1951,15 +1951,18 @@ void QLQuantumKmeans::KNNAnsatz(
             //    ++uiHitRes;
             //}
         }
-        scores.AddItem(uiHitRes);
-        appGeneral(_T("finish %d / %d , hit = %d ...\n"), uiV, h, uiHitRes);
+        scores[uiV] = uiHitRes;
+        appGeneral(_T("finish %d / %d , hit = %d (%f) ...\n"), uiV, h, uiHitRes, res[1]);
     }
 
     appSafeFree(pHostY);
     appSafeFree(pHostZ);
+    //appSafeFree(realpart);
+    //appSafeFree(imagpart);
 
     //final export host center
-    SaveCSVAUI(scores.GetData(), 1, h, sScore);
+    SaveCSVAUI(scores, 1, h, sScore);
+    appSafeFree(scores);
 
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);

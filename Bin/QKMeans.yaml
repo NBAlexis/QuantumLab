@@ -12,7 +12,7 @@
 # EQKJ_TestQKNNAnsatz2D
 # EQKJ_TestQKNNAnsatz
 # EQKJ_TestQKNNAE
-KMeansJob : EQKJ_TestQKNNAE
+KMeansJob : EQKJ_TestQKNNAnsatz
 
 # ########################
 # GPU Kmeans
@@ -80,8 +80,8 @@ FitWaveFunction:
     PointFile : gqgcwf1500.csv
     AnsatzFile : angqgcwf1500.csv
     HistoryFile : histgqgcwf1500.csv
-    AnsatzLevel : 30
-    MaxStep : 5000
+    AnsatzLevel : 5
+    MaxStep : 500
     LearnRate : 0.01
     Goal : 0.01
     OnlyReal : 0
@@ -97,11 +97,11 @@ QKNN2DAnsatz:
 QKNNAnsatz:
 
     PointSet : gqgcwf1500.csv
-    Ansatz : angqgcwf1500.csv
-    TestSet : gqgctest1500-sm.csv
-    TestSave : gqgcsm1500.csv
-    AnsatzLevel : 30
-    AnsatzQubits : 13
+    Ansatz : anaqgcwf1500-512-l50.csv
+    TestSet : Comb-1500.csv
+    TestSave : Comb-1500-l50.csv
+    AnsatzLevel : 50
+    AnsatzQubits : 12
     Repeat : 1000
 
 QAnomaly2D:
