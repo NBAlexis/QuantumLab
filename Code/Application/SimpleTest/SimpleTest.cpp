@@ -1483,7 +1483,9 @@ int main()
 
     //TestNoiseSimulatorUsingPhaseEstimation();
 
-    ShowMatrixOfGate();
+    //ShowMatrixOfGate();
+
+    TestAmplitudeEncodeOneRealVector();
 
     return 0;
 }

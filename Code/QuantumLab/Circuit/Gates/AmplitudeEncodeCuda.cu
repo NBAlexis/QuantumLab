@@ -36,7 +36,7 @@ _kernelAE_VtoAbs(const QLComplex* __restrict__ v, Real* absBuffer, UINT uiMax)
 
     if (idx < uiMax)
     {
-        absBuffer[idx] = _cuCabsf(v[idx]);
+        absBuffer[idx] = v[idx].x;
     }
 }
 

@@ -28,6 +28,20 @@ void TestAmplitudeEncodeOneVector()
     sim.Simulate(&param);
 }
 
+void TestAmplitudeEncodeOneRealVector()
+{
+    QLMatrix m(1, 8);
+    m.RandomOneReal();
+    m = m / _sqrt(m.VectorDot(m).x);
+    m.Print(_T("v"));
+    TArray<QLComplex> v = m.ToVector();
+
+    QLGate ae = AmplitudeEncodeOneVectorReal(v.GetData(), 3);
+
+    QLMatrix res = QLSimulatorVector::ShowState(ae);
+    res.Print(_T("resv"));
+}
+
 void TestAmplitudeEncodeVectors()
 {
     QLMatrix m1(8, 8);

@@ -9,7 +9,6 @@
 //=============================================================================
 
 #include "SwapTest.h"
-#include <random>
 
 TArray<QLComplex> ExchangeComplexBuffer(const TArray<QLComplex>& row)
 {
@@ -28,49 +27,69 @@ TArray<QLComplex> ExchangeComplexBuffer(const TArray<QLComplex>& row)
     return ret;
 }
 
-TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, UBOOL bComplex, const QLSimulatorParametersDensityMatrix& param, INT iRealMeasure)
+TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, UBOOL bComplex, const QLSimulatorParametersDensityMatrix& param, INT iRealMeasure, UBOOL bEnableNoise)
 {
     QLSimulatorParametersDensityMatrix param2 = param;
     if (bComplex)
     {
-        QLGate cswap = CreateSwapTest(row1, row2);
-        param2.m_byQubitCount = static_cast<BYTE>(cswap.m_lstQubits.Num());
-        param2.m_MasterGate = cswap;
+        QLGate zerotest = ZeroTest(row1, row2);
+        param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
+        param2.m_MasterGate = zerotest;
+        param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
     }
     else
     {
-        QLGate cswap = CreateSwapTestReal(row1, row2);
-        param2.m_byQubitCount = static_cast<BYTE>(cswap.m_lstQubits.Num());
-        param2.m_MasterGate = cswap;
+        QLGate zerotest = ZeroTestReal(row1, row2);
+        param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
+        param2.m_MasterGate = zerotest;
+        param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
     }
 
-    param2.m_lstMeasureQubits.AddItem(0);
+    Real fAveragePurity = F(1.0);
+    Real fAverageFidelity = F(1.0);
+    Real fRes = F(0.0);
 
-    QLSimulatorOutputDensityMatrix out;
-    QLSimulatorDensityMatrix sim;
-    sim.Simulate(&param2, &out);
-
-    Real fAveragePurity = out.AveragePurity();
-    Real fAverageFidelity = out.AverageFidelity();
-    Real fRes = 2 * out.m_lstMeasureOutcomes[0] - 1;
-    if (iRealMeasure > 0)
+    if (bEnableNoise)
     {
-        std::random_device rd;  // Will be used to obtain a seed for the random number engine
-        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-        std::uniform_real_distribution<> dis(0.0, 1.0);
+        param2.m_iMeasureTimes = iRealMeasure;
+        QLSimulatorOutputDensityMatrix out;
+        QLSimulatorDensityMatrix sim;
+        sim.Simulate(&param2, &out);
 
-        UINT iMeasure0 = 0;
-        for (INT i = 0; i < iRealMeasure; ++i)
-        {
-            //appGeneral(_T("%f %f\n"), dis(gen), out.m_lstMeasureOutcomes[0]);
-            if (dis(gen) < out.m_lstMeasureOutcomes[0])
-            {
-                ++iMeasure0;
-            }
-        }
-        fRes = iMeasure0 / static_cast<Real>(iRealMeasure);
-        fRes = 2 * fRes - 1;
+        fAveragePurity = out.AveragePurity();
+        fAverageFidelity = out.AverageFidelity();
+        fRes = out.m_lstMeasureOutcomes[0];
     }
+    else
+    {
+        QLSimulatorMeasure sim;
+        QLSimulatorOutputMeasure out;
+        QLSimulatorParametersMeasure param3;
+        param3.m_bPrint = FALSE;
+        param3.m_iRepeat = -1;
+        param3.m_iMeasureUntil = -1;
+        param3.m_byQubitCount = param2.m_byQubitCount;
+        param3.m_MasterGate = param2.m_MasterGate;
+        param3.m_lstMeasureBits = param2.m_lstMeasureQubits;
+
+        sim.Simulate(&param3, &out);
+
+        fRes = out.m_lstMeasureOutcomes[0];
+
+        if (iRealMeasure > 0)
+        {
+            UINT iMeasure0 = 0;
+            for (INT i = 0; i < iRealMeasure; ++i)
+            {
+                if (RandomF() < out.m_lstMeasureOutcomes[0])
+                {
+                    ++iMeasure0;
+                }
+            }
+            fRes = iMeasure0 / static_cast<Real>(iRealMeasure);
+        }
+    }
+
     if (fRes < _QL_FLT_MIN)
     {
         fRes = F(0.0);
@@ -95,10 +114,10 @@ Real ClassicalDot(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2)
     QLMatrix m1 = QLMatrix::CopyCreate(1, row1.Num(), row1.GetData());
     QLMatrix m2 = QLMatrix::CopyCreate(1, row2.Num(), row2.GetData());
 
-    m1 = m1 / _sqrt(cuCabsf(m1.VectorDot(m1)));
-    m2 = m2 / _sqrt(cuCabsf(m2.VectorDot(m2)));
+    m1 = m1 / _sqrt(_cuCabsf(m1.VectorDot(m1)));
+    m2 = m2 / _sqrt(_cuCabsf(m2.VectorDot(m2)));
 
-    return cuCabsf(m1.VectorDot(m2));
+    return _cuCabsf(m1.VectorDot(m2));
 }
 
 int main()
@@ -159,7 +178,17 @@ int main()
     __FetchIntWithDefault(_T("Complex"), 1);
     UBOOL bComplex = (0 != iValues);
 
-    QLComplex* expectedoutput = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
+    __FetchIntWithDefault(_T("EnableClassical"), 1);
+    UBOOL bHasClassical = (0 != iValues);
+
+    __FetchIntWithDefault(_T("EnableNoise"), 1);
+    UBOOL bEnableNoise = (0 != iValues);
+
+    QLComplex* expectedoutput = NULL;
+    if (bHasClassical)
+    {
+        expectedoutput = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
+    }
     QLComplex* output = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
     QLComplex* averagePurity = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
     QLComplex* averageFidelity = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex) * m1.Y() * m2.Y()));
@@ -174,7 +203,10 @@ int main()
             {
                 if (i == j)
                 {
-                    expectedoutput[idx1] = _make_cuComplex(F(1.0), F(0.0));
+                    if (bHasClassical)
+                    {
+                        expectedoutput[idx1] = _make_cuComplex(F(1.0), F(0.0));
+                    }
                     output[idx1] = _make_cuComplex(F(1.0), F(0.0));
                     averagePurity[idx1] = _make_cuComplex(F(1.0), F(0.0));
                     averageFidelity[idx1] = _make_cuComplex(F(1.0), F(0.0));
@@ -182,7 +214,10 @@ int main()
                 }
                 else if (j < i)
                 {
-                    expectedoutput[idx1] = expectedoutput[idx2];
+                    if (bHasClassical)
+                    {
+                        expectedoutput[idx1] = expectedoutput[idx2];
+                    }
                     output[idx1] = output[idx2];
                     averagePurity[idx1] = averagePurity[idx2];
                     averageFidelity[idx1] = averageFidelity[idx2];
@@ -196,43 +231,63 @@ int main()
                 v1 = ExchangeComplexBuffer(v1);
                 v2 = ExchangeComplexBuffer(v2);
             }
-            Real fClassical = ClassicalDot(v1, v2);
-            ++iNow;
-            appGeneral(_T("=============\nCalculating v1[%d] * v2[%d] (progress %d/%d), expected result: %f\n"),
-                i, 
-                j, 
-                iNow,
-                bSameFile ? ((m1.Y() * m1.Y() - m1.Y()) / 2) : m1.Y() * m2.Y(),
-                fClassical);
 
-            TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam, iRealMeasure);
+            if (bHasClassical)
+            {
+                Real fClassical = ClassicalDot(v1, v2);
+                ++iNow;
+                appGeneral(_T("=============\nCalculating v1[%d] * v2[%d] (progress %d/%d), expected result: %f\n"),
+                    i,
+                    j,
+                    iNow,
+                    bSameFile ? ((m1.Y() * m1.Y() - m1.Y()) / 2) : m1.Y() * m2.Y(),
+                    fClassical);
+                expectedoutput[idx1] = _make_cuComplex(fClassical, F(0.0));
+            }
+            else
+            {
+                ++iNow;
+                appGeneral(_T("=============\nCalculating v1[%d] * v2[%d] (progress %d/%d)\n"),
+                    i,
+                    j,
+                    iNow,
+                    bSameFile ? ((m1.Y() * m1.Y() - m1.Y()) / 2) : m1.Y() * m2.Y());
+            }
 
-            expectedoutput[idx1] = _make_cuComplex(fClassical, F(0.0));
+            TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam, iRealMeasure, bEnableNoise);
+            
             output[idx1] = _make_cuComplex(quantumRes[2], F(0.0));
             averagePurity[idx1] = _make_cuComplex(quantumRes[0], F(0.0));
             averageFidelity[idx1] = _make_cuComplex(quantumRes[1], F(0.0));
         }
     }
 
-    QLMatrix expm(m1.Y(), m2.Y(), expectedoutput);
+    if (bHasClassical)
+    {
+        QLMatrix expm(m1.Y(), m2.Y(), expectedoutput);
+        if (m1.Y() * m2.Y() < 10000)
+        {
+            expm.Print("ClassicalResult");
+        }
+        __FetchStringWithDefault(_T("ClassicalResSaveFileName"), _T(""));
+        if (!sValues.IsEmpty())
+        {
+            SaveCSVR(expm, sValues);
+            appGeneral(_T("%f file saved...\n"), sValues.c_str());
+        }
+    }
+    
     QLMatrix resm(m1.Y(), m2.Y(), output);
     QLMatrix purity(m1.Y(), m2.Y(), averagePurity);
     QLMatrix fidelity(m1.Y(), m2.Y(), averageFidelity);
 
     if (m1.Y() * m2.Y() < 10000)
     {
-        expm.Print("ClassicalResult");
         resm.Print("QuantumResult");
         purity.Print("AveragePurity");
         fidelity.Print("AverageFidelity");
     }
 
-    __FetchStringWithDefault(_T("ClassicalResSaveFileName"), _T(""));
-    if (!sValues.IsEmpty())
-    {
-        SaveCSVR(expm, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues.c_str());
-    }
     __FetchStringWithDefault(_T("QuantumResSaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {

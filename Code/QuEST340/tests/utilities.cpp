@@ -739,8 +739,12 @@ QVector getDFT(QVector in, int* targs, int numTargs) {
             
             // modifies sum_y |y> (x) ...
             long long int outInd = getIndexOfTargetValues(j, targs, numTargs, y);
-            
+#if QuEST_PREC == 1
+            qcomp elem = (in[j] / sqrtf(pow(2, numTargs))) * expI(2 * M_PI * x * y / pow(2, numTargs));
+#else
             qcomp elem = (in[j] / sqrt(pow(2,numTargs))) * expI(2*M_PI * x * y / pow(2,numTargs));
+            
+#endif
             out[outInd] += elem;
         }
     }

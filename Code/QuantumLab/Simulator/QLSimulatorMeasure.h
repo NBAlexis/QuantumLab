@@ -33,7 +33,7 @@ public:
     BYTE m_byQubitCount;
     UBOOL m_bPrint;
 
-    UINT m_iRepeat;
+    INT m_iRepeat;
     INT m_iMeasureUntil;
     TArray<BYTE> m_lstMeasureBits;
 };
@@ -43,9 +43,11 @@ class QLAPI QLSimulatorOutputMeasure : public QLSimulatorOutput
 public:
 
     //to be changed to 'circuit' which including measurement (if measurement can be viewed as matrix)
-    QLMatrix m_OutputMatrix;
+    //QLMatrix m_OutputMatrix;
     TArray<UINT> m_lstCounts;
     TArray<UINT> m_lstHist;
+
+    TArray<Real> m_lstMeasureOutcomes;
 
     UINT m_uiMeasureUntilRes;
     UINT m_uiMeasureUntilCount;

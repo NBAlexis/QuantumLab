@@ -122,6 +122,67 @@ QLGate QLAPI CreateSwapTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2)
     return ret;
 }
 
+QLGate QLAPI ZeroTest(TArray<QLComplex> v1, TArray<QLComplex> v2)
+{
+    UINT l = static_cast<UINT>(v1.Num() > v2.Num() ? v1.Num() : v2.Num());
+    BYTE qubitForEachVector = static_cast<BYTE>(MostSignificantPowerTwo(l));
+    for (UINT i = 0; i < (1U << qubitForEachVector); ++i)
+    {
+        if (v1.Num() <= static_cast<INT>(i))
+        {
+            v1.AddItem(_zeroc);
+        }
+
+        if (v2.Num() <= static_cast<INT>(i))
+        {
+            v2.AddItem(_zeroc);
+        }
+    }
+
+    QLGate ret;
+    ret.AddQubits(qubitForEachVector);
+
+    QLGate aev1 = AmplitudeEncodeOneVector(v1.GetData(), qubitForEachVector, FALSE);
+    QLGate aev2 = AmplitudeEncodeOneVector(v2.GetData(), qubitForEachVector, FALSE);
+    aev2.Dagger();
+
+    ret.AppendGate(aev1, aev1.m_lstQubits);
+    ret.AppendGate(aev2, aev2.m_lstQubits);
+
+
+    return ret;
+}
+
+QLGate QLAPI ZeroTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2)
+{
+    UINT l = static_cast<UINT>(v1.Num() > v2.Num() ? v1.Num() : v2.Num());
+    BYTE qubitForEachVector = static_cast<BYTE>(MostSignificantPowerTwo(l));
+    for (UINT i = 0; i < (1U << qubitForEachVector); ++i)
+    {
+        if (v1.Num() <= static_cast<INT>(i))
+        {
+            v1.AddItem(_zeroc);
+        }
+
+        if (v2.Num() <= static_cast<INT>(i))
+        {
+            v2.AddItem(_zeroc);
+        }
+    }
+
+    QLGate ret;
+    ret.AddQubits(qubitForEachVector);
+
+    QLGate aev1 = AmplitudeEncodeOneVectorReal(v1.GetData(), qubitForEachVector);
+    QLGate aev2 = AmplitudeEncodeOneVectorReal(v2.GetData(), qubitForEachVector);
+    aev2.Dagger();
+
+    ret.AppendGate(aev1, aev1.m_lstQubits);
+    ret.AppendGate(aev2, aev2.m_lstQubits);
+
+    return ret;
+}
+
 __END_NAMESPACE
 
 

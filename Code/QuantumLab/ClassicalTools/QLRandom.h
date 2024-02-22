@@ -203,16 +203,21 @@ public:
     /**
     * 0 - 1 random
     */
-    __host__ __inline__ Real GetRandomF()
+    static __host__ __inline__ Real GetRandomF()
     {
-        if (ERandom::ER_Schrage == m_eRandomType)
-        {
-            return static_cast<Real>(AM * GetRandomUISchrage());
-        }
+        std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        std::uniform_real_distribution<Real> dis(F(0.0), F(1.0));
 
-        curandGenerateUniform(m_HGen, m_deviceBuffer, 1);
-        checkCudaErrors(cudaMemcpy(m_hostBuffer, m_deviceBuffer, sizeof(FLOAT), cudaMemcpyDeviceToHost));
-        return static_cast<Real>(m_hostBuffer[0]);
+        return dis(gen);
+        //if (ERandom::ER_Schrage == m_eRandomType)
+        //{
+        //    return static_cast<Real>(AM * GetRandomUISchrage());
+        //}
+
+        //curandGenerateUniform(m_HGen, m_deviceBuffer, 1);
+        //checkCudaErrors(cudaMemcpy(m_hostBuffer, m_deviceBuffer, sizeof(FLOAT), cudaMemcpyDeviceToHost));
+        //return static_cast<Real>(m_hostBuffer[0]);
     }
 
     FLOAT* m_deviceBuffer;
@@ -220,6 +225,7 @@ public:
     curandGenerator_t m_HGen;
     ERandom m_eRandomType;
     UINT m_uiMaxThread;
+
 
 protected:
 
@@ -315,7 +321,7 @@ extern QLAPI QLRandom* _hostRandomPointer;
 
 inline Real RandomF()
 {
-    return _hostRandomPointer->GetRandomF();
+    return QLRandom::GetRandomF();
 }
 
 __END_NAMESPACE

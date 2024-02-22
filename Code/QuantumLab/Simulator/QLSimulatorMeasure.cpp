@@ -36,14 +36,6 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
 
     //This is a lazy slow implement, I need to use cuda to improve it
     LONGLONG veclen = 1LL << param->m_byQubitCount;
-    QLComplex* res = reinterpret_cast<QLComplex*>(malloc(sizeof(QLComplex)* veclen));
-    if (NULL == res)
-    {
-        appCrucial("buffer not created!");
-        return;
-    }
-
-    //appGeneral(_T("building zero start\n"));
 
     syncQuESTEnv(evn);
     param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
@@ -62,43 +54,25 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     syncQuESTEnv(evn);
     copyStateFromGPU(vec);
 
-    for (LONGLONG line2 = 0; line2 < veclen; ++line2)
-    {
-        res[line2].x = static_cast<Real>(vec.stateVec.real[line2]);
-        res[line2].y = static_cast<Real>(vec.stateVec.imag[line2]);
-    }
-
-    QLMatrix resmtr(static_cast<UINT>(veclen), 1, res);
-
     QLSimulatorOutputMeasure* outputMatrix = dynamic_cast<QLSimulatorOutputMeasure*>(output);
-    if (NULL != outputMatrix)
-    {
-        outputMatrix->m_OutputMatrix = resmtr;
-    }
 
     //================ start measure ===============
     TArray<UINT> lstCount;
     TArray<UINT> lstHist;
-    for (UINT i = 0; i < (1U << param->m_lstMeasureBits.Num()); ++i)
-    {
-        lstCount.AddItem(0);
-    }
-
-    const QLComplex* hostbuffer = resmtr.HostBuffer();
 
     if (param->m_iMeasureUntil > 0)
     {
+        for (UINT i = 0; i < (1U << param->m_lstMeasureBits.Num()); ++i)
+        {
+            lstCount.AddItem(0);
+        }
+
         UBOOL bContinue = TRUE;
         UINT uiCount = 0;
         while (bContinue)
         {
             if (0 != uiCount)
             {
-                for (LONGLONG line2 = 0; line2 < veclen; ++line2)
-                {
-                    vec.stateVec.real[line2] = hostbuffer[static_cast<INT>(line2)].x;
-                    vec.stateVec.imag[line2] = hostbuffer[static_cast<INT>(line2)].y;
-                }
                 copyStateToGPU(vec);
                 syncQuESTEnv(evn);
             }
@@ -123,6 +97,11 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
                 {
                     outputMatrix->m_uiMeasureUntilCount = uiCount;
                     outputMatrix->m_uiMeasureUntilRes = measureRes;
+
+                    for (UINT i = 0; i < (1U << param->m_lstMeasureBits.Num()); ++i)
+                    {
+                        outputMatrix->m_lstMeasureOutcomes[i] = lstCount[i] / static_cast<Real>(uiCount);
+                    }
                 }
 
                 bContinue = FALSE;
@@ -131,37 +110,57 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     }
     else
     {
-        for (UINT i = 0; i < param->m_iRepeat; ++i)
+        if (param->m_iRepeat > 0)
         {
-            if (0 != i)
+            for (UINT i = 0; i < (1U << param->m_lstMeasureBits.Num()); ++i)
             {
-                for (LONGLONG line2 = 0; line2 < veclen; ++line2)
-                {
-                    vec.stateVec.real[line2] = hostbuffer[static_cast<INT>(line2)].x;
-                    vec.stateVec.imag[line2] = hostbuffer[static_cast<INT>(line2)].y;
-                }
-                copyStateToGPU(vec);
-                syncQuESTEnv(evn);
+                lstCount.AddItem(0);
             }
 
-            UINT measureRes = 0;
-            for (INT j = 0; j < param->m_lstMeasureBits.Num(); ++j)
+            for (UINT i = 0; i < param->m_iRepeat; ++i)
             {
-                INT out = measure(vec, param->m_lstMeasureBits[j]);
-                if (1 == out)
+                if (0 != i)
                 {
-                    measureRes = measureRes | (1U << j);
+                    copyStateToGPU(vec);
+                    syncQuESTEnv(evn);
+                }
+
+                UINT measureRes = 0;
+                for (INT j = 0; j < param->m_lstMeasureBits.Num(); ++j)
+                {
+                    INT out = measure(vec, param->m_lstMeasureBits[j]);
+                    if (1 == out)
+                    {
+                        measureRes = measureRes | (1U << j);
+                    }
+                }
+                lstCount[measureRes] = lstCount[measureRes] + 1;
+                lstHist.AddItem(measureRes);
+            }
+
+            if (NULL != outputMatrix)
+            {
+                outputMatrix->m_lstCounts = lstCount;
+                outputMatrix->m_lstHist = lstHist;
+
+                for (UINT i = 0; i < (1U << param->m_lstMeasureBits.Num()); ++i)
+                {
+                    outputMatrix->m_lstMeasureOutcomes[i] = lstCount[i] / static_cast<Real>(param->m_iRepeat);
                 }
             }
-            lstCount[measureRes] = lstCount[measureRes] + 1;
-            lstHist.AddItem(measureRes);
         }
-    }
-
-    if (NULL != outputMatrix)
-    {
-        outputMatrix->m_lstCounts = lstCount;
-        outputMatrix->m_lstHist = lstHist;
+        else if (NULL != outputMatrix)
+        {
+            Real* outcome = reinterpret_cast<Real*>(malloc(sizeof(Real) * (1U << param->m_lstMeasureBits.Num())));
+            TArray<INT> tobemeasured;
+            for (INT i = 0; i < param->m_lstMeasureBits.Num(); ++i)
+            {
+                tobemeasured.AddItem(param->m_lstMeasureBits[i]);
+            }
+            calcProbOfAllOutcomes(outcome, vec, tobemeasured.GetData(), param->m_lstMeasureBits.Num());
+            outputMatrix->m_lstMeasureOutcomes.Append(outcome, (1U << param->m_lstMeasureBits.Num()));
+            appSafeFree(outcome);
+        }
     }
 
     if (param->m_bPrint)

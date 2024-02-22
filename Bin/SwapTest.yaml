@@ -1,20 +1,22 @@
 # ########################
 FileName1 : v1.csv
 FileName2 : v1.csv
-MeasureRepeat : 10000
-Complex : 1
+MeasureRepeat : 1000
+Complex : 0
+EnableClassical : 0
+EnableNoise : 0
 
-DampingAfterGate : 0.0
-DepolarisingAfterGate : 0.0
-DephasingAfterGate : 0.0
-MixPauliAfterGate : 0.0001
+DampingAfterGate : 0.001
+DepolarisingAfterGate : 0.001
+DephasingAfterGate : 0.001
+MixPauliAfterGate : 0.001
 TwoQubitDephasing : 0.001
 TwoQubitDepolarising : 0.001
 
-DampingBeforeMeasure : 0.01
-DepolarisingBeforeMeasure : 0.0
+DampingBeforeMeasure : 0.02
+DepolarisingBeforeMeasure : 0.02
 DephasingBeforeMeasure : 0.0
-MixPauliBeforeMeasure : 0.0
+MixPauliBeforeMeasure : 0.02
 
 ClassicalResSaveFileName : ../classicalres.csv
 QuantumResSaveFileName : ../quantumres.csv

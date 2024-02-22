@@ -29,6 +29,7 @@
 #include <sstream>
 #include <assert.h>
 #include <time.h>
+#include <random>
 
 #include <algorithm>
 #include <atomic> //replace interlock

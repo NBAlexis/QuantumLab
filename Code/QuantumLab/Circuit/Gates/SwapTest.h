@@ -21,6 +21,13 @@ extern QLGate QLAPI CreateSwapTest(TArray<QLComplex> v1, TArray<QLComplex> v2);
 */
 extern QLGate QLAPI CreateSwapTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2);
 
+extern QLGate QLAPI ZeroTest(TArray<QLComplex> v1, TArray<QLComplex> v2);
+
+/**
+* when v1 and v2 are real vectors
+*/
+extern QLGate QLAPI ZeroTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2);
+
 
 __END_NAMESPACE
 

@@ -36,9 +36,17 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
 
     syncQuESTEnv(evn);
 
-    //LONGLONG bufferlength = param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
-
+    param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
     copyStateToGPU(vec);
+    if (param->m_bMeasureFidelity)
+    {
+        UINT uiVectorLengthVec2 = 1U << param->m_byQubitCount;
+        memset(vec2.stateVec.real, 0, sizeof(Real) * uiVectorLengthVec2);
+        memset(vec2.stateVec.imag, 0, sizeof(Real) * uiVectorLengthVec2);
+        vec2.stateVec.real[0] = F(1.0);
+        copyStateToGPU(vec2);
+    }
+    syncQuESTEnv(evn);
 
     UINT uiSingleQubitGate = 0;
     UINT uiTwoQubitGate = 0;
@@ -58,6 +66,8 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
                 appParanoiac(_T("there is no basic gate: %d\n"), op.m_eOperation);
             }
         }
+
+        //appGeneral(_T("op %d: %d, %f\n"), i, op.m_eOperation, op.m_fClassicalParameter);
 
         Real fProba = QLGate::PerformBasicOperation(vec, op);
         if (NULL != output)
@@ -272,7 +282,10 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
         }
 
         MeasurePurity(param, output, &vec);
-        MeasureFidelity(param, output, &vec, &vec2);
+        if (param->m_bMeasureFidelity)
+        {
+            MeasureFidelity(param, output, &vec, &vec2);
+        }
 
         TArray<INT> tomeasure;
         for (INT i = 0; i < param->m_lstMeasureQubits.Num(); ++i)
@@ -282,6 +295,11 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
 
         Real* res = (Real*)malloc(sizeof(Real) * (1ULL << static_cast<UINT>(param->m_lstMeasureQubits.Num())));
         calcProbOfAllOutcomes(res, vec, tomeasure.GetData(), tomeasure.Num());
+        //for (INT k = 0; k < (1ULL << static_cast<UINT>(param->m_lstMeasureQubits.Num())); ++k)
+        //{
+        //    appGeneral(_T("%f\n"), res[k]);
+        //}
+        //appGeneral(_T("\n"));
         if (NULL != output)
         {
             output->m_lstMeasureOutcomes.Append(res, 1U << param->m_lstMeasureQubits.Num());
@@ -301,11 +319,11 @@ void QLSimulatorDensityMatrix::Simulate(QLSimulatorParameters * params, QLSimula
         appSafeFree(res);
     }
 
-    destroyQureg(vec, evn);
     if (param->m_bMeasureFidelity)
     {
         destroyQureg(vec2, evn);
     }
+    destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 }
 
