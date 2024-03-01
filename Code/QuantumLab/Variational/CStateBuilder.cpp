@@ -12,7 +12,7 @@
 
 __BEGIN_NAMESPACE
 
-TArray<Real> CStateBuilder::Fit(COptimizer* optimizer, UINT uiMaxStep)
+TArray<Real> CStateBuilder::Fit(COptimizer* optimizer, const CCString& sAnsatzFile, UINT uiMaxStep)
 {
     QuESTEnv evn = createQuESTEnv();
     Qureg vec = createQureg(m_GateToBuild.m_lstQubits.Num(), evn);
@@ -36,7 +36,7 @@ TArray<Real> CStateBuilder::Fit(COptimizer* optimizer, UINT uiMaxStep)
     destroyQuESTEnv(evn);
 
     optimizer->SetLossFunc(this);
-    return optimizer->Optimize(m_fGoal, uiMaxStep);
+    return optimizer->Optimize(m_fGoal, uiMaxStep, sAnsatzFile);
 }
 
 Real CStateBuilder::LossFunction(const QLGate& ansatzGate)
@@ -77,17 +77,41 @@ void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const 
     BYTE byQubit = static_cast<BYTE>(aegate.m_lstQubits.Num());
 
     ESingleLayer eSingle = ESingleLayer::RYRZ;
-    ELinkLayer eLinker = ELinkLayer::CZ;
     if (bOnlyReal)
     {
         eSingle = ESingleLayer::RY;
     }
 
-    CTwoLocal ansatz(byQubit, uiLevel, eSingle, eLinker, ELinkStyle::SCA);
+    CTwoLocal ansatz(byQubit, uiLevel, eSingle, ELinkLayer::CZ, ELinkStyle::SCA);
     CAdam optimizer(&ansatz, NULL, fLearnRate);
     CStateBuilder builder(aegate, fGoal);
-    TArray<Real> history = builder.Fit(&optimizer, uiMaxStep);
-    ansatz.SaveParameters(sAnsatzFile);
+    TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
+    SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
+}
+
+void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile,
+    Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT uiAdaptiveWait, Real fAdaptiveEps, UBOOL bOnlyReal)
+{
+    UINT w, h;
+    TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
+    UINT wpower = MostSignificantPowerTwo(w);
+    UINT hpower = MostSignificantPowerTwo(h);
+
+    QLGate aegate = AmplitudeEncodeVectors(points.GetData(), hpower, wpower, FALSE);
+    BYTE byQubit = static_cast<BYTE>(aegate.m_lstQubits.Num());
+
+    ESingleLayer eSingle = ESingleLayer::RYRZ;
+    if (bOnlyReal)
+    {
+        eSingle = ESingleLayer::RY;
+    }
+
+    CTwoLocalAdaptive ansatz(byQubit, eSingle, ELinkLayer::CZ, ELinkStyle::Circular);
+    ansatz.SetMaxLayer(uiMaxLayer);
+    CAdam optimizer(&ansatz, NULL, fLearnRate);
+    optimizer.SetAdapetiveParameter(uiAdaptiveWait, fAdaptiveEps);
+    CStateBuilder builder(aegate, fGoal);
+    TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }
 

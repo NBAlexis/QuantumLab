@@ -7,12 +7,13 @@
 # EQKJ_TestQKNN2D
 # EQKJ_TestQKNN3D
 # EQKJ_TestFitPointSet
+# EQKJ_TestFitPointSetAdap
 # EQKJ_QAnomaly2D
 # EQKJ_QAnomaly3D
 # EQKJ_TestQKNNAnsatz2D
 # EQKJ_TestQKNNAnsatz
 # EQKJ_TestQKNNAE
-KMeansJob : EQKJ_TestQKNNAnsatz
+KMeansJob : EQKJ_TestFitPointSetAdap
 
 # ########################
 # GPU Kmeans
@@ -34,11 +35,11 @@ GPUKmeans:
 CircuitTestDim:
 
     LoadFile : q8.csv
-    MeasureSave : q8_16.csv
-    DimList :      [256, 256, 256, 32, 32, 32, 4, 4, 4]
+    MeasureSave : br2.csv
+    DimList :      [32, 32, 32]
     # AARepeatList : [1, 2,  3,  4,  6,   8,  12,  17,   25]
-    AARepeatList : [12, 12, 12, 6, 6, 6, 1, 1, 1]
-    CountList : [256, 32, 4, 256, 32, 4, 256, 32, 4]
+    AARepeatList : [4, 4, 4]
+    CountList : [256, 32, 4]
     VectorCount : 16
     AA : 1
     Repeat : 1000
@@ -77,14 +78,17 @@ QKNN3D:
 
 FitWaveFunction:
 
-    PointFile : gqgcwf1500.csv
-    AnsatzFile : angqgcwf1500.csv
-    HistoryFile : histgqgcwf1500.csv
+    PointFile : F:\Builds\QKMeans-02-10\Release\gqgcwf1500-1024.csv
+    AnsatzFile : F:\Builds\QKMeans-02-10\Release\angqgcwf1500-1024-ad.csv
+    HistoryFile : F:\Builds\QKMeans-02-10\Release\histgqgcwf1500-1024-ad.csv
     AnsatzLevel : 5
-    MaxStep : 500
+    MaxStep : 10000
+    MaxLayer : 100
     LearnRate : 0.01
     Goal : 0.01
     OnlyReal : 0
+    AdaptiveWait : 200
+    AdaptiveEps : 0.001
 
 QKNN2DAnsatz:
 
@@ -97,9 +101,10 @@ QKNN2DAnsatz:
 QKNNAnsatz:
 
     PointSet : gqgcwf1500.csv
-    Ansatz : anaqgcwf1500-512-l50.csv
-    TestSet : Comb-1500.csv
-    TestSave : Comb-1500-l50.csv
+    Ansatz : F:\Builds\QKMeans-02-10\Release\anaqgcwf1500-512-l50.csv
+    TestSet : F:\Builds\QKMeans-02-10\Release\FT7-1500-4.csv
+    TestSave : F:\Builds\QKMeans-02-10\Release\FT7-1500-4-l50.csv
+    IsAdaptive : 0
     AnsatzLevel : 50
     AnsatzQubits : 12
     Repeat : 1000

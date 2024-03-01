@@ -31,9 +31,9 @@ void TestKMeans2D(CParameters& params)
     __FetchStringWithDefault(_T("RepeatFileHead"), _T(""));
     sReepatFileHead = sValues;
 
-    UINT uiK = 4;
+    BYTE uiK = 4;
     __FetchIntWithDefault(_T("K"), 4);
-    uiK = static_cast<UINT>(iValues);
+    uiK = static_cast<BYTE>(iValues);
 
     UINT uiMinHit = 2;
     __FetchIntWithDefault(_T("Hit"), 2);
@@ -139,11 +139,14 @@ void TestKNNAnsatz(CParameters& params)
     __FetchIntWithDefault(_T("AnsatzLevel"), 1);
     uiAnsatzLevel = static_cast<UINT>(iValues);
 
+    __FetchIntWithDefault(_T("IsAdaptive"), 0);
+    UBOOL bIsAdap = (iValues != 0);
+
     UINT uiRepeat = 100;
     __FetchIntWithDefault(_T("Repeat"), 2);
     uiRepeat = static_cast<UINT>(iValues);
 
-    QLQuantumKmeans::KNNAnsatz(sAnsatz, sTestPoints, sTestingClusters, ansatzQubit, uiAnsatzLevel, uiRepeat);
+    QLQuantumKmeans::KNNAnsatz(sAnsatz, sTestPoints, sTestingClusters, ansatzQubit, bIsAdap, uiAnsatzLevel, uiRepeat);
 }
 
 void TestKNNAE(CParameters& params)

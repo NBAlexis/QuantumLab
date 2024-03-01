@@ -50,7 +50,7 @@ public:
         m_lstParameters[uiParameterCount] = m_lstParameters[uiParameterCount] + fOffset;
     }
 
-    void SaveParameters(const CCString& sFileName) const
+    virtual void SaveParameters(const CCString& sFileName) const
     {
         SaveCSVAR(m_lstParameters.GetData(), 1, m_lstParameters.Num(), sFileName);
     }
@@ -74,6 +74,8 @@ public:
         params[numberOfParamter] = params[numberOfParamter] + fOffset;
         return BuildState(params);
     }
+
+    virtual void IncreaseAdaptive() {}
 
 protected:
 

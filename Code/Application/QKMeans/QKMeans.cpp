@@ -127,6 +127,19 @@ int main()
             }
         }
         break;
+    case EQKJ_TestFitPointSetAdap:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
+            {
+                TestFitPointSetAdap(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("FitWaveFunction not found!\n"));
+            }
+        }
+        break;
     case EQKJ_QAnomaly2D:
         {
             CParameters jobparam;

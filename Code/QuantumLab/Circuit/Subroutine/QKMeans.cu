@@ -1834,12 +1834,12 @@ void QLQuantumKmeans::KNNAnsatz(
     const CCString& sAnsatz, 
     const CCString& sTestPoints, 
     const CCString& sScore,
-    BYTE ansatzQubits, UINT uiAnsatzLevel, UINT uiRepeat)
+    BYTE ansatzQubits, UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat)
 {
     //UINT uiBlock = 0;
     //UINT uiThread = 0;
-    UINT w, h;
-    TArray<Real> ansatzParam = ReadCSVAR(sAnsatz, w, h);
+    UINT w, h, ha;
+    TArray<Real> ansatzParam = ReadCSVAR(sAnsatz, w, ha);
     TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
     BYTE vectorPower = static_cast<BYTE>(MostSignificantPowerTwo(w));
 
@@ -1865,9 +1865,25 @@ void QLQuantumKmeans::KNNAnsatz(
     checkCudaErrors(cudaFree(pDeviceY));
     checkCudaErrors(cudaFree(pDeviceZ));
 
-    CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
-    ansatz.SetParameters(ansatzParam);
-    QLGate ansatzGate = ansatz.BuildStateWithParam();
+    QLGate ansatzGate;
+    if (bAdaptive)
+    {
+        uiAnsatzLevel = (ha / (ansatzQubits << 1U)) - 1;
+        CTwoLocalAdaptive ansatz(ansatzQubits, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::Circular);
+        for (UINT i = 0; i < uiAnsatzLevel; ++i)
+        {
+            ansatz.IncreaseAdaptive();
+        }
+        ansatz.SetParameters(ansatzParam);
+        ansatzGate = ansatz.BuildStateWithParam();
+    }
+    else
+    {
+        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+        ansatz.SetParameters(ansatzParam);
+        ansatzGate = ansatz.BuildStateWithParam();
+    }
+
     UINT* scores = reinterpret_cast<UINT*>(malloc(sizeof(UINT) * h));
 
     UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);

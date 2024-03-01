@@ -22,7 +22,7 @@ public:
     {
     }
 
-    TArray<Real> Fit(COptimizer* optimizer, UINT uiMaxStep = 10000);
+    TArray<Real> Fit(COptimizer* optimizer, const CCString& sAnsatzFile, UINT uiMaxStep = 10000);
 
 protected:
 
@@ -33,8 +33,9 @@ protected:
     Real m_fGoal;
 };
 
-extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, 
-    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
+extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
+
+extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT adaptiveWait, Real fadaptiveEps, UBOOL bOnlyReal);
 
 __END_NAMESPACE
 

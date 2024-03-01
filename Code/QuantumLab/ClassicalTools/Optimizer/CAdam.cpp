@@ -65,8 +65,8 @@ Real CAdam::Iteration()
     {
         m_m[p] = m_fBeta1 * m_m[p] + (1 - m_fBeta1) * gradients[p];
         m_v[p] = m_fBeta2 * m_v[p] + (1 - m_fBeta2) * gradients[p] * gradients[p];
-        mhat.AddItem(m_m[p] / (F(1.0) - pow(m_fBeta1, m_uiItr)));
-        vhat.AddItem(m_v[p] / (F(1.0) - pow(m_fBeta2, m_uiItr)));
+        mhat.AddItem(static_cast<Real>(m_m[p] / (1.0 - pow(m_fBeta1, m_uiItr))));
+        vhat.AddItem(static_cast<Real>(m_v[p] / (1.0 - pow(m_fBeta2, m_uiItr))));
     }
 
     for (UINT p = 0; p < m_pAnsatzToOptimize->ParameterCount(); ++p)

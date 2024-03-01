@@ -80,6 +80,7 @@
 #include "Circuit/Ansatz/CAnsatz.h"
 #include "Circuit/Ansatz/CFHEA.h"
 #include "Circuit/Ansatz/CTwoLocal.h"
+#include "Circuit/Ansatz/CTwoLocalAddaptive.h"
 
 #include "ClassicalTools/Optimizer/COptimizer.h"
 #include "ClassicalTools/Optimizer/CGradientDesend.h"

@@ -54,14 +54,14 @@ TArray<Real> COptimizer::GetGradientsWithKnown(Real fLossNow) const
     return ret;
 }
 
-TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep, UBOOL bTurnToMinLoss)
+TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep, const CCString& smallestFileName)
 {
     TArray<Real> history;
     Real fLoss = Start();
     history.AddItem(fLoss);
     UINT step = 0;
     Real fMinLoss = fLoss;
-    TArray<Real> minLossParam;
+    //TArray<Real> minLossParam;
     while (fLoss > fGoal && step < uiMaxStep)
     {
         ++step;
@@ -71,17 +71,18 @@ TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep, UBOOL bTurnToMinLo
         if (fLoss < fMinLoss)
         {
             fMinLoss = fLoss;
-            minLossParam = m_pAnsatzToOptimize->GetParameters();
+            //minLossParam = m_pAnsatzToOptimize->GetParameters();
+            if (!smallestFileName.IsEmpty())
+            {
+                m_pAnsatzToOptimize->SaveParameters(smallestFileName);
+            }
         }
+        CheckAdaptive(fLoss);
     }
 
     if (fLoss > fGoal)
     {
         appGeneral(_T("optimizer failed with max step reached, loss = %f minloss = %f\n"), fLoss, fMinLoss);
-        if (bTurnToMinLoss)
-        {
-            m_pAnsatzToOptimize->SetParameters(minLossParam);
-        }
     }
     else
     {
@@ -89,6 +90,25 @@ TArray<Real> COptimizer::Optimize(Real fGoal, UINT uiMaxStep, UBOOL bTurnToMinLo
     }
 
     return history;
+}
+
+void COptimizer::CheckAdaptive(Real fLoss)
+{
+    if (m_fSmallestLoss - fLoss < m_fAdaptiveEps)
+    {
+        ++m_uiAdaptiveIteration;
+        if (m_uiAdaptiveIteration >= m_uiAdaptiveIterationMax)
+        {
+            m_uiAdaptiveIteration = 0;
+            m_pAnsatzToOptimize->IncreaseAdaptive();
+            Start();
+        }
+    }
+    else
+    {
+        m_uiAdaptiveIteration = 0;
+        m_fSmallestLoss = fLoss;
+    }
 }
 
 __END_NAMESPACE

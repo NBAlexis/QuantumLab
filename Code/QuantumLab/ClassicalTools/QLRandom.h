@@ -205,9 +205,9 @@ public:
     */
     static __host__ __inline__ Real GetRandomF()
     {
-        std::random_device rd;  // Will be used to obtain a seed for the random number engine
-        std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-        std::uniform_real_distribution<Real> dis(F(0.0), F(1.0));
+        static std::random_device rd;  // Will be used to obtain a seed for the random number engine
+        static std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+        static std::uniform_real_distribution<Real> dis(F(0.0), F(1.0));
 
         return dis(gen);
         //if (ERandom::ER_Schrage == m_eRandomType)

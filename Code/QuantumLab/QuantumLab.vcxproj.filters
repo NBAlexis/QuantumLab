@@ -139,6 +139,9 @@
     <ClCompile Include="ClassicalTools\Optimizer\CAdam.cpp">
       <Filter>ClassicalTools\Optimizer</Filter>
     </ClCompile>
+    <ClCompile Include="Circuit\Ansatz\CTwoLocalAddaptive.cpp">
+      <Filter>Circuit\Ansatz</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Circuit\QLGate.h">
@@ -319,6 +322,9 @@
     </ClInclude>
     <ClInclude Include="ClassicalTools\Optimizer\CAdam.h">
       <Filter>ClassicalTools\Optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="Circuit\Ansatz\CTwoLocalAddaptive.h">
+      <Filter>Circuit\Ansatz</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

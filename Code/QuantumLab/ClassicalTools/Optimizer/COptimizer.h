@@ -32,6 +32,10 @@ public:
         : m_pAnsatzToOptimize(pAnsatz)
         , m_pLoss(pLoss)
         , m_fGradientOffset(fGradientOffset) 
+        , m_fSmallestLoss(F(1.0))
+        , m_fAdaptiveEps(F(0.01))
+        , m_uiAdaptiveIteration(0)
+        , m_uiAdaptiveIterationMax(200)
     {
 
     }
@@ -39,11 +43,17 @@ public:
     virtual Real Start() = 0;
     virtual Real Iteration() = 0;
 
-    TArray<Real> Optimize(Real fGoal, UINT uiMaxStep = 10000, UBOOL bTurnToMinLoss = TRUE);
+    TArray<Real> Optimize(Real fGoal, UINT uiMaxStep, const CCString& smallestFileName = _T(""));
 
     void SetLossFunc(CLossFunction* pLoss)
     {
         m_pLoss = pLoss;
+    }
+
+    void SetAdapetiveParameter(UINT waitIteration, Real fEps)
+    {
+        m_uiAdaptiveIterationMax = waitIteration;
+        m_fAdaptiveEps = fEps;
     }
 
 protected:
@@ -54,9 +64,16 @@ protected:
     TArray<Real> GetGradients() const;
     TArray<Real> GetGradientsWithKnown(Real fLossNow) const;
 
+    virtual void CheckAdaptive(Real fLoss);
+
     class CAnsatz* m_pAnsatzToOptimize;
     CLossFunction* m_pLoss;
     Real m_fGradientOffset;
+
+    Real m_fSmallestLoss;
+    Real m_fAdaptiveEps;
+    UINT m_uiAdaptiveIteration;
+    UINT m_uiAdaptiveIterationMax;
 };
 
 __END_NAMESPACE

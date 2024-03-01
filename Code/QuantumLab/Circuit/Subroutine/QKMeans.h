@@ -67,7 +67,7 @@ public:
     static void KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sSaveK, const CCString& sRepeat, UINT kHit);
 
     static void KNNAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sScore, 
-        BYTE ansatzQubits, UINT uiAnsatzLevel, UINT uiRepeat);
+        BYTE ansatzQubits, UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat);
 
     static void KNNAE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, UINT uiRepeat);
 

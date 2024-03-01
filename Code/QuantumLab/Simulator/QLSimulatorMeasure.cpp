@@ -35,7 +35,7 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
     
 
     //This is a lazy slow implement, I need to use cuda to improve it
-    LONGLONG veclen = 1LL << param->m_byQubitCount;
+    //LONGLONG veclen = 1LL << param->m_byQubitCount;
 
     syncQuESTEnv(evn);
     param->BuildZeroStart(param->m_byQubitCount, vec.stateVec.real, vec.stateVec.imag);
@@ -117,7 +117,7 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
                 lstCount.AddItem(0);
             }
 
-            for (UINT i = 0; i < param->m_iRepeat; ++i)
+            for (UINT i = 0; i < static_cast<UINT>(param->m_iRepeat); ++i)
             {
                 if (0 != i)
                 {
@@ -151,7 +151,7 @@ void QLSimulatorMeasure::Simulate(QLSimulatorParameters * params, QLSimulatorOut
         }
         else if (NULL != outputMatrix)
         {
-            Real* outcome = reinterpret_cast<Real*>(malloc(sizeof(Real) * (1U << param->m_lstMeasureBits.Num())));
+            Real* outcome = reinterpret_cast<Real*>(malloc(sizeof(Real) * (1ULL << param->m_lstMeasureBits.Num())));
             TArray<INT> tobemeasured;
             for (INT i = 0; i < param->m_lstMeasureBits.Num(); ++i)
             {
