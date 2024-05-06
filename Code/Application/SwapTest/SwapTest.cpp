@@ -45,6 +45,9 @@ TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComple
         param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
     }
 
+    TArray<UINT> gates = param2.m_MasterGate.SummarizeGateCounts();
+    appGeneral(_T("Single: %d, TwoQubit: %d, Noise: %d, Measure: %d, Other: %d\n"), gates[0], gates[1], gates[2], gates[3], gates[4]);
+
     Real fAveragePurity = F(1.0);
     Real fAverageFidelity = F(1.0);
     Real fRes = F(0.0);

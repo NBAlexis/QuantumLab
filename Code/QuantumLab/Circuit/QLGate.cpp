@@ -560,6 +560,64 @@ TArray<SBasicOperation> QLGate::GetOperation(const TArray<BYTE>& lstMappingQubit
 	return ret;
 }
 
+TArray<UINT> QLGate::SummarizeGateCounts() const
+{
+	UINT uiSingle = 0;
+	UINT uiTwo = 0;
+	UINT uiNoise = 0;
+	UINT uiMeasure = 0;
+	UINT uiOther = 0;
+	if (EBasicOperation::EBO_Composite != m_eOp)
+	{
+		INT opsize = m_lstOperations.Num();
+		for (INT i = 0; i < opsize; ++i)
+		{
+
+			if (SBasicOperation::IsSingle(m_lstOperations[i].m_eOperation))
+			{
+				++uiSingle;
+			}
+			else if (SBasicOperation::IsBasicTwoQubit(m_lstOperations[i].m_eOperation))
+			{
+				++uiTwo;
+			}
+			else if (SBasicOperation::IsNoise(m_lstOperations[i].m_eOperation))
+			{
+				++uiNoise;
+			}
+			else if (SBasicOperation::IsMeasure(m_lstOperations[i].m_eOperation))
+			{
+				++uiMeasure;
+			}
+			else
+			{
+				++uiOther;
+			}
+		}
+	}
+	else
+	{
+		INT gatesize = m_lstSubGates.Num();
+		for (INT i = 0; i < gatesize; ++i)
+		{
+			TArray<UINT> oplist = m_lstSubGates[i].SummarizeGateCounts();
+			uiSingle += oplist[0];
+			uiTwo += oplist[1];
+			uiNoise += oplist[2];
+			uiMeasure += oplist[3];
+			uiOther += oplist[4];
+		}
+	}
+
+	TArray<UINT> ret;
+	ret.AddItem(uiSingle);
+	ret.AddItem(uiTwo);
+	ret.AddItem(uiNoise);
+	ret.AddItem(uiMeasure);
+	ret.AddItem(uiOther);
+	return ret;
+}
+
 void QLGate::ApplyOnQubits(const TArray<BYTE>& lstMappingQubits)
 {
 	m_lstQubits = ExchangeQubits(lstMappingQubits); //thess changes are enough for basic gates

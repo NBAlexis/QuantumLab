@@ -1870,6 +1870,7 @@ void QLQuantumKmeans::KNNAnsatz(
     {
         uiAnsatzLevel = (ha / (ansatzQubits << 1U)) - 1;
         CTwoLocalAdaptive ansatz(ansatzQubits, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::Circular);
+        ansatz.SetMaxLayer(1000);
         for (UINT i = 0; i < uiAnsatzLevel; ++i)
         {
             ansatz.IncreaseAdaptive();

@@ -151,6 +151,42 @@ struct QLAPI SBasicOperation
     {
         return IsSingleQubitGate() || (EBasicOperation::EBO_CX == m_eOperation);
     }
+
+    static UBOOL IsSingle(EBasicOperation eOp)
+    {
+        return EBasicOperation::EBO_H == eOp
+            || EBasicOperation::EBO_X == eOp
+            || EBasicOperation::EBO_Y == eOp
+            || EBasicOperation::EBO_Z == eOp
+            || EBasicOperation::EBO_P == eOp
+            || EBasicOperation::EBO_Phase == eOp
+            || EBasicOperation::EBO_RX == eOp
+            || EBasicOperation::EBO_RY == eOp
+            || EBasicOperation::EBO_RZ == eOp;
+    }
+
+    static UBOOL IsBasicTwoQubit(EBasicOperation eOp)
+    {
+        return EBasicOperation::EBO_CX == eOp;
+    }
+
+    static UBOOL IsMeasure(EBasicOperation eOp)
+    {
+        return EBasicOperation::EBO_CC == eOp;
+    }
+
+    static UBOOL IsNoise(EBasicOperation eOp)
+    {
+        return EBasicOperation::EBO_Noise_Damping == eOp
+            || EBasicOperation::EBO_Noise_Dephaseing == eOp
+            || EBasicOperation::EBO_Noise_Depolarising == eOp
+            || EBasicOperation::EBO_Noise_MixPauliX == eOp
+            || EBasicOperation::EBO_Noise_MixPauliY == eOp
+            || EBasicOperation::EBO_Noise_MixPauliZ == eOp
+            || EBasicOperation::EBO_Noise_MixPauliAll == eOp
+            || EBasicOperation::EBO_Noise_TwoQubitDephaseing == eOp
+            || EBasicOperation::EBO_Noise_TwoQubitDepolarising == eOp;
+    }
 };
 
 struct QLAPI SBasicOperationInGate
@@ -202,6 +238,8 @@ public:
     {
         return GetOperation(m_lstQubits);
     }
+
+    TArray<UINT> SummarizeGateCounts() const;
 
     BYTE GetQubitCount() const { return static_cast<BYTE>(m_lstQubits.Num()); }
 
