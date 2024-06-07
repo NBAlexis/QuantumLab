@@ -24,7 +24,7 @@ enum class EVerboseLevel : UINT
 
 enum 
 {
-    _kTraceBuffSize = 4096,
+    _kTraceBuffSize = 32768,
 };
 
 class QLAPI CTracer

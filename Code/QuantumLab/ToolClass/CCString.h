@@ -10,6 +10,13 @@
 #ifndef _CCSTRING_H_
 #define _CCSTRING_H_
 
+#define defineToStr(type) \
+template<> \
+inline CCString appToString(const type& content) \
+{ \
+    return CCString(std::to_string(content).c_str()); \
+}
+
 __BEGIN_NAMESPACE
 
 inline void appStrTrimLeft(TCHAR*& InStr)
@@ -684,44 +691,89 @@ inline void CCString::Init()
     m_pchData = __EmptyString.m_pchData;
 }
 
-/**
-* Did I write this many many years ago?
-*/
-inline CCString appIntToString(INT inInta)
+template<class T>
+inline CCString appToString(const T& content)
 {
-    return CCString(std::to_string(inInta).c_str());
+    CCString res;
+    res.Format(_T("%d"), content);
+    return res;
 }
 
-/**
-*
-*/
-inline CCString appIntToString(SQWORD inInta)
+defineToStr(INT)
+defineToStr(UINT)
+defineToStr(WORD)
+defineToStr(SWORD)
+defineToStr(BYTE)
+defineToStr(SBYTE)
+defineToStr(LONGLONG)
+defineToStr(ULONGLONG)
+
+defineToStr(Real)
+#if _CLG_DOUBLEFLOAT
+defineToStr(FLOAT)
+#else
+defineToStr(DOUBLE)
+#endif
+
+template<>
+inline CCString appToString(const CCString& content)
 {
-    return CCString(std::to_string(inInta).c_str());
+    return content;
 }
 
-/**
-*
-*/
-inline CCString appIntToString(QWORD inInta)
+template<>
+inline CCString appToString(const QLComplex& content)
 {
-    return CCString(std::to_string(inInta).c_str());
+    CCString sret;
+    sret.Format(_T("%2.12f %s %2.12f I"),
+        content.x,
+        content.y < F(0.0) ? _T("-") : _T("+"),
+        abs(content.y));
+    return sret;
 }
 
-/**
-*
-*/
-inline CCString appFloatToString(FLOAT inFloata)
+#if _CLG_DOUBLEFLOAT
+template<>
+inline CCString appToString(const cuComplex& content)
 {
-    return CCString(std::to_string(inFloata).c_str());
+    CCString sret;
+    sret.Format(_T("%2.12f %s %2.12f I"),
+        content.x,
+        content.y < F(0.0) ? _T("-") : _T("+"),
+        abs(content.y));
+    return sret;
 }
-
-#if !_CLG_DOUBLEFLOAT
-inline CCString appFloatToString(DOUBLE inFloata)
+#else
+template<>
+inline CCString appToString(const cuDoubleComplex& content)
 {
-    return CCString(std::to_string(inFloata).c_str());
+    CCString sret;
+    sret.Format(_T("%2.12f %s %2.12f I"),
+        content.x,
+        content.y < F(0.0) ? _T("-") : _T("+"),
+        abs(content.y));
+    return sret;
 }
 #endif
+
+template <class T>
+inline CCString appToString(const TArray<T>& arr)
+{
+    CCString sret = _T("{");
+    for (INT i = 0; i < arr.Num(); ++i)
+    {
+        if (i == arr.Num() - 1)
+        {
+            sret = sret + appToString(arr[i]);
+        }
+        else
+        {
+            sret = sret + appToString(arr[i]) + _T(", ");
+        }
+    }
+    sret = sret + _T("}");
+    return sret;
+}
 
 /**
 * The thing is, since we don't have custum types (like vector, rotation or so) to sprint

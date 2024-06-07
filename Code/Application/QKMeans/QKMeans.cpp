@@ -205,6 +205,19 @@ int main()
             }
         }
         break;
+    case EQKT_TestSimpleEncode:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("SimpleEncodeCircuitTest"), jobparam))
+            {
+                TestSimpleEncode(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("SimpleEncodeCircuitTest not found!\n"));
+            }
+        }
+        break;
     default:
         break;
     }

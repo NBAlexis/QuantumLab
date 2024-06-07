@@ -28,7 +28,9 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_TestQKNNAnsatz2D,
     EQKJ_TestQKNNAnsatz,
     EQKJ_TestQKNNAE,
-    EQKJ_TestAnomalyDetection
+    EQKJ_TestAnomalyDetection,
+
+    EQKT_TestSimpleEncode
     )
 
 
@@ -81,6 +83,11 @@ extern void TestKNN3D(CParameters& params);
 */
 extern void TestFitPointSet(CParameters& params);
 extern void TestFitPointSetAdap(CParameters& params);
+
+/**
+* Test Simple Encode Circuit
+*/
+extern void TestSimpleEncode(CParameters& params);
 
 #endif //#ifndef _QL_QKMEANS_H_
 

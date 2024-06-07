@@ -30,6 +30,7 @@
     <ClInclude Include="Circuit\Gates\PauliSimulate.h" />
     <ClInclude Include="Circuit\Gates\QuantumFFT.h" />
     <ClInclude Include="Circuit\Gates\QuantumPhaseEstimate.h" />
+    <ClInclude Include="Circuit\Gates\SimpleEncode.h" />
     <ClInclude Include="Circuit\Gates\SimpleGates.h" />
     <ClInclude Include="Circuit\Gates\SwapTest.h" />
     <ClInclude Include="Circuit\Hamitonian\CHamitonianList.h" />
@@ -114,6 +115,7 @@
   <ItemGroup>
     <CudaCompile Include="Circuit\Gates\AmplitudeEncodeCuda.cu" />
     <CudaCompile Include="Circuit\Gates\FRGate.cu" />
+    <CudaCompile Include="Circuit\Gates\SimpleEncode.cu" />
     <CudaCompile Include="Circuit\Hamitonian\CLattice2D.cu" />
     <CudaCompile Include="Circuit\Subroutine\QKMeans.cu" />
     <CudaCompile Include="ClassicalTools\GPUKmeans\GPUKmeans.cu" />

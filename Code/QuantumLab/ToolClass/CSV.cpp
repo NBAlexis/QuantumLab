@@ -32,12 +32,13 @@ QLMatrix QLAPI ReadCSV(const CCString& fileName)
         CCString sLine(buf);
         TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
 
-        if (0 != (sep.Num() & 1))
-        {
-            appCrucial(_T("CSV file format not good!\n"));
-            file.close();
-            return QLMatrix();
-        }
+        //if (0 != (sep.Num() & 1))
+        //{
+        //    appCrucial(_T("CSV file format not good!\n"));
+        //    file.close();
+        //    return QLMatrix();
+        //}
+
         if (0 != lenx)
         {
             if (leny != sep.Num())
@@ -50,17 +51,18 @@ QLMatrix QLAPI ReadCSV(const CCString& fileName)
 
         if (0 == lenx)
         {
-            leny = sep.Num() / 2;
+            leny = sep.Num();
         }
 
-        for (INT i = 0; i < leny; ++i)
+        INT halfleny = (leny + 1) / 2;
+        for (INT i = 0; i < halfleny; ++i)
         {
 #if _QL_DOUBLEFLOAT
             Real real = appStoD(sep[2 * i]);
-            Real img = appStoD(sep[2 * i + 1]);
+            Real img = ((2 * i + 1) < leny) ? appStoD(sep[2 * i + 1]) : 0.0;
 #else
             Real real = appStoF(sep[2 * i]);
-            Real img = appStoF(sep[2 * i + 1]);
+            Real img = ((2 * i + 1) < leny) ? appStoF(sep[2 * i + 1]) : 0.0f;
 #endif
             all.AddItem(_make_cuComplex(real, img));
         }
@@ -71,7 +73,7 @@ QLMatrix QLAPI ReadCSV(const CCString& fileName)
     
     file.close();
 
-    QLMatrix ret = QLMatrix::CopyCreate(static_cast<UINT>(lenx), static_cast<UINT>(leny), all.GetData());
+    QLMatrix ret = QLMatrix::CopyCreate(static_cast<UINT>(lenx), static_cast<UINT>((leny + 1) / 2), all.GetData());
     ret.Transpose();
 
     return ret;
@@ -100,21 +102,21 @@ TArray<QLComplex> QLAPI ReadCSVA(const CCString& fileName, UINT &w, UINT &h)
         CCString sLine(buf);
         TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
 
-        if (0 != (sep.Num() & 1))
-        {
-            appCrucial(_T("CSV file format not good!\n"));
-            file.close();
-            w = leny;
-            h = lenx;
-            return all;
-        }
+        //if (0 != (sep.Num() & 1))
+        //{
+        //    appCrucial(_T("CSV file format not good!\n"));
+        //    file.close();
+        //    w = leny;
+        //    h = lenx;
+        //    return all;
+        //}
         if (0 != lenx)
         {
-            if (leny * 2 != sep.Num())
+            if (leny != sep.Num())
             {
                 appCrucial(_T("CSV file format not good!\n"));
                 file.close();
-                w = leny;
+                w = (leny + 1) / 2;
                 h = lenx;
                 return all;
             }
@@ -122,17 +124,17 @@ TArray<QLComplex> QLAPI ReadCSVA(const CCString& fileName, UINT &w, UINT &h)
 
         if (0 == lenx)
         {
-            leny = sep.Num() / 2;
+            leny = sep.Num();
         }
-
-        for (INT i = 0; i < leny; ++i)
+        INT halfleny = (leny + 1) / 2;
+        for (INT i = 0; i < halfleny; ++i)
         {
 #if _QL_DOUBLEFLOAT
             Real real = appStoD(sep[2 * i]);
-            Real img = appStoD(sep[2 * i + 1]);
+            Real img = ((2 * i + 1) < leny) ? appStoD(sep[2 * i + 1]) : 0.0;
 #else
             Real real = appStoF(sep[2 * i]);
-            Real img = appStoF(sep[2 * i + 1]);
+            Real img = ((2 * i + 1) < leny) ? appStoF(sep[2 * i + 1]) : 0.0f;
 #endif
             all.AddItem(_make_cuComplex(real, img));
         }
@@ -143,7 +145,7 @@ TArray<QLComplex> QLAPI ReadCSVA(const CCString& fileName, UINT &w, UINT &h)
 
     file.close();
 
-    w = leny;
+    w = (leny + 1) / 2;
     h = lenx;
     return all;
 }

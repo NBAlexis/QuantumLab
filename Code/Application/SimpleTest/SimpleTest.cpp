@@ -576,22 +576,17 @@ void TestCSDGate()
 void TestZeroStartAmplitudeEncode()
 {
     TArray<Real> v;
-    v.AddItem(F(0.0000000001));
-    v.AddItem(F(0.0000000001));
-    v.AddItem(F(0.0000000001));
+    v.AddItem(F(0.0));
+    v.AddItem(F(0.0));
+    v.AddItem(F(0.0));
     for (INT i = 0; i < 29; ++i)
     {
         v.AddItem((i + 1) * F(0.1));
     }
 
-    QLGate ae = AmplitudeEncodeReal(v);
-
-    QLSimulatorParametersVector param;
-    param.m_byQubitCount = 5;
-    param.m_MasterGate = ae;
-
-    QLSimulatorVector sim;
-    sim.Simulate(&param);
+    QLGate ae = AmplitudeEncodeOneVectorReal(v);
+    QLMatrix res = QLSimulatorVector::ShowState(ae);
+    res.Print(_T("res"));
 }
 
 void TestQFFT()
@@ -604,7 +599,7 @@ void TestQFFT()
     fft = fft / _sqrt(fft.VectorDot(fft).x);
     fft.Print(_T("fft"));
 
-    QLGate ae = AmplitudeEncode(m.ToVector());
+    QLGate ae = AmplitudeEncodeOneVector(m.ToVector());
 
     QLGate fftg = QuantumFFTGate(3);
 
@@ -617,12 +612,8 @@ void TestQFFT()
     all.AppendGate(ae, allqubits);
     all.AppendGate(fftg, allqubits);
 
-    QLSimulatorParametersVector param;
-    param.m_byQubitCount = 3;
-    param.m_MasterGate = all;
-
-    QLSimulatorVector sim;
-    sim.Simulate(&param);
+    QLMatrix res = QLSimulatorVector::ShowState(all);
+    res.Print(_T("res"));
 }
 
 void TestQFFT2()
@@ -1242,7 +1233,7 @@ void TestMatrixPower()
     y = y / _sqrt(y.VectorDot(y).x);
     y.Print("y");
 
-    QLGate y_gate = AmplitudeEncode(y.ToVector());
+    QLGate y_gate = AmplitudeEncodeOneVector(y.ToVector());
 
     for (INT i = -2; i < 3; ++i)
     {
@@ -1321,15 +1312,15 @@ void TestZeroEigenMatrixPower()
     BYTE phaseBit = 6;
 
     TArray<Real> yr;
-    yr.AddItem(F(0.0000000001));
-    yr.AddItem(F(0.0000000001));
-    yr.AddItem(F(0.0000000001));
+    yr.AddItem(F(0.0));
+    yr.AddItem(F(0.0));
+    yr.AddItem(F(0.0));
     for (INT i = 0; i < 5; ++i)
     {
         yr.AddItem((i + 1) * F(0.1));
     }
 
-    QLGate y_gate = AmplitudeEncodeReal(yr);
+    QLGate y_gate = AmplitudeEncodeOneVectorReal(yr);
     QLComplex yc[8];
     for (INT i = 0; i < 8; ++i)
     {
@@ -1348,7 +1339,7 @@ void TestZeroEigenMatrixPower()
     y1.AddItem(F(0.0));
     y1.AddItem(F(0.0));
     y1.AddItem(F(0.0));
-    QLGate y1_gate = AmplitudeEncodeReal(y1);
+    QLGate y1_gate = AmplitudeEncodeOneVectorReal(y1);
 
     QLComplex yc1[8];
     for (INT i = 0; i < 8; ++i)
@@ -1485,7 +1476,12 @@ int main()
 
     //ShowMatrixOfGate();
 
-    TestAmplitudeEncodeOneRealVector();
+    //TestAmplitudeEncodeOneRealVector();
+
+    //TestZeroStartAmplitudeEncode();
+    //TestQFFT();
+    TestZeroEigenMatrixPower();
+    //TestMatrixPower();
 
     return 0;
 }

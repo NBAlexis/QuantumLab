@@ -326,6 +326,9 @@
     <ClInclude Include="Circuit\Ansatz\CTwoLocalAddaptive.h">
       <Filter>Circuit\Ansatz</Filter>
     </ClInclude>
+    <ClInclude Include="Circuit\Gates\SimpleEncode.h">
+      <Filter>Circuit\Gates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="ClassicalTools\QLMatrix.cu">
@@ -353,6 +356,9 @@
       <Filter>ClassicalTools</Filter>
     </CudaCompile>
     <CudaCompile Include="Circuit\Gates\FRGate.cu">
+      <Filter>Circuit\Gates</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Circuit\Gates\SimpleEncode.cu">
       <Filter>Circuit\Gates</Filter>
     </CudaCompile>
   </ItemGroup>

@@ -13,7 +13,8 @@
 # EQKJ_TestQKNNAnsatz2D
 # EQKJ_TestQKNNAnsatz
 # EQKJ_TestQKNNAE
-KMeansJob : EQKJ_TestFitPointSetAdap
+# EQKT_TestSimpleEncode
+KMeansJob : EQKT_TestSimpleEncode
 
 # ########################
 # GPU Kmeans
@@ -78,11 +79,11 @@ QKNN3D:
 
 FitWaveFunction:
 
-    PointFile : F:\Builds\QKMeans-02-10\Release\gqgcwf1500-1024.csv
-    AnsatzFile : F:\Builds\QKMeans-02-10\Release\angqgcwf1500-1024-ad.csv
-    HistoryFile : F:\Builds\QKMeans-02-10\Release\histgqgcwf1500-1024-ad.csv
-    AnsatzLevel : 5
-    MaxStep : 10000
+    PointFile : train-4096.csv
+    AnsatzFile : an-train-4096-l3-5000.csv
+    HistoryFile : hist-train-4096-l3-5000.csv
+    AnsatzLevel : 3
+    MaxStep : 5000
     MaxLayer : 100
     LearnRate : 0.01
     Goal : 0.01
@@ -100,14 +101,15 @@ QKNN2DAnsatz:
 
 QKNNAnsatz:
 
-    PointSet : gqgcwf1500.csv
-    Ansatz : F:\Builds\QKMeans-02-10\Release\anaqgcwf1500-512-l50.csv
-    TestSet : F:\Builds\QKMeans-02-10\Release\FT7-1500-4.csv
-    TestSave : F:\Builds\QKMeans-02-10\Release\FT7-1500-4-l50.csv
+    PointSet : train-4096.csv
+    Ansatz : an-train-1024-l5-2000.csv
+    TestSet : validation-30000.csv
+    TestSave : validation-30000-4096-ae.csv
     IsAdaptive : 0
-    AnsatzLevel : 50
+    AnsatzLevel : 5
     AnsatzQubits : 12
-    Repeat : 1000
+    NumberOfMeasure : 2
+    Repeat : 100
 
 QAnomaly2D:
 
@@ -124,6 +126,14 @@ QAnomaly3D:
     PointFile : p3grid.csv
     ReferenceFile : p3gaussian.csv
     BuildRateSave : brgaussian.csv
+
+
+# ########################
+# Simple encode test
+# ########################
+SimpleEncodeCircuitTest:
+
+    FileName : testsimpleencode.csv
 
 # ########################
 # Quantum Kmeans

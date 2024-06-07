@@ -36,6 +36,7 @@ TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComple
         param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
         param2.m_MasterGate = zerotest;
         param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
+        //zerotest.DebugPrint(3);
     }
     else
     {
@@ -43,8 +44,9 @@ TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComple
         param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
         param2.m_MasterGate = zerotest;
         param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
+        //zerotest.DebugPrint(3);
     }
-
+    
     TArray<UINT> gates = param2.m_MasterGate.SummarizeGateCounts();
     appGeneral(_T("Single: %d, TwoQubit: %d, Noise: %d, Measure: %d, Other: %d\n"), gates[0], gates[1], gates[2], gates[3], gates[4]);
 

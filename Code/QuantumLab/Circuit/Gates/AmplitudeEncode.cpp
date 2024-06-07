@@ -213,30 +213,30 @@ void ApplyPhase(QLGate& gate, const TArray<QLComplex>& v, UINT lenPower)
     }
 }
 
-QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v)
-{
-    UINT vLengthPower = 0;
-    TArray<QLComplex> varray = NormalizeV(v, vLengthPower);
-
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(vLengthPower));
-    ret.m_sName = _T("AmpEnc");
-    MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotations(varray, vLengthPower), vLengthPower);
-    ApplyPhase(ret, varray, vLengthPower);
-    return ret;
-}
-
-QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v)
-{
-    UINT vLengthPower = 0;
-    TArray<Real> varray = NormalizeVReal(v, vLengthPower);
-
-    QLGate ret;
-    ret.AddQubits(static_cast<BYTE>(vLengthPower));
-    ret.m_sName = _T("AmpEnc");
-    MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotationsReal(varray, vLengthPower), vLengthPower);
-    return ret;
-}
+//QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v)
+//{
+//    UINT vLengthPower = 0;
+//    TArray<QLComplex> varray = NormalizeV(v, vLengthPower);
+//
+//    QLGate ret;
+//    ret.AddQubits(static_cast<BYTE>(vLengthPower));
+//    ret.m_sName = _T("AmpEnc");
+//    MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotations(varray, vLengthPower), vLengthPower);
+//    ApplyPhase(ret, varray, vLengthPower);
+//    return ret;
+//}
+//
+//QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v)
+//{
+//    UINT vLengthPower = 0;
+//    TArray<Real> varray = NormalizeVReal(v, vLengthPower);
+//
+//    QLGate ret;
+//    ret.AddQubits(static_cast<BYTE>(vLengthPower));
+//    ret.m_sName = _T("AmpEnc");
+//    MakeCircuitWithRotations(ret, CalculateVectorAbsoluteRotationsReal(varray, vLengthPower), vLengthPower);
+//    return ret;
+//}
 
 __END_NAMESPACE
 

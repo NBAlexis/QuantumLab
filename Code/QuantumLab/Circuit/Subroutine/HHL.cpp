@@ -16,6 +16,7 @@ QLGate QLAPI HHLGate(const QLMatrix& h, const TArray<QLComplex>& y, UINT trotter
 {
     UINT len;
     TArray<QLComplex> normalizedY = NormalizeV(y, len);
+
     Real t = PI / maxAbsEigenValue;
     Real rotationC = F(-0.000001) + PI2 / (1U << phaseQubitNum) / t;
 
@@ -24,7 +25,7 @@ QLGate QLAPI HHLGate(const QLMatrix& h, const TArray<QLComplex>& y, UINT trotter
     hhlGate.m_sName = _T("HHL");
 
     //========= step1: put y ==============
-    QLGate yGate = AmplitudeEncode(normalizedY);
+    QLGate yGate = AmplitudeEncodeOneVector(normalizedY);
     TArray<BYTE> yBits;
     for (UINT i = 0; i < len; ++i)
     {
@@ -103,7 +104,7 @@ QLGate QLAPI HermitianMatrixMultiply(const QLMatrix& h, const TArray<QLComplex>&
     hhlGate.m_sName = _T("HerMult");
 
     //========= step1: put y ==============
-    QLGate yGate = AmplitudeEncode(normalizedY);
+    QLGate yGate = AmplitudeEncodeOneVector(normalizedY);
     TArray<BYTE> yBits;
     for (UINT i = 0; i < len; ++i)
     {

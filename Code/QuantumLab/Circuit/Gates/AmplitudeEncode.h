@@ -28,10 +28,10 @@ extern TArray<QLComplex> QLAPI NormalizeV(const TArray<QLComplex>& v, UINT& lenP
 extern TArray<Real> QLAPI NormalizeVReal(const TArray<Real>& v, UINT& lenPower);
 
 //[[deprecated("use AmplitudeEncodeOneVector instead")]]
-extern QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v);
+//extern QLGate QLAPI AmplitudeEncode(const TArray<QLComplex>& v);
 
 //[[deprecated("use AmplitudeEncodeOneVectorReal instead")]]
-extern QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v);
+//extern QLGate QLAPI AmplitudeEncodeReal(const TArray<Real>& v);
 
 //=============================================================================
 // rewrite amplitude encode
@@ -87,6 +87,40 @@ extern QLGate QLAPI ExchangeToYGate(UINT vectorCountPower, UINT vectorPower, Rea
 */
 extern QLGate QLAPI AmplitudeEncodeOneVector(const QLComplex* hostv, UINT vectorPower, UBOOL bHasPhase);
 extern QLGate QLAPI AmplitudeEncodeOneVectorReal(const QLComplex* hostv, UINT vectorPower);
+extern QLGate QLAPI AmplitudeEncodeOneVectorReal(const Real* hostv, UINT vectorPower);
+
+static inline QLGate AmplitudeEncodeOneVector(TArray<QLComplex> hostv, UBOOL bHasPhase = TRUE)
+{
+    const UINT vectorPower = MostSignificantPowerTwo(hostv.Num());
+    const UINT fulllength = 1UL << vectorPower;
+    for (UINT i = static_cast<UINT>(hostv.Num()); i < fulllength; ++i)
+    {
+        hostv.AddItem(_zeroc);
+    }
+    return AmplitudeEncodeOneVector(hostv.GetData(), vectorPower, bHasPhase);
+}
+
+static inline  QLGate AmplitudeEncodeOneVectorReal(TArray<QLComplex> hostv)
+{
+    const UINT vectorPower = MostSignificantPowerTwo(hostv.Num());
+    const UINT fulllength = 1UL << vectorPower;
+    for (UINT i = static_cast<UINT>(hostv.Num()); i < fulllength; ++i)
+    {
+        hostv.AddItem(_zeroc);
+    }
+    return AmplitudeEncodeOneVectorReal(hostv.GetData(), vectorPower);
+}
+
+static inline  QLGate AmplitudeEncodeOneVectorReal(TArray<Real> hostv)
+{
+    const UINT vectorPower = MostSignificantPowerTwo(hostv.Num());
+    const UINT fulllength = 1UL << vectorPower;
+    for (UINT i = static_cast<UINT>(hostv.Num()); i < fulllength; ++i)
+    {
+        hostv.AddItem(F(0.0));
+    }
+    return AmplitudeEncodeOneVectorReal(hostv.GetData(), vectorPower);
+}
 
 /**
 * the gate to build |i>|phi_i>

@@ -749,6 +749,31 @@ QLGate QLAPI AmplitudeEncodeOneVectorReal(const QLComplex* hostv, UINT vectorPow
     return ret;
 }
 
+QLGate QLAPI AmplitudeEncodeOneVectorReal(const Real* hostv, UINT vectorPower)
+{
+    UINT vLength = 1U << vectorPower;
+
+    Real* absBuffer = NULL;
+    Real* YBuffer = NULL;
+    checkCudaErrors(cudaMalloc((void**)&absBuffer, sizeof(Real) * vLength));
+    checkCudaErrors(cudaMalloc((void**)&YBuffer, sizeof(Real) * vLength));
+    checkCudaErrors(cudaMemcpy(absBuffer, hostv, sizeof(Real) * vLength, cudaMemcpyHostToDevice));
+
+    Real* YHostBuffer = (Real*)malloc(sizeof(Real) * vLength);
+
+    CalculateDegreesReal(absBuffer, 1, vectorPower, YBuffer);
+    checkCudaErrors(cudaMemcpy(YHostBuffer, YBuffer, sizeof(Real) * vLength, cudaMemcpyDeviceToHost));
+
+    checkCudaErrors(cudaFree(absBuffer));
+    checkCudaErrors(cudaFree(YBuffer));
+
+    QLGate ret = ExchangeToYGate(vectorPower, YHostBuffer);
+
+    free(YHostBuffer);
+
+    return ret;
+}
+
 QLGate QLAPI AmplitudeEncodeVectors(const QLComplex* hostv, UINT vectorCountPower, UINT vectorPower, UBOOL bHasPhase)
 {
     UINT vLength = 1U << vectorPower;

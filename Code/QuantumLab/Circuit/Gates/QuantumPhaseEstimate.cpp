@@ -134,7 +134,7 @@ QLGate QLAPI BuildImprovedQPEInitialState(BYTE byQubit)
         coeffs.AddItem(_sqrt(2 / T) * _sin(PI * (i + F(0.5)) / T));
     }
 
-    QLGate ret = AmplitudeEncodeReal(coeffs);
+    QLGate ret = AmplitudeEncodeOneVectorReal(coeffs);
     ret.m_sName = _T("IQPEInit");
     return ret;
 }

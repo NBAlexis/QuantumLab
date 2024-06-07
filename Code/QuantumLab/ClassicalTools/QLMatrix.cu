@@ -1989,7 +1989,12 @@ QLMatrix QLMatrix::VectorFFT(UBOOL bForward) const
     const cufftResult planRes = cufftPlanMany(&plan, 1, n,
         n, 1, 1,
         n, 1, 1,
-        CUFFT_Z2Z, 1);
+#if _QL_DOUBLEFLOAT
+        CUFFT_Z2Z, 
+#else
+        CUFFT_C2C,
+#endif
+        1);
 
     if (CUFFT_SUCCESS != planRes)
     {

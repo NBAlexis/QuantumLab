@@ -196,6 +196,39 @@ void TestCircuitBuildStateOnce(CParameters& params)
     QLQuantumKmeans::TestCircuitBuildStateOnce(vim, um, VectorCount, VectorDim);
 }
 
+/**
+* 
+* {0.1668 - 0.1084 I, 0.1924 - 0.2479 I, 0.1216 + 0.0238 I, 0.4872 + 0.1737 I, -0.2941 - 0.2460 I, 0.1191 + 0.2021 I, -0.2198 + 0.2187 I, 0.2594 + 0.1305 I, -0.0504 + 0.0619 I, -0.2192 + 0.0554 I, -0.0418 + 0.0981 I, 0.0835 + 0.1440 I, 0.0339 - 0.1325 I, -0.1244 + 0.1189 I, 0.1807 - 0.0836 I, -0.1026 - 0.0387 I}}
+* 
+* {0.1066, 0.1075, 0.0089, -0.5573, -0.1235, -0.2695, 0.2929, -0.0915, -0.0469, -0.5079, 0.1105, -0.1569, 0.2621, 0.1746, 0.1549, -0.2535}
+*/
+void TestSimpleEncode(CParameters& params)
+{
+    CCString sValues;
+
+    CCString sFileToLoad;
+    __FetchStringWithDefault(_T("FileName"), _T(""));
+    sFileToLoad = sValues;
+
+    UINT w = 0;
+    UINT h = 0;
+    TArray<QLComplex> data = ReadCSVA(sFileToLoad, w, h);
+
+    QLComplex onev[6];
+    memcpy(onev, data.GetData() + 6, sizeof(QLComplex) * 6);
+    QLGate simpleencodeOne = SimpleEncodeOneVector(onev, 4, 6);
+    //QLGate simpleencodeOne = SimpleEncodeVectors(data.GetData(), 5, 4, 6);
+
+    simpleencodeOne.DebugPrint(1);
+
+    QLMatrix res = QLSimulatorVector::ShowState(simpleencodeOne);
+    res.Print(_T("res"));
+
+
+    //appGeneral(_T("%s"), appToString(data));
+
+}
+
 //=============================================================================
 // END OF FILE
 //=============================================================================

@@ -139,6 +139,10 @@ void TestKNNAnsatz(CParameters& params)
     __FetchIntWithDefault(_T("AnsatzLevel"), 1);
     uiAnsatzLevel = static_cast<UINT>(iValues);
 
+    BYTE uiMeasureBits = 1;
+    __FetchIntWithDefault(_T("NumberOfMeasure"), 1);
+    uiMeasureBits = static_cast<BYTE>(iValues);
+
     __FetchIntWithDefault(_T("IsAdaptive"), 0);
     UBOOL bIsAdap = (iValues != 0);
 
@@ -146,7 +150,7 @@ void TestKNNAnsatz(CParameters& params)
     __FetchIntWithDefault(_T("Repeat"), 2);
     uiRepeat = static_cast<UINT>(iValues);
 
-    QLQuantumKmeans::KNNAnsatz(sAnsatz, sTestPoints, sTestingClusters, ansatzQubit, bIsAdap, uiAnsatzLevel, uiRepeat);
+    QLQuantumKmeans::KNNAnsatz(sAnsatz, sTestPoints, sTestingClusters, ansatzQubit, uiMeasureBits, bIsAdap, uiAnsatzLevel, uiRepeat);
 }
 
 void TestKNNAE(CParameters& params)
@@ -166,11 +170,15 @@ void TestKNNAE(CParameters& params)
     __FetchStringWithDefault(_T("TestSave"), _T(""));
     sTestingClusters = sValues;
 
+    BYTE uiMeasureBits = 1;
+    __FetchIntWithDefault(_T("NumberOfMeasure"), 1);
+    uiMeasureBits = static_cast<BYTE>(iValues);
+
     UINT uiRepeat = 100;
     __FetchIntWithDefault(_T("Repeat"), 2);
     uiRepeat = static_cast<UINT>(iValues);
 
-    QLQuantumKmeans::KNNAE(sPoints, sTestPoints, sTestingClusters, uiRepeat);
+    QLQuantumKmeans::KNNAE(sPoints, sTestPoints, sTestingClusters, uiMeasureBits, uiRepeat);
 }
 
 void TestKNN3D(CParameters& params)

@@ -72,6 +72,7 @@
 #include "Circuit/Gates/FRGate.h"
 #include "Circuit/Gates/CSDDecompose.h"
 #include "Circuit/Gates/AmplitudeEncode.h"
+#include "Circuit/Gates/SimpleEncode.h"
 #include "Circuit/Gates/QuantumFFT.h"
 #include "Circuit/Gates/QuantumPhaseEstimate.h"
 #include "Circuit/Gates/PauliSimulate.h"
