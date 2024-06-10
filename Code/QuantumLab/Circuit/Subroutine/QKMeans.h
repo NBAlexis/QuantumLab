@@ -71,6 +71,8 @@ public:
 
     static void KNNAE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, UINT uiRepeat);
 
+    static void KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, UINT uiRepeat);
+
     static void QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate, 
         Real minX, Real maxX, Real minY, Real maxY);
 

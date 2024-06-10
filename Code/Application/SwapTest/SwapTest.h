@@ -13,6 +13,12 @@
 
 #include "QuantumLab.h"
 
+__DEFINE_ENUM(EDotType,
+    EDT_AmplitudeEncodeComplex,
+    EDT_AmplitudeEncodeReal,
+    EDT_SimpleEncode
+)
+
 #endif //#ifndef _APP_SWAP_TEST_H_
 
 //=============================================================================

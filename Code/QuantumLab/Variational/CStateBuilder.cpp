@@ -89,6 +89,30 @@ void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const 
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }
 
+void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits,
+    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal)
+{
+    UINT w, h;
+    TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
+    //UINT wpower = MostSignificantPowerTwo(w);
+    UINT hpower = MostSignificantPowerTwo(h);
+
+    QLGate segate = SimpleEncodeVectors(points.GetData(), static_cast<BYTE>(hpower), byEncodeQubits, w);
+    BYTE byQubit = static_cast<BYTE>(segate.m_lstQubits.Num());
+
+    ESingleLayer eSingle = ESingleLayer::RYRZ;
+    if (bOnlyReal)
+    {
+        eSingle = ESingleLayer::RY;
+    }
+
+    CTwoLocal ansatz(byQubit, uiLevel, eSingle, ELinkLayer::CZ, ELinkStyle::SCA);
+    CAdam optimizer(&ansatz, NULL, fLearnRate);
+    CStateBuilder builder(segate, fGoal);
+    TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
+    SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
+}
+
 void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile,
     Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT uiAdaptiveWait, Real fAdaptiveEps, UBOOL bOnlyReal)
 {

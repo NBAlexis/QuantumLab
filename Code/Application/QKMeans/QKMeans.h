@@ -22,12 +22,14 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_TestQKNN2D,
     EQKJ_TestQKNN3D,
     EQKJ_TestFitPointSet,
+    EQKJ_TestFitPointSetSE,
     EQKJ_TestFitPointSetAdap,
     EQKJ_QAnomaly2D,
     EQKJ_QAnomaly3D,
     EQKJ_TestQKNNAnsatz2D,
     EQKJ_TestQKNNAnsatz,
     EQKJ_TestQKNNAE,
+    EQKJ_TestQKNNSE,
     EQKJ_TestAnomalyDetection,
 
     EQKT_TestSimpleEncode
@@ -61,6 +63,8 @@ extern void TestKNNAnsatz(CParameters& params);
 
 extern void TestKNNAE(CParameters& params);
 
+extern void TestKNNSE(CParameters& params);
+
 
 /**
 * test whether the circuit can build the correct state
@@ -82,6 +86,7 @@ extern void TestKNN3D(CParameters& params);
 * Fit point set
 */
 extern void TestFitPointSet(CParameters& params);
+extern void TestFitPointSetSE(CParameters& params);
 extern void TestFitPointSetAdap(CParameters& params);
 
 /**

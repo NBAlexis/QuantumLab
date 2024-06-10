@@ -28,6 +28,7 @@ extern QLGate QLAPI ZeroTest(TArray<QLComplex> v1, TArray<QLComplex> v2);
 */
 extern QLGate QLAPI ZeroTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2);
 
+extern QLGate QLAPI SimpleZeroTest(TArray<QLComplex> v1, TArray<QLComplex> v2, BYTE byEncodeBits);
 
 __END_NAMESPACE
 

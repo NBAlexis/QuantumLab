@@ -127,6 +127,19 @@ int main()
             }
         }
         break;
+    case EQKJ_TestFitPointSetSE:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
+            {
+                TestFitPointSetSE(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("FitWaveFunction not found!\n"));
+            }
+        }
+        break;
     case EQKJ_TestFitPointSetAdap:
         {
             CParameters jobparam;
@@ -201,7 +214,20 @@ int main()
             }
             else
             {
-                appCrucial(_T("QKNN2DAnsatz not found!\n"));
+                appCrucial(_T("QKNNAnsatz not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_TestQKNNSE:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
+            {
+                TestKNNSE(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QKNNAnsatz not found!\n"));
             }
         }
         break;

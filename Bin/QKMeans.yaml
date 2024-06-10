@@ -7,6 +7,7 @@
 # EQKJ_TestQKNN2D
 # EQKJ_TestQKNN3D
 # EQKJ_TestFitPointSet
+# EQKJ_TestFitPointSetSE
 # EQKJ_TestFitPointSetAdap
 # EQKJ_QAnomaly2D
 # EQKJ_QAnomaly3D
@@ -14,7 +15,8 @@
 # EQKJ_TestQKNNAnsatz
 # EQKJ_TestQKNNAE
 # EQKT_TestSimpleEncode
-KMeansJob : EQKT_TestSimpleEncode
+# EQKJ_TestQKNNSE
+KMeansJob : EQKJ_TestQKNNAnsatz
 
 # ########################
 # GPU Kmeans
@@ -79,17 +81,18 @@ QKNN3D:
 
 FitWaveFunction:
 
-    PointFile : train-4096.csv
-    AnsatzFile : an-train-4096-l3-5000.csv
-    HistoryFile : hist-train-4096-l3-5000.csv
-    AnsatzLevel : 3
-    MaxStep : 5000
+    PointFile : train-16384.csv
+    AnsatzFile : an-train-16384-l5-10000.csv
+    HistoryFile : hist-train-16384-l5-10000.csv
+    AnsatzLevel : 5
+    MaxStep : 10000
     MaxLayer : 100
-    LearnRate : 0.01
+    LearnRate : 0.002
     Goal : 0.01
     OnlyReal : 0
     AdaptiveWait : 200
     AdaptiveEps : 0.001
+    NumberOfEncode : 4
 
 QKNN2DAnsatz:
 
@@ -102,13 +105,14 @@ QKNN2DAnsatz:
 QKNNAnsatz:
 
     PointSet : train-4096.csv
-    Ansatz : an-train-1024-l5-2000.csv
+    Ansatz : an-train-16384-l5-10000.csv
     TestSet : validation-30000.csv
-    TestSave : validation-30000-4096-ae.csv
+    TestSave : validation-30000-16384-l5.csv
     IsAdaptive : 0
     AnsatzLevel : 5
-    AnsatzQubits : 12
+    AnsatzQubits : 19
     NumberOfMeasure : 2
+    NumberOfEncode : 4
     Repeat : 100
 
 QAnomaly2D:

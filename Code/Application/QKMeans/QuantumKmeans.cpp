@@ -181,6 +181,38 @@ void TestKNNAE(CParameters& params)
     QLQuantumKmeans::KNNAE(sPoints, sTestPoints, sTestingClusters, uiMeasureBits, uiRepeat);
 }
 
+void TestKNNSE(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+
+    CCString sPoints;
+    __FetchStringWithDefault(_T("PointSet"), _T(""));
+    sPoints = sValues;
+
+    CCString sTestPoints;
+    __FetchStringWithDefault(_T("TestSet"), _T(""));
+    sTestPoints = sValues;
+
+    CCString sTestingClusters;
+    __FetchStringWithDefault(_T("TestSave"), _T(""));
+    sTestingClusters = sValues;
+
+    BYTE uiMeasureBits = 1;
+    __FetchIntWithDefault(_T("NumberOfMeasure"), 1);
+    uiMeasureBits = static_cast<BYTE>(iValues);
+
+    BYTE uiEncodeBits = 4;
+    __FetchIntWithDefault(_T("NumberOfEncode"), 4);
+    uiEncodeBits = static_cast<BYTE>(iValues);
+
+    UINT uiRepeat = 100;
+    __FetchIntWithDefault(_T("Repeat"), 2);
+    uiRepeat = static_cast<UINT>(iValues);
+
+    QLQuantumKmeans::KNNSE(sPoints, sTestPoints, sTestingClusters, uiMeasureBits, uiEncodeBits, uiRepeat);
+}
+
 void TestKNN3D(CParameters& params)
 {
     CCString sValues;

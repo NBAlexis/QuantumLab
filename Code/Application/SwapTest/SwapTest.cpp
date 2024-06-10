@@ -27,24 +27,40 @@ TArray<QLComplex> ExchangeComplexBuffer(const TArray<QLComplex>& row)
     return ret;
 }
 
-TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, UBOOL bComplex, const QLSimulatorParametersDensityMatrix& param, INT iRealMeasure, UBOOL bEnableNoise)
+TArray<Real> QuantumOverlap(const TArray<QLComplex>& row1, const TArray<QLComplex>& row2, EDotType edt, BYTE byEncodeQubit, const QLSimulatorParametersDensityMatrix& param, INT iRealMeasure, UBOOL bEnableNoise)
 {
     QLSimulatorParametersDensityMatrix param2 = param;
-    if (bComplex)
+    switch (edt)
     {
-        QLGate zerotest = ZeroTest(row1, row2);
-        param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
-        param2.m_MasterGate = zerotest;
-        param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
-        //zerotest.DebugPrint(3);
-    }
-    else
-    {
-        QLGate zerotest = ZeroTestReal(row1, row2);
-        param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
-        param2.m_MasterGate = zerotest;
-        param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
-        //zerotest.DebugPrint(3);
+    case EDT_AmplitudeEncodeComplex:
+        {
+            QLGate zerotest = ZeroTest(row1, row2);
+            param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
+            param2.m_MasterGate = zerotest;
+            param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
+        }
+        break;
+    case EDT_AmplitudeEncodeReal:
+        {
+            QLGate zerotest = ZeroTestReal(row1, row2);
+            param2.m_byQubitCount = static_cast<BYTE>(zerotest.m_lstQubits.Num());
+            param2.m_MasterGate = zerotest;
+            param2.m_lstMeasureQubits.Append(zerotest.m_lstQubits);
+        }
+        break;
+    case EDT_SimpleEncode:
+        {
+            QLGate simpleencodetest = SimpleZeroTest(row1, row2, byEncodeQubit);
+            param2.m_byQubitCount = static_cast<BYTE>(simpleencodetest.m_lstQubits.Num());
+            param2.m_MasterGate = simpleencodetest;
+            param2.m_lstMeasureQubits.Append(simpleencodetest.m_lstQubits);
+
+            //simpleencodetest.DebugPrint(2);
+        }
+        break;
+    default:
+        appCrucial(_T("DotType not implemented!\n"));
+        break;
     }
     
     TArray<UINT> gates = param2.m_MasterGate.SummarizeGateCounts();
@@ -154,6 +170,9 @@ int main()
     Real fValues = F(0.0);
     INT iValues = 0;
 
+    __FetchIntWithDefault(_T("SimpleEncodeQubits"), 3);
+    BYTE bySimpleEncodeQubits = static_cast<BYTE>(iValues);
+
     __FetchRealWithDefault(_T("DampingAfterGate"), F(0.0));
     simulateParam.m_fDampingAfterGate = fValues;
     __FetchRealWithDefault(_T("DepolarisingAfterGate"), F(0.0));
@@ -180,14 +199,28 @@ int main()
     simulateParam.m_iMeasureTimes = -1;
     INT iRealMeasure = iValues;
 
-    __FetchIntWithDefault(_T("Complex"), 1);
-    UBOOL bComplex = (0 != iValues);
+    //__FetchIntWithDefault(_T("Complex"), 1);
+    //UBOOL bComplex = (0 != iValues);
 
     __FetchIntWithDefault(_T("EnableClassical"), 1);
     UBOOL bHasClassical = (0 != iValues);
 
     __FetchIntWithDefault(_T("EnableNoise"), 1);
     UBOOL bEnableNoise = (0 != iValues);
+
+    __FetchStringWithDefault(_T("DotType"), _T("EDT_AmplitudeEncodeComplex"));
+    EDotType edt = __STRING_TO_ENUM(EDotType, sValues);
+
+    UBOOL bComplex = FALSE;
+    if (EDT_AmplitudeEncodeComplex == edt
+     || EDT_SimpleEncode == edt)
+    {
+        bComplex = TRUE;
+    }
+    if (EDT_SimpleEncode == edt)
+    {
+        bHasClassical = FALSE;
+    }
 
     QLComplex* expectedoutput = NULL;
     if (bHasClassical)
@@ -259,7 +292,7 @@ int main()
                     bSameFile ? ((m1.Y() * m1.Y() - m1.Y()) / 2) : m1.Y() * m2.Y());
             }
 
-            TArray<Real> quantumRes = QuantumOverlap(v1, v2, bComplex, simulateParam, iRealMeasure, bEnableNoise);
+            TArray<Real> quantumRes = QuantumOverlap(v1, v2, edt, bySimpleEncodeQubits, simulateParam, iRealMeasure, bEnableNoise);
             
             output[idx1] = _make_cuComplex(quantumRes[2], F(0.0));
             averagePurity[idx1] = _make_cuComplex(quantumRes[0], F(0.0));
@@ -278,7 +311,7 @@ int main()
         if (!sValues.IsEmpty())
         {
             SaveCSVR(expm, sValues);
-            appGeneral(_T("%f file saved...\n"), sValues.c_str());
+            appGeneral(_T("%s file saved...\n"), sValues.c_str());
         }
     }
     
@@ -297,19 +330,19 @@ int main()
     if (!sValues.IsEmpty())
     {
         SaveCSVR(resm, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues.c_str());
+        appGeneral(_T("%s file saved...\n"), sValues.c_str());
     }
     __FetchStringWithDefault(_T("AveragePuritySaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {
         SaveCSVR(purity, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues.c_str());
+        appGeneral(_T("%s file saved...\n"), sValues.c_str());
     }
     __FetchStringWithDefault(_T("AverageFidelitySaveFileName"), _T(""));
     if (!sValues.IsEmpty())
     {
         SaveCSVR(fidelity, sValues);
-        appGeneral(_T("%f file saved...\n"), sValues.c_str());
+        appGeneral(_T("%s file saved...\n"), sValues.c_str());
     }
 
     return 0;

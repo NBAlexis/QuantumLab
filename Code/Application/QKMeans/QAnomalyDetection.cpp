@@ -51,6 +51,51 @@ void TestFitPointSet(CParameters& params)
     FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
 }
 
+void TestFitPointSetSE(CParameters& params)
+{
+    CCString sValues;
+    INT iValues;
+    Real fValues;
+
+    CCString sTrainingPoints;
+    __FetchStringWithDefault(_T("PointFile"), _T(""));
+    sTrainingPoints = sValues;
+
+    CCString sAnsatzFile;
+    __FetchStringWithDefault(_T("AnsatzFile"), _T(""));
+    sAnsatzFile = sValues;
+
+    CCString sHistory;
+    __FetchStringWithDefault(_T("HistoryFile"), _T(""));
+    sHistory = sValues;
+
+    BYTE uiEncodeBits = 4;
+    __FetchIntWithDefault(_T("NumberOfEncode"), 4);
+    uiEncodeBits = static_cast<BYTE>(iValues);
+
+    UINT uiLevel = 1;
+    __FetchIntWithDefault(_T("AnsatzLevel"), 2);
+    uiLevel = static_cast<UINT>(iValues);
+
+    UINT uiMaxStep = 10000;
+    __FetchIntWithDefault(_T("MaxStep"), 10000);
+    uiMaxStep = static_cast<UINT>(iValues);
+
+    UBOOL bOnlyReal = FALSE;
+    __FetchIntWithDefault(_T("OnlyReal"), 0);
+    bOnlyReal = (0 != iValues);
+
+    Real fLearnRate = F(0.001);
+    __FetchRealWithDefault(_T("LearnRate"), F(0.001));
+    fLearnRate = fValues;
+
+    Real fGoal = F(0.1);
+    __FetchRealWithDefault(_T("Goal"), F(0.1));
+    fGoal = fValues;
+
+    FitSE(sTrainingPoints, sAnsatzFile, sHistory, uiEncodeBits, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
+}
+
 void TestFitPointSetAdap(CParameters& params)
 {
     CCString sValues;

@@ -183,6 +183,21 @@ QLGate QLAPI ZeroTestReal(TArray<QLComplex> v1, TArray<QLComplex> v2)
     return ret;
 }
 
+QLGate QLAPI SimpleZeroTest(TArray<QLComplex> v1, TArray<QLComplex> v2, BYTE byEncodeBits)
+{   
+    QLGate ret;
+    ret.AddQubits(byEncodeBits);
+
+    QLGate aev1 = SimpleEncodeOneVector(v1.GetData(), byEncodeBits, v1.Num());
+    QLGate aev2 = SimpleEncodeOneVector(v2.GetData(), byEncodeBits, v2.Num());
+    aev2.Dagger();
+
+    ret.AppendGate(aev1, aev1.m_lstQubits);
+    ret.AppendGate(aev2, aev2.m_lstQubits);
+
+    return ret;
+}
+
 __END_NAMESPACE
 
 

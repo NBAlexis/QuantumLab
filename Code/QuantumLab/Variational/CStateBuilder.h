@@ -35,6 +35,8 @@ protected:
 
 extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
 
+extern void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
+
 extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT adaptiveWait, Real fadaptiveEps, UBOOL bOnlyReal);
 
 __END_NAMESPACE

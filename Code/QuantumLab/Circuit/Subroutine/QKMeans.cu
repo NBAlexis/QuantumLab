@@ -2153,6 +2153,127 @@ void QLQuantumKmeans::KNNAE(const CCString& sTrainingPoints, const CCString& sTe
     destroyQuESTEnv(evn);
 }
 
+void QLQuantumKmeans::KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, UINT uiRepeat)
+{
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
+    UINT w, h;
+    TArray<QLComplex> trainpoints = ReadCSVA(sTrainingPoints, w, h);
+    QLGate segate = SimpleEncodeVectors(trainpoints.GetData(), static_cast<BYTE>(MostSignificantPowerTwo(h)), byEncodeQubits, w);
+    BYTE allBytes = static_cast<BYTE>(segate.m_lstQubits.Num());
+    TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
+
+    UINT uiPossibleRes = 1 << byMeasureQubits;
+    Real* scores = reinterpret_cast<Real*>(malloc(sizeof(Real) * h * uiPossibleRes));
+
+    UINT veclen = 1UL << static_cast<UINT>(allBytes);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(allBytes, evn);
+
+    QLGate wholeCircuit;
+    wholeCircuit.AddQubits(allBytes);
+    wholeCircuit.AppendGate(segate, segate.m_lstQubits);
+
+    syncQuESTEnv(evn);
+    memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+    memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+    vec.stateVec.real[0] = F(1.0);
+    vec.stateVec.imag[0] = F(0.0);
+    copyStateToGPU(vec);
+    TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+    SIZE_T opssize = ops.Num();
+    for (SIZE_T i = 0; i < opssize; ++i)
+    {
+        QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
+    memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
+
+    Real* res = reinterpret_cast<Real*>(appAlloca(sizeof(Real) * uiPossibleRes));
+    INT* rescount = reinterpret_cast<INT*>(appAlloca(sizeof(INT) * uiPossibleRes));
+    TArray<INT> qubitsToSee;
+    for (BYTE bym = 0; bym < byMeasureQubits; ++bym)
+    {
+        qubitsToSee.AddItem(static_cast<INT>(allBytes - 1 - bym));
+    }
+
+    for (UINT uiV = 0; uiV < h; ++uiV)
+    {
+        QLGate newcircuit;
+        newcircuit.AddQubits(allBytes);
+        QLGate vectorSE = SimpleEncodeOneVector(orignalPointsArray.GetData() + uiV * w, byEncodeQubits, w);
+        vectorSE.Dagger();
+        newcircuit.AppendGate(vectorSE, vectorSE.m_lstQubits);
+        for (BYTE qm = 0; qm < byEncodeQubits; ++qm)
+        {
+            newcircuit.AppendGate(cc, qm);
+        }
+
+        if (0 != uiV)
+        {
+            memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
+            memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
+            syncQuESTEnv(evn);
+            copyStateToGPU(vec);
+        }
+
+        TArray<SBasicOperation> ops2 = newcircuit.GetOperation(newcircuit.m_lstQubits);
+        SIZE_T opssize2 = ops2.Num();
+        for (SIZE_T i = 0; i < opssize2; ++i)
+        {
+            QLGate::PerformBasicOperation(vec, ops2[static_cast<INT>(i)]);
+        }
+
+        calcProbOfAllOutcomes(res, vec, qubitsToSee.GetData(), byMeasureQubits);
+
+        //copyStateFromGPU(vec);
+        //UINT uiHitRes = 0;
+        memset(rescount, 0, sizeof(INT) * uiPossibleRes);
+        for (UINT hit = 0; hit < uiRepeat; ++hit)
+        {
+            Real fHit = RandomF();
+            Real fRight = res[0];
+            for (UINT ires = 0; ires < uiPossibleRes; ++ires)
+            {
+                if (fHit < fRight)
+                {
+                    ++rescount[ires];
+                    break;
+                }
+
+                if (ires == (uiPossibleRes - 2))
+                {
+                    ++rescount[uiPossibleRes - 1];
+                    break;
+                }
+                fRight = fRight + res[ires + 1];
+            }
+        }
+        CCString sRes;
+        const Real fDenorm = static_cast<Real>(uiRepeat);
+        for (UINT ires = 0; ires < uiPossibleRes; ++ires)
+        {
+            Real fScore = rescount[ires] / fDenorm;
+            sRes = sRes + appToString(fScore) + _T(", ");
+            scores[uiV * uiPossibleRes + ires] = fScore;
+        }
+        appGeneral(_T("finish %d / %d , hit = %s ...\n"), uiV, h, sRes.c_str());
+    }
+
+    //final export host center
+    SaveCSVAR(scores, uiPossibleRes, h, sScore);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+}
+
 void QLQuantumKmeans::QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate,
     Real minX, Real maxX, Real minY, Real maxY)
 {

@@ -141,13 +141,13 @@ QLGate QLAPI SimpleEncodeVectors(const QLComplex* hostv, BYTE vectorCountPower, 
         QLGate fryz = FRyz(hostdegreeY + i * uiVectorCount, hostdegreeZ + i * uiVectorCount, static_cast<UINT>(vectorCountPower + 1));
         //QLGate fry = FRy(hostdegreeY + i * uiVectorCount, static_cast<UINT>(vectorCountPower + 1));
 
-        TArray<Real> degrees;
-        for (UINT k = 0; k < uiVectorCount; ++k)
-        {
-            degrees.AddItem(hostdegreeY[i * uiVectorCount + k]);
-            degrees.AddItem(hostdegreeZ[i * uiVectorCount + k]);
-        }
-        appGeneral(_T("degress: %s\n"), appToString(degrees));
+        //TArray<Real> degrees;
+        //for (UINT k = 0; k < uiVectorCount; ++k)
+        //{
+        //    degrees.AddItem(hostdegreeY[i * uiVectorCount + k]);
+        //    degrees.AddItem(hostdegreeZ[i * uiVectorCount + k]);
+        //}
+        //appGeneral(_T("degress: %s\n"), appToString(degrees));
 
         //For example, if we have 16 vectors (length-8 complex), we need
         //6543-0, 6543-1, 6543-2, ...
