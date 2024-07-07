@@ -216,16 +216,22 @@ void TestSimpleEncode(CParameters& params)
 
     QLComplex onev[6];
     memcpy(onev, data.GetData() + 6, sizeof(QLComplex) * 6);
-    QLGate simpleencodeOne = SimpleEncodeOneVector(onev, 4, 6);
-    //QLGate simpleencodeOne = SimpleEncodeVectors(data.GetData(), 5, 4, 6);
+    //QLGate simpleencodeOne = SimpleEncodeOneVector(onev, 4, 6);
+    QLGate simpleencodeOne = SimpleEncodeVectors(data.GetData(), 5, 4, 6);
 
-    simpleencodeOne.DebugPrint(1);
+    //simpleencodeOne.DebugPrint(1);
 
     QLMatrix res = QLSimulatorVector::ShowState(simpleencodeOne);
     res.Print(_T("res"));
 
 
     //appGeneral(_T("%s"), appToString(data));
+
+    QLQuantumKmeans::TestCircuitBuildState(
+        8,
+        256,
+        1,
+        1);
 
 }
 

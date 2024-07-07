@@ -158,7 +158,7 @@ int main()
 
     __FetchStringWithDefault(_T("FileName2"), _T(""));
     QLMatrix m2 = ReadCSVR(sValues);
-    m2.Print("v2");
+    //m2.Print("v2");
 
     UBOOL bSameFile = sFile1 == sValues;
 

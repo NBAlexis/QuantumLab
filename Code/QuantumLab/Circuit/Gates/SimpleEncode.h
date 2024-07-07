@@ -22,6 +22,9 @@ __BEGIN_NAMESPACE
 * 1      4
 * 2      ...
 * 
+* 
+* 2209.12788
+* the Hadamad is removed.
 */
 extern QLGate QLAPI SimpleEncodeOneVector(const QLComplex* hostv, BYTE qubits, UINT uiVLength);
 

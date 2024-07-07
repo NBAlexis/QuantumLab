@@ -13,6 +13,7 @@ extern void TestAmplitudeEncodeOneRealVector();
 extern void TestAmplitudeEncodeVectors();
 extern void TestCnNOTAncilla();
 extern void TestGroverGate();
+extern void TestSimpleEncode();
 
 //=============================================================================
 // END OF FILE

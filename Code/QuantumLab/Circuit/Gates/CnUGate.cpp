@@ -422,6 +422,7 @@ QLGate CreateCnNotWithNM2BorrowedAncilla(BYTE nControlledQubits)
     TArray<BYTE> toAdd;
     toAdd.Append(ByteSequnce, 3);
     QLGate retGate;
+    retGate.m_sName = _T("CnNot_bo");
     retGate.AddQubits(2 * nControlledQubits - 1);
 
     //Assume nControlledQubits = 5
@@ -540,6 +541,7 @@ QLGate QLAPI CreateCnNotWithAncilla(BYTE numOfController, EAncillaType eAT)
     BYTE firstOneQubitCount = 0;
     BYTE secondOneQubitCount = 0;
     QLGate ret;
+    ret.m_sName = _T("CnNot");
     ret.AddQubits(numOfController + 2);
     if (3 == numOfController)
     {

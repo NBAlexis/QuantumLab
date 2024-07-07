@@ -13,10 +13,11 @@
 # EQKJ_QAnomaly3D
 # EQKJ_TestQKNNAnsatz2D
 # EQKJ_TestQKNNAnsatz
+# EQKJ_TestQKNNAnsatzSE
 # EQKJ_TestQKNNAE
 # EQKT_TestSimpleEncode
 # EQKJ_TestQKNNSE
-KMeansJob : EQKJ_TestQKNNAnsatz
+KMeansJob : EQKT_TestSimpleEncode
 
 # ########################
 # GPU Kmeans
@@ -104,13 +105,14 @@ QKNN2DAnsatz:
 
 QKNNAnsatz:
 
-    PointSet : train-4096.csv
-    Ansatz : an-train-16384-l5-10000.csv
-    TestSet : validation-30000.csv
-    TestSave : validation-30000-16384-l5.csv
+    PointSet : trainse2-16384.csv
+    Ansatz : ansatzd2k4.csv
+    TestSet : d2test.csv
+    TestSave : d2test-100.csv
+    HitSave : hit-2dk4-100.csv
     IsAdaptive : 0
-    AnsatzLevel : 5
-    AnsatzQubits : 19
+    AnsatzLevel : 1
+    AnsatzQubits : 9
     NumberOfMeasure : 2
     NumberOfEncode : 4
     Repeat : 100

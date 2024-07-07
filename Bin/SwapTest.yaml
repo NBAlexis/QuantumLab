@@ -1,6 +1,6 @@
 # ########################
 # DotType : {EDT_AmplitudeEncodeComplex, EDT_AmplitudeEncodeReal, EDT_SimpleEncode}
-FileName1 : v2.csv
+FileName1 : v1.csv
 FileName2 : v2.csv
 MeasureRepeat : 1000
 DotType : EDT_SimpleEncode

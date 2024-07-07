@@ -19,6 +19,7 @@ __BEGIN_NAMESPACE
 QLGate QLAPI GroverSXGate(BYTE numberOfQubits, UINT elementToFlip, UBOOL bUseAncilla)
 {
     QLGate ret;
+    ret.m_sName = _T("SX");
     if (bUseAncilla)
     {
         ret.AddQubits(numberOfQubits + 2);

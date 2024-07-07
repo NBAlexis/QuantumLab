@@ -602,6 +602,7 @@ QLGate QLAPI ExchangeToYZGate(UINT vectorCountPower, UINT vectorPower, Real* hos
 
         UINT startInV = vectorCount * (vectorLength - (1U << (i + 1)));
 
+        appParanoiac(_T("fryz for vector power %d\n"), i);
         QLGate fryz = FRyz(hostY + startInV, hostZ + startInV, static_cast<UINT>(bits.Num()));
 
         retGate.AppendGate(fryz, bits);

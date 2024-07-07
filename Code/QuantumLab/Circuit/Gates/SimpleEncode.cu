@@ -45,7 +45,6 @@ QLGate QLAPI SimpleEncodeOneVector(const QLComplex* hostv, BYTE qubits, UINT uiV
     QLGate cnot(EBasicOperation::EBO_CX);
 
     BYTE toaddbyte = 0;
-    UBOOL bLastLevelCnotAdded = FALSE;
 
     for (UINT i = 0; i < uiVLength; ++i)
     {
@@ -56,7 +55,7 @@ QLGate QLAPI SimpleEncodeOneVector(const QLComplex* hostv, BYTE qubits, UINT uiV
         ret.AppendGate(rz, toaddbyte);
 
         toaddbyte = toaddbyte + 1;
-        if (toaddbyte == qubits)
+        if (toaddbyte == qubits && i != (uiVLength - 1))
         {
             for (BYTE j = 0; j < qubits; ++j)
             {
@@ -70,26 +69,6 @@ QLGate QLAPI SimpleEncodeOneVector(const QLComplex* hostv, BYTE qubits, UINT uiV
                 }
             }
             toaddbyte = 0;
-            bLastLevelCnotAdded = TRUE;
-        }
-        else
-        {
-            bLastLevelCnotAdded = FALSE;
-        }
-    }
-
-    if (!bLastLevelCnotAdded)
-    {
-        for (BYTE j = 0; j < qubits; ++j)
-        {
-            if (0 == j)
-            {
-                ret.AppendGate(cnot, j, qubits - 1);
-            }
-            else
-            {
-                ret.AppendGate(cnot, j, j - 1);
-            }
         }
     }
 
@@ -138,6 +117,7 @@ QLGate QLAPI SimpleEncodeVectors(const QLComplex* hostv, BYTE vectorCountPower, 
 
     for (UINT i = 0; i < uiVLength; ++i)
     {
+        appParanoiac(_T("encode feature %d\n"), i);
         QLGate fryz = FRyz(hostdegreeY + i * uiVectorCount, hostdegreeZ + i * uiVectorCount, static_cast<UINT>(vectorCountPower + 1));
         //QLGate fry = FRy(hostdegreeY + i * uiVectorCount, static_cast<UINT>(vectorCountPower + 1));
 
@@ -157,7 +137,7 @@ QLGate QLAPI SimpleEncodeVectors(const QLComplex* hostv, BYTE vectorCountPower, 
         //ret.AppendGate(fry, bits);
 
         toaddbyte = toaddbyte + 1;
-        if (toaddbyte == qubits)
+        if (toaddbyte == qubits && i != (uiVLength - 1))
         {
             for (BYTE j = 0; j < qubits; ++j)
             {
@@ -176,21 +156,6 @@ QLGate QLAPI SimpleEncodeVectors(const QLComplex* hostv, BYTE vectorCountPower, 
         else
         {
             bLastLevelCnotAdded = FALSE;
-        }
-    }
-
-    if (!bLastLevelCnotAdded)
-    {
-        for (BYTE j = 0; j < qubits; ++j)
-        {
-            if (0 == j)
-            {
-                ret.AppendGate(cnot, j, qubits - 1);
-            }
-            else
-            {
-                ret.AppendGate(cnot, j, j - 1);
-            }
         }
     }
 

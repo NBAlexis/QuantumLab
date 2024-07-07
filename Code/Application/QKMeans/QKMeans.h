@@ -28,6 +28,7 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_QAnomaly3D,
     EQKJ_TestQKNNAnsatz2D,
     EQKJ_TestQKNNAnsatz,
+    EQKJ_TestQKNNAnsatzSE,
     EQKJ_TestQKNNAE,
     EQKJ_TestQKNNSE,
     EQKJ_TestAnomalyDetection,
@@ -60,6 +61,7 @@ extern void QAnomaly3D(CParameters& params);
 extern void TestKNN2DAnsatz(CParameters& params);
 
 extern void TestKNNAnsatz(CParameters& params);
+extern void TestKNNAnsatzSE(CParameters& params);
 
 extern void TestKNNAE(CParameters& params);
 

@@ -1480,8 +1480,9 @@ int main()
 
     //TestZeroStartAmplitudeEncode();
     //TestQFFT();
-    TestZeroEigenMatrixPower();
+    //TestZeroEigenMatrixPower();
     //TestMatrixPower();
+    TestSimpleEncode();
 
     return 0;
 }

@@ -16,7 +16,7 @@ int main()
     CParameters params;
     CYAMLParser::ParseFile(_T("../QKMeans.yaml"), params);
     params.Dump();
-
+    
 
     CCString sValues;
     __FetchStringWithDefault(_T("KMeansJob"), _T("EQKJ_TestDifferentDimension"));
@@ -201,7 +201,20 @@ int main()
             }
             else
             {
-                appCrucial(_T("QKNN2DAnsatz not found!\n"));
+                appCrucial(_T("QKNNAnsatz not found!\n"));
+            }
+        }
+        break;
+    case EQKJ_TestQKNNAnsatzSE:
+        {
+            CParameters jobparam;
+            if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
+            {
+                TestKNNAnsatzSE(jobparam);
+            }
+            else
+            {
+                appCrucial(_T("QKNNAnsatz not found!\n"));
             }
         }
         break;

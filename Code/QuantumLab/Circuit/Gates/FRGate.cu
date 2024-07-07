@@ -155,6 +155,7 @@ TArray<Real> QLAPI SpliteAngles(const Real* angles, UINT length)
 {
     if (length > 2048 && NULL != _splitAnglePointer)
     {
+        appParanoiac(_T("split angle using GPU with length: %d\n"), length);
         return _splitAnglePointer->SpliteAngles(angles, length);
     }
 

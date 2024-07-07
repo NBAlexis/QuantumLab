@@ -779,9 +779,15 @@ TArray<QLComplex> QLQuantumKmeans::TestCircuitBuildState(UINT uiVectorDim, UINT 
 
         totalCircuit.AppendGate(ampGate1, ampGate);
         totalCircuit.AppendGate(ampGate2, ampDaggerGate);
+        totalCircuit.m_sName = _T("A");
 
         // 3 - Amplitude amplification
         QLGate afterAA = AmplitudeAmplification(totalCircuit, subspaceQubits, 0, aaRepeat);
+
+        if (1 == testRepeat)
+        {
+            afterAA.DebugPrint(3);
+        }
 
         // 4 - controlled collapse
         QLGate ctrCollapse(EBasicOperation::EBO_CC, 0);
@@ -1834,6 +1840,7 @@ void QLQuantumKmeans::KNNAnsatz(
     const CCString& sAnsatz, 
     const CCString& sTestPoints, 
     const CCString& sScore,
+    const CCString& sHitFile,
     BYTE ansatzQubits, 
     BYTE byMeasureQubits,
     UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat)
@@ -1889,6 +1896,7 @@ void QLQuantumKmeans::KNNAnsatz(
 
     UINT uiPossibleRes = 1 << byMeasureQubits;
     Real* scores = reinterpret_cast<Real*>(malloc(sizeof(Real) * h * uiPossibleRes));
+    Real* probs = reinterpret_cast<Real*>(malloc(sizeof(Real) * h));
 
     UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);
     QLGate cc(EBasicOperation::EBO_CC, 0);
@@ -1934,10 +1942,7 @@ void QLQuantumKmeans::KNNAnsatz(
         wholeCircuit.AddQubits(ansatzQubits);
         vectorAE.Dagger();
         wholeCircuit.AppendGate(vectorAE, vectorAE.m_lstQubits);
-        if (uiV == (h - 1))
-        {
 
-        }
         for (BYTE qm = 0; qm < vectorPower; ++qm)
         {
             wholeCircuit.AppendGate(cc, qm);
@@ -1953,10 +1958,12 @@ void QLQuantumKmeans::KNNAnsatz(
 
         TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
         SIZE_T opssize = ops.Num();
+        Real fProb = F(1.0);
         for (SIZE_T i = 0; i < opssize; ++i)
         {
-            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+            fProb = fProb * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
         }
+        probs[uiV] = fProb;
         //syncQuESTEnv(evn);
         calcProbOfAllOutcomes(res, vec, qubitsToSee.GetData(), byMeasureQubits);
 
@@ -1992,12 +1999,172 @@ void QLQuantumKmeans::KNNAnsatz(
             scores[uiV * uiPossibleRes + ires] = fScore;
         }
         appGeneral(_T("finish %d / %d , hit = %s ...\n"), uiV, h, sRes.c_str());
+
+        if (uiV == (h - 1))
+        {
+            wholeCircuit.DebugPrint(-1);
+        }
     }
 
     appSafeFree(pHostY);
     appSafeFree(pHostZ);
     //appSafeFree(realpart);
     //appSafeFree(imagpart);
+
+    //final export host center
+    SaveCSVAR(scores, uiPossibleRes, h, sScore);
+    appSafeFree(scores);
+
+    SaveCSVAR(probs, 1, h, sHitFile);
+    appSafeFree(probs);
+
+    destroyQureg(vec, evn);
+    destroyQuESTEnv(evn);
+
+    ansatzGate.DebugPrint(-1);
+}
+
+void QLQuantumKmeans::KNNAnsatzSE(
+    const CCString& sAnsatz,
+    const CCString& sTestPoints,
+    const CCString& sScore,
+    BYTE ansatzQubits,
+    BYTE byMeasureQubits,
+    BYTE byEncodeQubit,
+    UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat)
+{
+    //UINT uiBlock = 0;
+    //UINT uiThread = 0;
+    UINT w, h, ha;
+    TArray<Real> ansatzParam = ReadCSVAR(sAnsatz, w, ha);
+    TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
+
+    QLGate ansatzGate;
+    if (bAdaptive)
+    {
+        uiAnsatzLevel = (ha / (ansatzQubits << 1U)) - 1;
+        CTwoLocalAdaptive ansatz(ansatzQubits, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::Circular);
+        ansatz.SetMaxLayer(1000);
+        for (UINT i = 0; i < uiAnsatzLevel; ++i)
+        {
+            ansatz.IncreaseAdaptive();
+        }
+        ansatz.SetParameters(ansatzParam);
+        ansatzGate = ansatz.BuildStateWithParam();
+    }
+    else
+    {
+        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+        ansatz.SetParameters(ansatzParam);
+        ansatzGate = ansatz.BuildStateWithParam();
+    }
+
+    UINT uiPossibleRes = 1 << byMeasureQubits;
+    Real* scores = reinterpret_cast<Real*>(malloc(sizeof(Real) * h * uiPossibleRes));
+
+    UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);
+    QLGate cc(EBasicOperation::EBO_CC, 0);
+
+    QuESTEnv evn = createQuESTEnv();
+    Qureg vec = createQureg(ansatzQubits, evn);
+    QLGate wholeCircuitBefore;
+    wholeCircuitBefore.AddQubits(ansatzQubits);
+    wholeCircuitBefore.AppendGate(ansatzGate, ansatzGate.m_lstQubits);
+    syncQuESTEnv(evn);
+    memset(vec.stateVec.real, 0, sizeof(Real) * veclen);
+    memset(vec.stateVec.imag, 0, sizeof(Real) * veclen);
+    vec.stateVec.real[0] = F(1.0);
+    vec.stateVec.imag[0] = F(0.0);
+    copyStateToGPU(vec);
+
+    TArray<SBasicOperation> opsBefore = wholeCircuitBefore.GetOperation(wholeCircuitBefore.m_lstQubits);
+    SIZE_T opssizeBefore = opsBefore.Num();
+    for (SIZE_T i = 0; i < opssizeBefore; ++i)
+    {
+        QLGate::PerformBasicOperation(vec, opsBefore[static_cast<INT>(i)]);
+    }
+    syncQuESTEnv(evn);
+    copyStateFromGPU(vec);
+
+    Real* res = reinterpret_cast<Real*>(appAlloca(sizeof(Real) * uiPossibleRes));
+    INT* rescount = reinterpret_cast<INT*>(appAlloca(sizeof(INT) * uiPossibleRes));
+    TArray<INT> qubitsToSee;
+    for (BYTE bym = 0; bym < byMeasureQubits; ++bym)
+    {
+        qubitsToSee.AddItem(static_cast<INT>(ansatzQubits - 1 - bym));
+    }
+
+    //Real* realpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    //Real* imagpart = reinterpret_cast<Real*>(malloc(sizeof(Real) * veclen));
+    //memcpy(realpart, vec.stateVec.real, sizeof(Real) * veclen);
+    //memcpy(imagpart, vec.stateVec.imag, sizeof(Real) * veclen);
+    for (UINT uiV = 0; uiV < h; ++uiV)
+    {
+        //QLGate vectorAE = AmplitudeEncodeOneVector(orignalPointsArray.GetData() + w * uiV, vectorPower, FALSE);
+        QLGate vectorSE = SimpleEncodeOneVector(orignalPointsArray.GetData() + uiV * w, byEncodeQubit, w);
+        QLGate wholeCircuit;
+        wholeCircuit.AddQubits(ansatzQubits);
+        vectorSE.Dagger();
+        wholeCircuit.AppendGate(vectorSE, vectorSE.m_lstQubits);
+        if (uiV == (h - 1))
+        {
+
+        }
+        for (BYTE qm = 0; qm < byEncodeQubit; ++qm)
+        {
+            wholeCircuit.AppendGate(cc, qm);
+        }
+
+        if (0 != uiV)
+        {
+            //memcpy(vec.stateVec.real, realpart, sizeof(Real) * veclen);
+            //memcpy(vec.stateVec.imag, imagpart, sizeof(Real) * veclen);
+            syncQuESTEnv(evn);
+            copyStateToGPU(vec);
+        }
+
+        TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
+        SIZE_T opssize = ops.Num();
+        for (SIZE_T i = 0; i < opssize; ++i)
+        {
+            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+        }
+        //syncQuESTEnv(evn);
+        calcProbOfAllOutcomes(res, vec, qubitsToSee.GetData(), byMeasureQubits);
+
+        //copyStateFromGPU(vec);
+        //UINT uiHitRes = 0;
+        memset(rescount, 0, sizeof(INT) * uiPossibleRes);
+        for (UINT hit = 0; hit < uiRepeat; ++hit)
+        {
+            Real fHit = RandomF();
+            Real fRight = res[0];
+            for (UINT ires = 0; ires < uiPossibleRes; ++ires)
+            {
+                if (fHit < fRight)
+                {
+                    ++rescount[ires];
+                    break;
+                }
+
+                if (ires == (uiPossibleRes - 2))
+                {
+                    ++rescount[uiPossibleRes - 1];
+                    break;
+                }
+                fRight = fRight + res[ires + 1];
+            }
+        }
+        CCString sRes;
+        const Real fDenorm = static_cast<Real>(uiRepeat);
+        for (UINT ires = 0; ires < uiPossibleRes; ++ires)
+        {
+            Real fScore = rescount[ires] / fDenorm;
+            sRes = sRes + appToString(fScore) + _T(", ");
+            scores[uiV * uiPossibleRes + ires] = fScore;
+        }
+        appGeneral(_T("finish %d / %d , hit = %s ...\n"), uiV, h, sRes.c_str());
+    }
 
     //final export host center
     SaveCSVAR(scores, uiPossibleRes, h, sScore);

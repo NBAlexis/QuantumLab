@@ -48,6 +48,8 @@ void TestFitPointSet(CParameters& params)
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
 
+    CSpliteAngleBufferHelper helper;
+
     FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
 }
 
@@ -92,6 +94,8 @@ void TestFitPointSetSE(CParameters& params)
     Real fGoal = F(0.1);
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
+
+    CSpliteAngleBufferHelper helper;
 
     FitSE(sTrainingPoints, sAnsatzFile, sHistory, uiEncodeBits, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
 }
@@ -141,6 +145,8 @@ void TestFitPointSetAdap(CParameters& params)
     Real fGoal = F(0.1);
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
+
+    CSpliteAngleBufferHelper helper;
 
     FitAE(sTrainingPoints, sAnsatzFile, sHistory, fLearnRate, fGoal, uiMaxStep, uiMaxLayer, uiAdap, fAdapEps, bOnlyReal);
 }

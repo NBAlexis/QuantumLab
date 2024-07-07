@@ -35,6 +35,7 @@ TArray<Real> CStateBuilder::Fit(COptimizer* optimizer, const CCString& sAnsatzFi
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 
+    appParanoiac(_T("state was built\n"));
     optimizer->SetLossFunc(this);
     return optimizer->Optimize(m_fGoal, uiMaxStep, sAnsatzFile);
 }

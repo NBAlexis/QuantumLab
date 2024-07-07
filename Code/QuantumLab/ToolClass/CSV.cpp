@@ -192,8 +192,11 @@ QLMatrix QLAPI ReadCSVR(const CCString& fileName)
     INT leny = 0;
     INT lenx = 0;
     TArray<QLComplex> all;
+    INT rowid = 0;
     while (file.getline(buf, buf_size))
     {
+        appParanoiac(_T("read row:%d\n"), rowid+1);
+        ++rowid;
         CCString sLine(buf);
         TArray<CCString> sep = appGetStringList(sLine, _T(','), EGSLF_IgnorTabSpace | EGSLF_IgnorTabSpaceInSide);
 

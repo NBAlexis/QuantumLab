@@ -92,6 +92,10 @@ extern QLGate QLAPI CreateCnP(BYTE numOfController, Real fDegree);
 extern QLGate QLAPI CreateCnPh(BYTE numOfController, Real fDegree);
 
 /**
+* see 
+* https://algassert.com/circuits/2015/06/05/Constructing-Large-Controlled-Nots.html
+* for details
+* 
 * Burnable Bits: 
 *   Guaranteed to be OFF initially, but with no restrictions on state afterwards. 
 * 
