@@ -297,6 +297,34 @@ public:
 
     void ApplyOnQubits(const TArray<BYTE>& lstMappingQubits);
 
+    static TArray<SBasicOperation> ToBuiltIn(const TArray<SBasicOperation>& gates);
+
+    /**
+    * arXiv:1707.03429
+    */
+    static CCString ToOpenOASM(const TArray<SBasicOperation>& gates, BYTE byQubit, const TArray<BYTE>& measureAtLast);
+
+    /**
+    * https://quarkstudio.readthedocs.io/en/latest/usage/qlisp/
+    */
+    static CCString ToQLISP(const TArray<SBasicOperation>& gates, BYTE byQubit, const TArray<BYTE>& measureAtLast);
+
+    static QLMatrix CreateSingleQubitMatrix(enum class EBasicOperation eop, Real fParam);
+
+    CCString ToOpenOASM(const TArray<BYTE>& measureAtLast, UBOOL bOnlyBuiltIn = TRUE)
+    {
+        if (bOnlyBuiltIn)
+        {
+            return ToOpenOASM(ToBuiltIn(GetOperation()), static_cast<BYTE>(m_lstQubits.Num()), measureAtLast);
+        }
+        return ToOpenOASM(GetOperation(), static_cast<BYTE>(m_lstQubits.Num()), measureAtLast);
+    }
+
+    CCString ToQLISP(const TArray<BYTE>& measureAtLast)
+    {
+        return ToQLISP(ToBuiltIn(GetOperation()), static_cast<BYTE>(m_lstQubits.Num()), measureAtLast);
+    }
+
 protected:
     
     TArray<BYTE> ExchangeQubits(const TArray<BYTE>& lstMappingQubits) const;

@@ -1058,6 +1058,8 @@ void QLQuantumKmeans::TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QL
     appSafeFree(res);
 }
 
+#if 0
+
 /**
 * 
 */
@@ -1836,6 +1838,8 @@ void QLQuantumKmeans::KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTest
     destroyQuESTEnv(evn);
 }
 
+#endif
+
 void QLQuantumKmeans::KNNAnsatz(
     const CCString& sAnsatz, 
     const CCString& sTestPoints, 
@@ -1843,7 +1847,7 @@ void QLQuantumKmeans::KNNAnsatz(
     const CCString& sHitFile,
     BYTE ansatzQubits, 
     BYTE byMeasureQubits,
-    UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat)
+    UBOOL bAdaptive, UINT uiAnsatzLevel, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, UINT uiRepeat)
 {
     //UINT uiBlock = 0;
     //UINT uiThread = 0;
@@ -1878,7 +1882,7 @@ void QLQuantumKmeans::KNNAnsatz(
     if (bAdaptive)
     {
         uiAnsatzLevel = (ha / (ansatzQubits << 1U)) - 1;
-        CTwoLocalAdaptive ansatz(ansatzQubits, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::Circular);
+        CTwoLocalAdaptive ansatz(ansatzQubits, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle);
         ansatz.SetMaxLayer(1000);
         for (UINT i = 0; i < uiAnsatzLevel; ++i)
         {
@@ -1889,7 +1893,7 @@ void QLQuantumKmeans::KNNAnsatz(
     }
     else
     {
-        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle);
         ansatz.SetParameters(ansatzParam);
         ansatzGate = ansatz.BuildStateWithParam();
     }
@@ -2002,6 +2006,7 @@ void QLQuantumKmeans::KNNAnsatz(
 
         if (uiV == (h - 1))
         {
+            ansatzGate.DebugPrint(-1);
             wholeCircuit.DebugPrint(-1);
         }
     }
@@ -2028,10 +2033,14 @@ void QLQuantumKmeans::KNNAnsatzSE(
     const CCString& sAnsatz,
     const CCString& sTestPoints,
     const CCString& sScore,
+    const CCString& sHitFile,
     BYTE ansatzQubits,
     BYTE byMeasureQubits,
     BYTE byEncodeQubit,
-    UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat)
+    UBOOL bAdaptive, UINT uiAnsatzLevel, 
+    ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer,
+    ELinkStyle eSimpleEncodeStyle, ELinkLayer eSimpleencodeLayer,
+    UINT uiRepeat)
 {
     //UINT uiBlock = 0;
     //UINT uiThread = 0;
@@ -2043,7 +2052,7 @@ void QLQuantumKmeans::KNNAnsatzSE(
     if (bAdaptive)
     {
         uiAnsatzLevel = (ha / (ansatzQubits << 1U)) - 1;
-        CTwoLocalAdaptive ansatz(ansatzQubits, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::Circular);
+        CTwoLocalAdaptive ansatz(ansatzQubits, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle);
         ansatz.SetMaxLayer(1000);
         for (UINT i = 0; i < uiAnsatzLevel; ++i)
         {
@@ -2054,13 +2063,14 @@ void QLQuantumKmeans::KNNAnsatzSE(
     }
     else
     {
-        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::SCA);
+        CTwoLocal ansatz(ansatzQubits, uiAnsatzLevel, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle);
         ansatz.SetParameters(ansatzParam);
         ansatzGate = ansatz.BuildStateWithParam();
     }
 
     UINT uiPossibleRes = 1 << byMeasureQubits;
     Real* scores = reinterpret_cast<Real*>(malloc(sizeof(Real) * h * uiPossibleRes));
+    Real* probs = reinterpret_cast<Real*>(malloc(sizeof(Real) * h));
 
     UINT veclen = 1UL << static_cast<UINT>(ansatzQubits);
     QLGate cc(EBasicOperation::EBO_CC, 0);
@@ -2101,7 +2111,7 @@ void QLQuantumKmeans::KNNAnsatzSE(
     for (UINT uiV = 0; uiV < h; ++uiV)
     {
         //QLGate vectorAE = AmplitudeEncodeOneVector(orignalPointsArray.GetData() + w * uiV, vectorPower, FALSE);
-        QLGate vectorSE = SimpleEncodeOneVector(orignalPointsArray.GetData() + uiV * w, byEncodeQubit, w);
+        QLGate vectorSE = SimpleEncodeOneVectorWithLinkStype(orignalPointsArray.GetData() + uiV * w, eSimpleEncodeStyle, eSimpleencodeLayer, byEncodeQubit, w);
         QLGate wholeCircuit;
         wholeCircuit.AddQubits(ansatzQubits);
         vectorSE.Dagger();
@@ -2125,10 +2135,12 @@ void QLQuantumKmeans::KNNAnsatzSE(
 
         TArray<SBasicOperation> ops = wholeCircuit.GetOperation(wholeCircuit.m_lstQubits);
         SIZE_T opssize = ops.Num();
+        Real fProb = F(1.0);
         for (SIZE_T i = 0; i < opssize; ++i)
         {
-            QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
+            fProb = fProb * QLGate::PerformBasicOperation(vec, ops[static_cast<INT>(i)]);
         }
+        probs[uiV] = fProb;
         //syncQuESTEnv(evn);
         calcProbOfAllOutcomes(res, vec, qubitsToSee.GetData(), byMeasureQubits);
 
@@ -2164,11 +2176,20 @@ void QLQuantumKmeans::KNNAnsatzSE(
             scores[uiV * uiPossibleRes + ires] = fScore;
         }
         appGeneral(_T("finish %d / %d , hit = %s ...\n"), uiV, h, sRes.c_str());
+
+        if (uiV == (h - 1))
+        {
+            ansatzGate.DebugPrint(-1);
+            wholeCircuit.DebugPrint(-1);
+        }
     }
 
     //final export host center
     SaveCSVAR(scores, uiPossibleRes, h, sScore);
     appSafeFree(scores);
+
+    SaveCSVAR(probs, 1, h, sHitFile);
+    appSafeFree(probs);
 
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
@@ -2320,13 +2341,13 @@ void QLQuantumKmeans::KNNAE(const CCString& sTrainingPoints, const CCString& sTe
     destroyQuESTEnv(evn);
 }
 
-void QLQuantumKmeans::KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, UINT uiRepeat)
+void QLQuantumKmeans::KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, ELinkStyle eStyle, ELinkLayer eLayer, UINT uiRepeat)
 {
     //UINT uiBlock = 0;
     //UINT uiThread = 0;
     UINT w, h;
     TArray<QLComplex> trainpoints = ReadCSVA(sTrainingPoints, w, h);
-    QLGate segate = SimpleEncodeVectors(trainpoints.GetData(), static_cast<BYTE>(MostSignificantPowerTwo(h)), byEncodeQubits, w);
+    QLGate segate = SimpleEncodeVectorsWithLinkStype(trainpoints.GetData(), eStyle, eLayer, static_cast<BYTE>(MostSignificantPowerTwo(h)), byEncodeQubits, w);
     BYTE allBytes = static_cast<BYTE>(segate.m_lstQubits.Num());
     TArray<QLComplex> orignalPointsArray = ReadCSVA(sTestPoints, w, h);
 
@@ -2375,7 +2396,7 @@ void QLQuantumKmeans::KNNSE(const CCString& sTrainingPoints, const CCString& sTe
     {
         QLGate newcircuit;
         newcircuit.AddQubits(allBytes);
-        QLGate vectorSE = SimpleEncodeOneVector(orignalPointsArray.GetData() + uiV * w, byEncodeQubits, w);
+        QLGate vectorSE = SimpleEncodeOneVectorWithLinkStype(orignalPointsArray.GetData() + uiV * w, eStyle, eLayer, byEncodeQubits, w);
         vectorSE.Dagger();
         newcircuit.AppendGate(vectorSE, vectorSE.m_lstQubits);
         for (BYTE qm = 0; qm < byEncodeQubits; ++qm)
@@ -2440,6 +2461,8 @@ void QLQuantumKmeans::KNNSE(const CCString& sTrainingPoints, const CCString& sTe
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 }
+
+#if 0
 
 void QLQuantumKmeans::QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate,
     Real minX, Real maxX, Real minY, Real maxY)
@@ -2721,6 +2744,8 @@ void QLQuantumKmeans::QAnomaly3D(const CCString& sTrainingPoints, const CCString
     checkCudaErrors(cudaFree(pTrainingPoints));
     checkCudaErrors(cudaFree(pTestingPoints));
 }
+
+#endif
 
 __END_NAMESPACE
 

@@ -1482,7 +1482,9 @@ int main()
     //TestQFFT();
     //TestZeroEigenMatrixPower();
     //TestMatrixPower();
-    TestSimpleEncode();
+    //TestSimpleEncode();
+
+    TestZYZ();
 
     return 0;
 }

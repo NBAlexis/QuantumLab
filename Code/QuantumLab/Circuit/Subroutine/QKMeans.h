@@ -50,36 +50,36 @@ public:
     */
     static void TestCircuitBuildStateOnce(const QLMatrix& hostVi, const QLMatrix& hostU, UINT vectorCount, UINT vectorDim);
 
-    static void Kmeans2D(const CCString& sPoints, const CCString& sSaveK, 
-        const CCString& sSaveCenter, const CCString& sRepeat,
-        BYTE k, UINT iteration, UINT uiMinHit);
+    //static void Kmeans2D(const CCString& sPoints, const CCString& sSaveK, 
+    //    const CCString& sSaveCenter, const CCString& sRepeat,
+    //    BYTE k, UINT iteration, UINT uiMinHit);
 
-    static void KNN2D(
-        const CCString& sTrainingPoints, const CCString& sTestPoints,
-        const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
-        UINT kHit, UINT uiMaxCluster);
+    //static void KNN2D(
+    //    const CCString& sTrainingPoints, const CCString& sTestPoints,
+    //    const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
+    //    UINT kHit, UINT uiMaxCluster);
 
-    static void KNN3D(
-        const CCString& sTrainingPoints, const CCString& sTestPoints,
-        const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
-        UINT kHit, UINT uiMaxCluster);
+    //static void KNN3D(
+    //    const CCString& sTrainingPoints, const CCString& sTestPoints,
+    //    const CCString& sLoadK, const CCString& sSaveK, const CCString& sRepeat,
+    //    UINT kHit, UINT uiMaxCluster);
 
-    static void KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sSaveK, const CCString& sRepeat, UINT kHit);
+    //static void KNN2DAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sSaveK, const CCString& sRepeat, UINT kHit);
 
     static void KNNAnsatz(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sScore, const CCString& sHit,
-        BYTE ansatzQubits, BYTE byMeasureQubits, UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat);
+        BYTE ansatzQubits, BYTE byMeasureQubits, UBOOL bAdaptive, UINT uiAnsatzLevel, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, UINT uiRepeat);
 
-    static void KNNAnsatzSE(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sScore,
-        BYTE ansatzQubits, BYTE byMeasureQubits, BYTE byEncodeQubit, UBOOL bAdaptive, UINT uiAnsatzLevel, UINT uiRepeat);
+    static void KNNAnsatzSE(const CCString& sAnsatz, const CCString& sTestPoints, const CCString& sScore, const CCString& sHit,
+        BYTE ansatzQubits, BYTE byMeasureQubits, BYTE byEncodeQubit, UBOOL bAdaptive, UINT uiAnsatzLevel, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, ELinkStyle eSimpleEncodeStyle, ELinkLayer eSimpleencodeLayer, UINT uiRepeat);
 
     static void KNNAE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, UINT uiRepeat);
 
-    static void KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, UINT uiRepeat);
+    static void KNNSE(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sScore, BYTE byMeasureQubits, BYTE byEncodeQubits, ELinkStyle eStyle, ELinkLayer eLayer, UINT uiRepeat);
 
-    static void QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate, 
-        Real minX, Real maxX, Real minY, Real maxY);
+    //static void QAnomaly2D(const CCString& sReferenceCSV, const CCString& sPointCSV, const CCString& sBuildRate, 
+    //    Real minX, Real maxX, Real minY, Real maxY);
 
-    static void QAnomaly3D(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sSaveScore);
+    //static void QAnomaly3D(const CCString& sTrainingPoints, const CCString& sTestPoints, const CCString& sSaveScore);
 
 protected:
 

@@ -48,98 +48,57 @@ CircuitTestDim:
     AA : 1
     Repeat : 1000
 
-QKMeans2D:
-
-    LoadFile : p2d.csv
-    KFileHead : k2d
-    CenterFileHead : c2d
-    RepeatFileHead : r2d
-    K : 4
-    Hit : 1
-    Iteration : 10
-
-QKNN2D:
-
-    TrainingCluster : k2dk4traing.csv
-    TrainingSet : p2dk4traing.csv
-    TestSet : p2dk4test.csv
-    TestSave : k2dtestres1-10.csv
-    RepeatSave : r2dtestres1-10.csv
-    MaxCluster : 4
-    PointHit : 1
-    KHit : 10
-
-QKNN3D:
-
-    TrainingCluster : k3dk8traing.csv
-    TrainingSet : p3dk8traing.csv
-    TestSet : p3dk8test.csv
-    TestSave : k3dtestres1-5.csv
-    RepeatSave : r3dtestres1-5.csv
-    MaxCluster : 8
-    PointHit : 1
-    KHit : 5
-
 FitWaveFunction:
 
-    PointFile : train-16384.csv
-    AnsatzFile : an-train-16384-l5-10000.csv
-    HistoryFile : hist-train-16384-l5-10000.csv
-    AnsatzLevel : 5
-    MaxStep : 10000
+    PointFile : testsimpleencode.csv
+    AnsatzFile : an-testsimpleencode.csv
+    HistoryFile : his-testsimpleencode.csv
+    AnsatzLevel : 10
+    MaxStep : 2000
     MaxLayer : 100
-    LearnRate : 0.002
+    LearnRate : 0.01
     Goal : 0.01
     OnlyReal : 0
     AdaptiveWait : 200
     AdaptiveEps : 0.001
     NumberOfEncode : 4
-
-QKNN2DAnsatz:
-
-    Ansatz : ansatzd2k4.csv
-    TestSet : d2test.csv
-    TestSave : k2dtestres-10.csv
-    RepeatSave : r2dtestres-10.csv
-    KHit : 10
+    # {PairWise, DoublePairWise, SCA}
+    AnsatzStyle : PairWise
+    # {RYRZ, RXRZ}
+    AnsatzSingleLayer : RXRZ
+    # {Random, Small, MBL}
+    AnsatzInitial : MBL
+    SEStyle : PairWise
+    # {CZ, CX}
+    AnsatzLayer : CZ
+    UseAbsorlute : 1
+    SELayer : CZ
 
 QKNNAnsatz:
 
     PointSet : trainse2-16384.csv
-    Ansatz : ansatzd2k4.csv
-    TestSet : d2test.csv
+    Ansatz : F:\Builds\QKMeans-07-11\Release\an-trainv8se-l3.csv
+    TestSet : F:\Builds\QKMeans-07-11\Release\validationv8se.csv
     TestSave : d2test-100.csv
     HitSave : hit-2dk4-100.csv
     IsAdaptive : 0
-    AnsatzLevel : 1
-    AnsatzQubits : 9
-    NumberOfMeasure : 2
-    NumberOfEncode : 4
+    AnsatzLevel : 3
+    AnsatzQubits : 17
+    NumberOfMeasure : 1
+    NumberOfEncode : 3
     Repeat : 100
-
-QAnomaly2D:
-
-    PointFile : p2grid.csv
-    ReferenceFile : p2gaussian.csv
-    BuildRateSave : br2gaussian.csv
-    MinX : -5.0
-    MaxX : 5.0
-    MinY : -10.0
-    MaxY : 10.0
-
-QAnomaly3D:
-
-    PointFile : p3grid.csv
-    ReferenceFile : p3gaussian.csv
-    BuildRateSave : brgaussian.csv
-
+    AnsatzStyle : PairWise
+    SEStyle : PairWise
+    AnsatzLayer : CZ
+    AnsatzSingleLayer : RXRZ
+    SELayer : CZ
 
 # ########################
 # Simple encode test
 # ########################
 SimpleEncodeCircuitTest:
 
-    FileName : testsimpleencode.csv
+    FileName : train-16384.csv
 
 # ########################
 # Quantum Kmeans

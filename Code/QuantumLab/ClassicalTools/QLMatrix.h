@@ -238,6 +238,7 @@ public:
     void Div(const Real& other);
 
     void ElementAbs();
+    void ElementArg();
     void ElementExp();
     void ElementIExp();
     void ElementAbsSq();
@@ -266,7 +267,11 @@ public:
     QLAPI friend QLMatrix operator/(const QLMatrix& m, const QLComplex& v) { QLMatrix ret = m; ret.Div(v); return ret; }
     QLAPI friend QLMatrix operator/(const QLMatrix& m, const Real& v) { QLMatrix ret = m; ret.Div(v); return ret; }
 
-    void Print(const CCString& sName = __EmptyString) const;
+    /**
+    * If py = true, it is python style
+    * else it is Mathematica style
+    */
+    void Print(const CCString& sName = __EmptyString, UBOOL bPy = FALSE) const;
 
     QLMatrix GetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen) const;
     void SetBlock(UINT uiXStart, UINT uiXLen, UINT uiYStart, UINT uiYLen, const QLComplex* content);

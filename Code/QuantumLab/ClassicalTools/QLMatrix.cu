@@ -31,12 +31,17 @@ __inline__  __device__ QLComplex ElementWiseAbs(const QLComplex& c)
 {
     return _make_cuComplex(_cuCabsf(c), F(0.0));
 }
+__inline__  __device__ QLComplex ElementWiseArg(const QLComplex& c)
+{
+    return _make_cuComplex(__cuCargf(c), F(0.0));
+}
 __inline__  __device__ QLComplex ElementWiseAbsSq(const QLComplex& c)
 {
     return _make_cuComplex(__cuCabsSqf(c), F(0.0));
 }
 
 __device__ complexfunc devicefunctionAbs = ElementWiseAbs;
+__device__ complexfunc devicefunctionArg = ElementWiseArg;
 __device__ complexfunc devicefunctionAbsSq = ElementWiseAbsSq;
 
 __inline__  __device__ QLComplex ElementWiseMul (const QLComplex& a, const QLComplex& b)
@@ -418,12 +423,16 @@ void QLMatrix::RandomOneReal()
     checkCudaErrors(cudaFree(deviceBuffer));
 }
 
-void QLMatrix::Print(const CCString& sName) const
+void QLMatrix::Print(const CCString& sName, UBOOL bPy) const
 {
     appPushLogDate(FALSE);
     if (!sName.IsEmpty())
     {
-        appGeneral("%s=", sName.c_str());
+        appGeneral("\n%s=", sName.c_str());
+    }
+    else
+    {
+        appGeneral(_T("\n"));
     }
 
     //first loop, find the spaces
@@ -431,7 +440,7 @@ void QLMatrix::Print(const CCString& sName) const
     for (UINT x = 0; x < m_uiX; ++x)
     {
         QLComplex toPrint = Get(x, 0);
-        UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat()).GetLength();
+        UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat(), 0, bPy).GetLength();
         lengths.AddItem(l);
     }
 
@@ -440,7 +449,7 @@ void QLMatrix::Print(const CCString& sName) const
         for (UINT x = 0; x < m_uiX; ++x)
         {
             QLComplex toPrint = Get(x, y);
-            UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat()).GetLength();
+            UINT l = CTracer::PrintComplex(toPrint.x, toPrint.y, GTracer.GetFloatFormat(), 0, bPy).GetLength();
             if (l > lengths[x])
             {
                 lengths[x] = l;
@@ -448,29 +457,29 @@ void QLMatrix::Print(const CCString& sName) const
         }
     }
 
-    appGeneral("{\n");
+    appGeneral(bPy ? _T("[") : _T("{\n"));
     for (UINT y = 0; y < m_uiY; ++y)
     {
         for (UINT x = 0; x < m_uiX; ++x)
         {
             if (0 == x)
             {
-                appGeneral("{");
+                appGeneral(bPy ? _T("[") : _T("{"));
             }
             else
             {
                 appGeneral(", ");
             }
             QLComplex toPrint = Get(x, y);
-            appGeneral(appPrintComplex(toPrint.x, toPrint.y, lengths[x]));
+            appGeneral(appPrintComplex(toPrint.x, toPrint.y, lengths[x], bPy));
         }
         if (y == (m_uiY - 1))
         {
-            appGeneral("}};\n");
+            appGeneral(bPy ? _T("]]\n") : _T("}};\n"));
         }
         else
         {
-            appGeneral("},\n");
+            appGeneral(bPy ? _T("],\n") : _T("},\n"));
         }
     }
     appPopLogDate();
@@ -1014,6 +1023,13 @@ void QLMatrix::ElementAbs()
 {
     complexfunc host_func;
     checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionAbs, sizeof(complexfunc)));
+    ElementWiseFunction(host_func);
+}
+
+void QLMatrix::ElementArg()
+{
+    complexfunc host_func;
+    checkCudaErrors(cudaMemcpyFromSymbol(&host_func, devicefunctionArg, sizeof(complexfunc)));
     ElementWiseFunction(host_func);
 }
 

@@ -18,15 +18,15 @@ __DEFINE_ENUM(EQKmeansJob,
     EQKJ_TestBuildStateOnce,
     EQKJ_TestBuildStateFromFile,
     EQKJ_TestBuildStateRandom,
-    EQKJ_TestQKmeans2D,
-    EQKJ_TestQKNN2D,
-    EQKJ_TestQKNN3D,
+    //EQKJ_TestQKmeans2D,
+    //EQKJ_TestQKNN2D,
+    //EQKJ_TestQKNN3D,
     EQKJ_TestFitPointSet,
     EQKJ_TestFitPointSetSE,
     EQKJ_TestFitPointSetAdap,
-    EQKJ_QAnomaly2D,
-    EQKJ_QAnomaly3D,
-    EQKJ_TestQKNNAnsatz2D,
+    //EQKJ_QAnomaly2D,
+    //EQKJ_QAnomaly3D,
+    //EQKJ_TestQKNNAnsatz2D,
     EQKJ_TestQKNNAnsatz,
     EQKJ_TestQKNNAnsatzSE,
     EQKJ_TestQKNNAE,
@@ -54,11 +54,11 @@ extern void TestProbabilityToBuildStateFromFile(CParameters& params);
 
 extern void TestProbabilityToBuildStateRandom(CParameters& params);
 
-extern void QAnomaly2D(CParameters& params);
+//extern void QAnomaly2D(CParameters& params);
 
-extern void QAnomaly3D(CParameters& params);
+//extern void QAnomaly3D(CParameters& params);
 
-extern void TestKNN2DAnsatz(CParameters& params);
+//extern void TestKNN2DAnsatz(CParameters& params);
 
 extern void TestKNNAnsatz(CParameters& params);
 extern void TestKNNAnsatzSE(CParameters& params);
@@ -76,13 +76,13 @@ extern void TestCircuitBuildStateOnce(CParameters& params);
 /**
 * test KMeans 2D
 */
-extern void TestKMeans2D(CParameters& params);
+//extern void TestKMeans2D(CParameters& params);
 
 /**
 * test KNN
 */
-extern void TestKNN2D(CParameters& params);
-extern void TestKNN3D(CParameters& params);
+//extern void TestKNN2D(CParameters& params);
+//extern void TestKNN3D(CParameters& params);
 
 /**
 * Fit point set

@@ -12,6 +12,7 @@
 // which is from:
 // https://www.nature.com/articles/nature23879
 // 
+// 1909.05820
 //
 // REVISION: [dd/mm/yy]
 //  [02/02/2024 nbale]
@@ -22,27 +23,19 @@
 
 __BEGIN_NAMESPACE
 
-enum class ESingleLayer : UINT
-{
+__DEFINE_ENUM(ESingleLayer,
     RY,
+    RX,
     RYRZ,
-};
+    RXRZ,
+)
 
-enum class ELinkLayer : UINT
-{
-    CX,
-    CZ,
-    CRX,
-};
-
-enum class ELinkStyle : UINT
-{
-    Full,
-    Linear,
-    Circular,
-    PairWise,
-    SCA,
-};
+//Details of Small and MBL see: 2403.04844
+__DEFINE_ENUM(EAnsatzInitial,
+    Random,
+    Small,
+    MBL,
+)
 
 class QLAPI CTwoLocal : public CAnsatz
 {
@@ -51,7 +44,8 @@ public:
     CTwoLocal(BYTE qubits, UINT uiLayerCount, 
         ESingleLayer eSingle = ESingleLayer::RYRZ, 
         ELinkLayer eLinkerLayer = ELinkLayer::CZ,
-        ELinkStyle eLinkStyle = ELinkStyle::Linear);
+        ELinkStyle eLinkStyle = ELinkStyle::Linear,
+        EAnsatzInitial eInitial = EAnsatzInitial::MBL);
 
     QLGate BuildState(const TArray<Real>& params) const override;
 
@@ -62,8 +56,10 @@ protected:
         switch (eSingle)
         {
         case ESingleLayer::RY:
+        case ESingleLayer::RX:
             return 1;
         case ESingleLayer::RYRZ:
+        case ESingleLayer::RXRZ:
             return 2;
         }
         return 0;
@@ -89,6 +85,7 @@ protected:
         case ELinkStyle::Full:
             return m_byQubits * (m_byQubits - 1) / 2;
         case ELinkStyle::Linear:
+        case ELinkStyle::DoublePairWise:
             return m_byQubits - 1;
         case ELinkStyle::Circular:
             return m_byQubits;

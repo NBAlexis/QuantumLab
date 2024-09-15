@@ -259,7 +259,7 @@ QLGate QLGate::CreateControlled() const
 		{
 		case EBasicOperation::EBO_H:
 		{
-			QLGate ret = CreateControlledZYZGate(_hadamard, FALSE);
+			QLGate ret = CreateControlledZYZGate(_hadamard);
 			ret.ApplyOnQubits(combinedQubits);
 			ret.m_sName = _T("c") + m_sName;
 			if (m_bDagger)
@@ -1424,6 +1424,642 @@ void QLGate::PrintGateName(const CCString& sName)
 		sNameString = sNameString + _T(" ");
 	}
 	appGeneral(sNameString.c_str(), sName.c_str());
+}
+
+
+TArray<SBasicOperation> QLGate::ToBuiltIn(const TArray<SBasicOperation>& gates)
+{
+	TArray<SBasicOperation> ret;
+
+	QLGate p1(EBasicOperation::EBO_P, -PI / 2);
+	QLGate p2(EBasicOperation::EBO_P, PI / 2);
+	QLGate h(EBasicOperation::EBO_H);
+	QLGate cx(EBasicOperation::EBO_CX);
+
+	for (INT i = 0; i < gates.Num(); ++i)
+	{
+		switch (gates[i].m_eOperation)
+		{
+		case EBasicOperation::EBO_CC:
+		case EBasicOperation::EBO_H:
+		case EBasicOperation::EBO_X:
+		case EBasicOperation::EBO_Y:
+		case EBasicOperation::EBO_Z:
+		case EBasicOperation::EBO_P:
+		case EBasicOperation::EBO_RX:
+		case EBasicOperation::EBO_RY:
+		case EBasicOperation::EBO_RZ:
+		case EBasicOperation::EBO_CX:
+			{
+				ret.AddItem(gates[i]);
+			}
+			break;
+		case EBasicOperation::EBO_CY:
+			{
+				SBasicOperation cy_h1;
+				cy_h1.m_eOperation = EBasicOperation::EBO_H;
+				cy_h1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cy_h1);
+
+				SBasicOperation cy_p1;
+				cy_p1.m_eOperation = EBasicOperation::EBO_P;
+				cy_p1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cy_p1.m_fClassicalParameter = PI / 2;
+				ret.AddItem(cy_p1);
+
+				SBasicOperation cy_cx;
+				cy_cx.m_eOperation = EBasicOperation::EBO_CX;
+				cy_cx.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cy_cx.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cy_cx);
+
+				SBasicOperation cy_p2;
+				cy_p2.m_eOperation = EBasicOperation::EBO_P;
+				cy_p2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cy_p2.m_fClassicalParameter = -PI / 2;
+				ret.AddItem(cy_p2);
+
+				SBasicOperation cy_h2;
+				cy_h2.m_eOperation = EBasicOperation::EBO_H;
+				cy_h2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cy_h2);
+			}
+			break;
+		case EBasicOperation::EBO_CZ:
+			{
+				SBasicOperation cz_h1;
+				cz_h1.m_eOperation = EBasicOperation::EBO_H;
+				cz_h1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cz_h1);
+
+				SBasicOperation cz_cx;
+				cz_cx.m_eOperation = EBasicOperation::EBO_CX;
+				cz_cx.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cz_cx.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cz_cx);
+
+				SBasicOperation cz_h2;
+				cz_h2.m_eOperation = EBasicOperation::EBO_H;
+				cz_h2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cz_h2);
+			}
+			break;
+		case EBasicOperation::EBO_CP:
+			{
+				SBasicOperation cp_cx1;
+				cp_cx1.m_eOperation = EBasicOperation::EBO_CX;
+				cp_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cp_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cp_cx1);
+
+				SBasicOperation cp_p1;
+				cp_p1.m_eOperation = EBasicOperation::EBO_P;
+				cp_p1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cp_p1.m_fClassicalParameter = -gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(cp_p1);
+
+				SBasicOperation cp_cx2;
+				cp_cx2.m_eOperation = EBasicOperation::EBO_CX;
+				cp_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cp_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cp_cx2);
+
+				SBasicOperation cp_p2;
+				cp_p2.m_eOperation = EBasicOperation::EBO_P;
+				cp_p2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cp_p2.m_fClassicalParameter = gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(cp_p2);
+
+				SBasicOperation cp_p3;
+				cp_p3.m_eOperation = EBasicOperation::EBO_P;
+				cp_p3.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cp_p3.m_fClassicalParameter = gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(cp_p3);
+			}
+			break;
+		case EBasicOperation::EBO_CRX:
+			{
+				SBasicOperation crx_rz1;
+				crx_rz1.m_eOperation = EBasicOperation::EBO_RZ;
+				crx_rz1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crx_rz1.m_fClassicalParameter = -PI / 2;
+				ret.AddItem(crx_rz1);
+
+				SBasicOperation crx_cx1;
+				crx_cx1.m_eOperation = EBasicOperation::EBO_CX;
+				crx_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				crx_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(crx_cx1);
+
+				SBasicOperation crx_ry1;
+				crx_ry1.m_eOperation = EBasicOperation::EBO_RY;
+				crx_ry1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crx_ry1.m_fClassicalParameter = gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(crx_ry1);
+
+				SBasicOperation crx_cx2;
+				crx_cx2.m_eOperation = EBasicOperation::EBO_CX;
+				crx_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				crx_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(crx_cx2);
+
+				SBasicOperation crx_ry2;
+				crx_ry2.m_eOperation = EBasicOperation::EBO_RY;
+				crx_ry2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crx_ry2.m_fClassicalParameter = -gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(crx_ry2);
+
+				SBasicOperation crx_rz2;
+				crx_rz2.m_eOperation = EBasicOperation::EBO_RZ;
+				crx_rz2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crx_rz2.m_fClassicalParameter = PI / 2;
+				ret.AddItem(crx_rz2);
+			}
+			break;
+		case EBasicOperation::EBO_CRY:
+			{
+				SBasicOperation cry_cx1;
+				cry_cx1.m_eOperation = EBasicOperation::EBO_CX;
+				cry_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cry_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cry_cx1);
+
+				SBasicOperation cry_ry1;
+				cry_ry1.m_eOperation = EBasicOperation::EBO_RY;
+				cry_ry1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cry_ry1.m_fClassicalParameter = -gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(cry_ry1);
+
+				SBasicOperation cry_cx2;
+				cry_cx2.m_eOperation = EBasicOperation::EBO_CX;
+				cry_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				cry_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(cry_cx2);
+
+				SBasicOperation cry_ry2;
+				cry_ry2.m_eOperation = EBasicOperation::EBO_RY;
+				cry_ry2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				cry_ry2.m_fClassicalParameter = gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(cry_ry2);
+			}
+			break;
+		case EBasicOperation::EBO_CRZ:
+			{
+				SBasicOperation crz_cx1;
+				crz_cx1.m_eOperation = EBasicOperation::EBO_CX;
+				crz_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				crz_cx1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(crz_cx1);
+
+				SBasicOperation crz_rz1;
+				crz_rz1.m_eOperation = EBasicOperation::EBO_RZ;
+				crz_rz1.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crz_rz1.m_fClassicalParameter = -gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(crz_rz1);
+
+				SBasicOperation crz_cx2;
+				crz_cx2.m_eOperation = EBasicOperation::EBO_CX;
+				crz_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[0]);
+				crz_cx2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				ret.AddItem(crz_cx2);
+
+				SBasicOperation crz_rz2;
+				crz_rz2.m_eOperation = EBasicOperation::EBO_RZ;
+				crz_rz2.m_lstQubits.AddItem(gates[i].m_lstQubits[1]);
+				crz_rz2.m_fClassicalParameter = gates[i].m_fClassicalParameter / 2;
+				ret.AddItem(crz_rz2);
+			}
+			break;
+		default:
+			appParanoiac(_T("not supported operator : %d\n"), gates[i].m_eOperation);
+			break;
+		}
+	}
+	return ret;
+}
+
+/**
+* About phase:
+* in normal openQASM,
+* U(a,b,c)=Rz(b)Ry(a)Rz(c)|psi>
+*         =  [ exp(i (alpha+beta)/2) cos(theta/2)  exp(i (alpha-beta)/2) sin(theta/2)]
+*            [-exp(-i(alpha-beta)/2) sin(theta/2)  exp(-i(alpha+beta)/2) cos(theta/2)]
+* 
+* in qiskit
+* U(a,b,c) = [cos(a/2)           -exp(ic)    sin(a/2)]
+*            [exp(ib) sin(a/2)   exp(i(b+c)) cos(a/2)]
+* 
+* 
+*/
+CCString QLGate::ToOpenOASM(const TArray<SBasicOperation>& gates, BYTE byQubit, const TArray<BYTE>& measureAtLast)
+{
+	CCString ret = _T("");
+
+	ret = ret + _T("qreg q[") + appToString(byQubit) + _T("];\n");
+	BYTE byMeasurebit = 0;
+	THashMap<BYTE, BYTE> measuremap;
+
+	QLMatrix single = _I2;
+	CCString operations = _T("");
+	CCString sOpAdd;
+	TArray<QLMatrix> singlematrices;
+	TArray<UINT> qubitLevel;
+	Real gloablePhaseOpenQASM = F(0.0);
+	Real gloablePhaseOpenQiskit = F(0.0);
+
+	for (BYTE i = 0; i < byQubit; ++i)
+	{
+		singlematrices.AddItem(single);
+		qubitLevel.AddItem(0);
+	}
+
+	for (INT i = 0; i < gates.Num(); ++i)
+	{
+		//UBOOL bIsTwoQubits = FALSE;
+		//BYTE dirtyQubit1 = 0;
+		//BYTE dirtyQubit2 = 0;
+
+		switch (gates[i].m_eOperation)
+		{
+		case EBasicOperation::EBO_CC:
+			{
+				TArray<Real> degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[0]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("U(%.8f, %.8f, %.8f) q[%d];\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[0]);
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+					operations = operations + sOpAdd;
+				}
+				else
+				{
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+				}
+
+				singlematrices[gates[i].m_lstQubits[0]] = _I2;
+				qubitLevel[gates[i].m_lstQubits[0]] = qubitLevel[gates[i].m_lstQubits[0]] + 1;
+
+				//find a classical bit
+				BYTE classicalByte = 0;
+				if (measuremap.Exist(gates[i].m_lstQubits[0]))
+				{
+					classicalByte = measuremap[gates[i].m_lstQubits[0]];
+				}
+				else
+				{
+					classicalByte = byMeasurebit;
+					measuremap.SetAt(gates[i].m_lstQubits[0], classicalByte);
+					byMeasurebit = byMeasurebit + 1;
+				}
+
+				//apply measure
+				sOpAdd.Format(_T("measure q[%d] -> c[%d];\n"), gates[i].m_lstQubits[0], classicalByte);
+				operations = operations + sOpAdd;
+			}
+			break;
+		case EBasicOperation::EBO_H:
+		case EBasicOperation::EBO_X:
+		case EBasicOperation::EBO_Y:
+		case EBasicOperation::EBO_Z:
+		case EBasicOperation::EBO_P:
+		case EBasicOperation::EBO_RX:
+		case EBasicOperation::EBO_RY:
+		case EBasicOperation::EBO_RZ:
+			{
+				singlematrices[gates[i].m_lstQubits[0]] = CreateSingleQubitMatrix(gates[i].m_eOperation, gates[i].m_fClassicalParameter) * singlematrices[gates[i].m_lstQubits[0]];
+			}
+			break;
+		case EBasicOperation::EBO_CX:
+		case EBasicOperation::EBO_CY:
+		case EBasicOperation::EBO_CZ:
+		case EBasicOperation::EBO_CP:
+		case EBasicOperation::EBO_CRX:
+		case EBasicOperation::EBO_CRY:
+		case EBasicOperation::EBO_CRZ:
+			{
+				TArray<Real> degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[0]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("U(%.8f, %.8f, %.8f) q[%d];\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[0]);
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+					operations = operations + sOpAdd;
+				}
+				else
+				{
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+				}
+				degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[1]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("U(%.8f, %.8f, %.8f) q[%d];\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[1]);
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+					operations = operations + sOpAdd;
+				}
+				else
+				{
+					gloablePhaseOpenQASM += degrees[3];
+					gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+				}
+				singlematrices[gates[i].m_lstQubits[0]] = _I2;
+				singlematrices[gates[i].m_lstQubits[1]] = _I2;
+				UINT iLevel1 = qubitLevel[gates[i].m_lstQubits[0]] + 1;
+				UINT iLevel2 = qubitLevel[gates[i].m_lstQubits[1]] + 1;
+				qubitLevel[gates[i].m_lstQubits[0]] = iLevel1 > iLevel2 ? iLevel1 : iLevel2;
+				qubitLevel[gates[i].m_lstQubits[1]] = iLevel1 > iLevel2 ? iLevel1 : iLevel2;
+
+				switch (gates[i].m_eOperation)
+					{
+						case EBasicOperation::EBO_CX:
+						{
+							sOpAdd.Format(_T("CX q[%d], q[%d];\n"), gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CY:
+						{
+							sOpAdd.Format(_T("cy q[%d], q[%d];\n"), gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CZ:
+						{
+							sOpAdd.Format(_T("cz q[%d], q[%d];\n"), gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CP:
+						{
+							sOpAdd.Format(_T("cp(%.8f) q[%d], q[%d];\n"), gates[i].m_fClassicalParameter, gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CRX:
+						{
+							sOpAdd.Format(_T("crx(%.8f) q[%d], q[%d];\n"), gates[i].m_fClassicalParameter, gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CRY:
+						{
+							sOpAdd.Format(_T("cry(%.8f) q[%d], q[%d];\n"), gates[i].m_fClassicalParameter, gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+						case EBasicOperation::EBO_CRZ:
+						{
+							sOpAdd.Format(_T("crz(%.8f) q[%d], q[%d];\n"), gates[i].m_fClassicalParameter, gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+							operations = operations + sOpAdd;
+						}
+						break;
+					}
+
+				}
+			break;
+		}
+	}
+
+	UINT uiMaxLevel = 0;
+	for (BYTE i = 0; i < byQubit; ++i)
+	{
+		TArray<Real> degrees = GetZYZDecompose(singlematrices[i]);
+		if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+		{
+			sOpAdd.Format(_T("U(%.8f, %.8f, %.8f) q[%d];\n"), -degrees[0], -degrees[2], -degrees[1], i);
+			gloablePhaseOpenQASM += degrees[3];
+			gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+			operations = operations + sOpAdd;
+		}
+		else
+		{
+			gloablePhaseOpenQASM += degrees[3];
+			gloablePhaseOpenQiskit += degrees[3] + F(0.5) * (degrees[1] + degrees[2]);
+		}
+
+		if (uiMaxLevel < qubitLevel[i])
+		{
+			uiMaxLevel = qubitLevel[i];
+		}
+	}
+
+	for (INT i = 0; i < measureAtLast.Num(); ++i)
+	{
+		BYTE classicalByte = 0;
+		if (measuremap.Exist(gates[i].m_lstQubits[0]))
+		{
+			classicalByte = measuremap[gates[i].m_lstQubits[0]];
+		}
+		else
+		{
+			classicalByte = byMeasurebit;
+			measuremap.SetAt(gates[i].m_lstQubits[0], classicalByte);
+			byMeasurebit = byMeasurebit + 1;
+		}
+
+		//apply measure
+		sOpAdd.Format(_T("measure q[%d] -> c[%d];\n"), gates[i].m_lstQubits[0], classicalByte);
+		operations = operations + sOpAdd;
+	}
+
+	if (byMeasurebit > 0)
+	{
+		ret = ret + _T("creg c[") + appToString(byMeasurebit) + _T("];\n");
+	}
+	while (gloablePhaseOpenQASM > PI)
+	{
+		gloablePhaseOpenQASM -= PI2;
+	}
+	while (gloablePhaseOpenQASM < -PI)
+	{
+		gloablePhaseOpenQASM += PI2;
+	}
+	while (gloablePhaseOpenQiskit > PI)
+	{
+		gloablePhaseOpenQiskit -= PI2;
+	}
+	while (gloablePhaseOpenQiskit < -PI)
+	{
+		gloablePhaseOpenQiskit += PI2;
+	}
+
+	CCString sPhase = _T("");
+	if (abs(gloablePhaseOpenQASM) > 0.000001f)
+	{
+		sPhase = _T("// gloable phase (QASM): ") + appToString(gloablePhaseOpenQASM) + _T("\n");
+	}
+	if (abs(gloablePhaseOpenQiskit) > 0.000001f)
+	{
+		sPhase = sPhase + _T("// gloable phase (Qiskit): ") + appToString(gloablePhaseOpenQiskit) + _T("\n");
+	}
+	ret = _T("\nOPENQASM 2.0;\ninclude \"qelib1.inc\";\n// depth: ") + appToString(uiMaxLevel) + _T("\n") + sPhase + ret;
+
+	return ret + operations + _T("\n");
+}
+
+QLMatrix QLGate::CreateSingleQubitMatrix(EBasicOperation eop, Real fParam)
+{
+	QLComplex matrixdata[4];
+
+	switch (eop)
+	{
+	case EBasicOperation::EBO_H:
+		return _hadamard;
+	case EBasicOperation::EBO_X:
+		return _PauliX;
+	case EBasicOperation::EBO_Y:
+		return _PauliY;
+	case EBasicOperation::EBO_Z:
+		return _PauliZ;
+	case EBasicOperation::EBO_P:
+		matrixdata[0] = _onec;
+		matrixdata[1] = _zeroc;
+		matrixdata[2] = _zeroc;
+		matrixdata[3] = _make_cuComplex(cos(fParam), sin(fParam));
+		return QLMatrix::CopyCreate(2U, 2U, matrixdata);
+	case EBasicOperation::EBO_RX:
+		matrixdata[0] = _make_cuComplex(cos(fParam * F(0.5)), F(0.0));
+		matrixdata[1] = _make_cuComplex(F(0.0), sin(fParam * F(-0.5)));
+		matrixdata[2] = _make_cuComplex(F(0.0), sin(fParam * F(-0.5)));
+		matrixdata[3] = _make_cuComplex(cos(fParam * F(0.5)), F(0.0));
+		return QLMatrix::CopyCreate(2U, 2U, matrixdata);
+	case EBasicOperation::EBO_RY:
+		matrixdata[0] = _make_cuComplex(cos(fParam * F(0.5)), F(0.0));
+		matrixdata[1] = _make_cuComplex(sin(fParam * F(0.5)), F(0.0));
+		matrixdata[2] = _make_cuComplex(sin(fParam * F(-0.5)), F(0.0));
+		matrixdata[3] = _make_cuComplex(cos(fParam * F(0.5)), F(0.0));
+		return QLMatrix::CopyCreate(2U, 2U, matrixdata);
+	case EBasicOperation::EBO_RZ:
+		matrixdata[0] = _make_cuComplex(cos(fParam * F(0.5)), sin(fParam * F(-0.5)));
+		matrixdata[1] = _zeroc;
+		matrixdata[2] = _zeroc;
+		matrixdata[3] = _make_cuComplex(cos(fParam * F(0.5)), sin(fParam * F(0.5)));
+		return QLMatrix::CopyCreate(2U, 2U, matrixdata);
+	}
+
+	appWarning(_T("CreateSingleQubitMatrix not supported: %d\n"), eop);
+	return _I2;
+}
+
+CCString QLGate::ToQLISP(const TArray<SBasicOperation>& gates, BYTE byQubit, const TArray<BYTE>& measureAtLast)
+{
+	BYTE byMeasurebit = 0;
+	THashMap<BYTE, BYTE> measuremap;
+
+	QLMatrix single = _I2;
+	CCString operations = _T("\n[\n");
+	CCString sOpAdd;
+	TArray<QLMatrix> singlematrices;
+	for (BYTE i = 0; i < byQubit; ++i)
+	{
+		singlematrices.AddItem(single);
+	}
+
+	for (INT i = 0; i < gates.Num(); ++i)
+	{
+		//UBOOL bIsTwoQubits = FALSE;
+		//BYTE dirtyQubit1 = 0;
+		//BYTE dirtyQubit2 = 0;
+
+		switch (gates[i].m_eOperation)
+		{
+		case EBasicOperation::EBO_CC:
+			{
+				TArray<Real> degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[0]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("    ((\'U\', %.5f, %.5f, %.5f), \'Q%d\'),\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[0]);
+					operations = operations + sOpAdd;
+				}
+				singlematrices[gates[i].m_lstQubits[0]] = _I2;
+
+				//find a classical bit
+				BYTE classicalByte = 0;
+				if (measuremap.Exist(gates[i].m_lstQubits[0]))
+				{
+					classicalByte = measuremap[gates[i].m_lstQubits[0]];
+				}
+				else
+				{
+					classicalByte = byMeasurebit;
+					measuremap.SetAt(gates[i].m_lstQubits[0], classicalByte);
+					byMeasurebit = byMeasurebit + 1;
+				}
+
+				//apply measure
+				sOpAdd.Format(_T("    ((\'Measure\', %d), \'Q%d\'),\n"), classicalByte, gates[i].m_lstQubits[0]);
+				operations = operations + sOpAdd;
+			}
+			break;
+		case EBasicOperation::EBO_H:
+		case EBasicOperation::EBO_X:
+		case EBasicOperation::EBO_Y:
+		case EBasicOperation::EBO_Z:
+		case EBasicOperation::EBO_P:
+		case EBasicOperation::EBO_RX:
+		case EBasicOperation::EBO_RY:
+		case EBasicOperation::EBO_RZ:
+			{
+				singlematrices[gates[i].m_lstQubits[0]] = CreateSingleQubitMatrix(gates[i].m_eOperation, gates[i].m_fClassicalParameter) * singlematrices[gates[i].m_lstQubits[0]];
+			}
+			break;
+		case EBasicOperation::EBO_CX:
+			{
+				TArray<Real> degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[0]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("    ((\'U\', %.5f, %.5f, %.5f), \'Q%d\'),\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[0]);
+					operations = operations + sOpAdd;
+				}
+				degrees = GetZYZDecompose(singlematrices[gates[i].m_lstQubits[1]]);
+				if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+				{
+					sOpAdd.Format(_T("    ((\'U\', %.5f, %.5f, %.5f), \'Q%d\'),\n"), -degrees[0], -degrees[2], -degrees[1], gates[i].m_lstQubits[1]);
+					operations = operations + sOpAdd;
+				}
+				singlematrices[gates[i].m_lstQubits[0]] = _I2;
+				singlematrices[gates[i].m_lstQubits[1]] = _I2;
+
+				sOpAdd.Format(_T("    (\'Cnot\', (\'Q%d\', \'Q%d\')),\n"), gates[i].m_lstQubits[0], gates[i].m_lstQubits[1]);
+				operations = operations + sOpAdd;
+
+			}
+			break;
+		}
+	}
+
+	for (BYTE i = 0; i < byQubit; ++i)
+	{
+		TArray<Real> degrees = GetZYZDecompose(singlematrices[i]);
+		if (abs(degrees[0]) + abs(degrees[1]) + abs(degrees[2]) > F(0.00001))
+		{
+			sOpAdd.Format(_T("    ((\'U\', %.5f, %.5f, %.5f), \'Q%d\'),\n"), -degrees[0], -degrees[2], -degrees[1], i);
+			operations = operations + sOpAdd;
+		}
+	}
+
+	for (INT i = 0; i < measureAtLast.Num(); ++i)
+	{
+		BYTE classicalByte = 0;
+		if (measuremap.Exist(gates[i].m_lstQubits[0]))
+		{
+			classicalByte = measuremap[gates[i].m_lstQubits[0]];
+		}
+		else
+		{
+			classicalByte = byMeasurebit;
+			measuremap.SetAt(gates[i].m_lstQubits[0], classicalByte);
+			byMeasurebit = byMeasurebit + 1;
+		}
+
+		//apply measure
+		sOpAdd.Format(_T("    ((\'Measure\', %d), \'Q%d\'),\n"), classicalByte, gates[i].m_lstQubits[0]);
+		operations = operations + sOpAdd;
+	}
+
+	return operations + _T("]\n");
 }
 
 __END_NAMESPACE

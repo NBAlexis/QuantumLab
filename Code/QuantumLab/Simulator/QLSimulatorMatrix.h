@@ -30,6 +30,7 @@ public:
     QLGate m_MasterGate;
     BYTE m_byQubitCount;
     UBOOL m_bPrint;
+    TArray<SBasicOperation> m_op;
 
 };
 
@@ -55,6 +56,9 @@ public:
     }
 
     void Simulate(QLSimulatorParameters* params, QLSimulatorOutput* output = NULL) const override;
+
+    static QLMatrix ShowMatrix(const QLGate& gate);
+    static QLMatrix ShowMatrix(const TArray<SBasicOperation>& op, BYTE qubit);
 
 };
 

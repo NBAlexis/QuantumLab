@@ -12,86 +12,84 @@
 
 __BEGIN_NAMESPACE
 
-TArray<Real> GetZYZDecompose(const QLMatrix& u, UBOOL bNormalize)
+/**
+* U = [u11 u12]
+*     [u21 u22]
+*
+* U = exp(i delta) [ exp(i (alpha+beta)/2) cos(theta/2)  exp(i (alpha-beta)/2) sin(theta/2)] = exp(i delta) Rz(-alpha) Ry(-theta) Rz(-beta)
+*                  [-exp(-i(alpha-beta)/2) sin(theta/2)  exp(-i(alpha+beta)/2) cos(theta/2)]
+*
+* for OpenQASM
+*
+*
+*
+* U(a,b,c)=Rz(b)Ry(a)Rz(c)|psi>, where a=-theta, b=-alpha, c=-beta
+* a,b,c = degree(0), degree(2), degree(1)
+*/
+TArray<Real> GetZYZDecompose(const QLMatrix& u)
 {
     TArray<Real> ret;
 
-    Real theta = F(0.0);
+    const QLComplex u11 = u.Get(0, 0);
+    const Real amp11 = _cuCabsf(u11);
+    const QLComplex u12 = u.Get(1, 0);
+    const Real amp12 = _cuCabsf(u12);
+    
+
+    Real beta = F(0.0);
     Real alpha = F(0.0);
     Real delta = F(0.0);
-    Real beta  = F(0.0);
 
-    QLComplex u11 = u.Get(0, 0);
-    QLComplex u12 = u.Get(1, 0);
-    QLComplex u21 = u.Get(0, 1);
-    QLComplex u22 = u.Get(1, 1);
-
-    QLComplex m12 = _make_cuComplex(-u12.x, -u12.y);
-
-    if (_cuCabsf(u11) < REAL_EPS)
+    if (amp11 < _QL_FLT_MIN_)
     {
-        theta = PI;
-        delta = (__cuCargf(m12) + __cuCargf(u21)) / F(2.0);
-        beta = __cuCargf(m12) - __cuCargf(u21);
-        ret.AddItem(theta);
-        ret.AddItem(beta);
-        ret.AddItem(alpha);
-        ret.AddItem(delta);
-        return ret;
+        const QLComplex u21 = u.Get(0, 1);
+        const Real a12 = __cuCargf(u12);
+        const Real a21 = __cuCargf(u21);
+        alpha = (a12 - a21 + PI) / 2;
+        beta = -alpha;
+        delta = (a12 + a21 - PI) / 2;
+    }
+    else
+    {
+        const QLComplex u22 = u.Get(1, 1);
+        const Real a12 = __cuCargf(u12);
+        const Real a11 = __cuCargf(u11);
+        const Real a22 = __cuCargf(u22);
+        beta = a11 - a12;
+        alpha = a12 - a22;
+        delta = a11 - alpha / 2 - beta / 2;
     }
 
-    if (_cuCabsf(u12) < REAL_EPS)
-    {
-        delta = (__cuCargf(u22) + __cuCargf(u11)) / F(2.0);
-        beta = __cuCargf(u22) - __cuCargf(u11);
-        ret.AddItem(theta);
-        ret.AddItem(beta);
-        ret.AddItem(alpha);
-        ret.AddItem(delta);
-        return ret;
-    }
-
-    if (bNormalize)
-    {
-        Real fNormA = __cuCabsSqf(u11) + __cuCabsSqf(u12);
-        QLComplex dotAB = _cuCaddf(_cuCmulf(_cuConjf(u11), u21), _cuCmulf(_cuConjf(u12), u22));
-        u21 = _cuCsubf(u21, cuCdivf_cr(_cuCmulf(u11, dotAB), fNormA));
-        u22 = _cuCsubf(u22, cuCdivf_cr(_cuCmulf(u12, dotAB), fNormA));
-        //Real fNormC = _sqrt(__cuCabsSqf(u21) + __cuCabsSqf(u22));
-        fNormA = _sqrt(fNormA);
-
-        u11 = cuCdivf_cr(u11, fNormA);
-        u12 = cuCdivf_cr(u12, fNormA);
-        u21 = cuCdivf_cr(u21, fNormA);
-        u22 = cuCdivf_cr(u22, fNormA);
-    }
-
-    theta = F(2.0) * _acos(_cuCabsf(u11));
-    Real cs = _cos(theta / 2);
-    Real sn = _sin(theta / 2);
-
-    //this can be simplified since the arg only changes when cs, sn < 0
-    u11 = cuCdivf_cr(u11, cs);
-    u12 = cuCdivf_cr(u12, sn);
-    u22 = cuCdivf_cr(u22, cs);
-    beta = __cuCargf(u11) - __cuCargf(u12);
-    alpha = __cuCargf(u12) - __cuCargf(u22);
-    delta = (__cuCargf(u11) - alpha / 2 - beta / 2);
-
-    ret.AddItem(theta);
+    ret.AddItem(F(2.0) * _atan2(amp12, amp11)); //theta
     ret.AddItem(beta);
     ret.AddItem(alpha);
-    ret.AddItem(delta);
+    ret.AddItem(delta); 
+
+    //appGeneral(_T("==============\n"));
+
+    //u.Print("u");
+
+    //QLMatrix r = QLGate::CreateSingleQubitMatrix(EBasicOperation::EBO_RZ, -ret[1]);
+    //r = QLGate::CreateSingleQubitMatrix(EBasicOperation::EBO_RY, -ret[0]) * r;
+    //r = QLGate::CreateSingleQubitMatrix(EBasicOperation::EBO_RZ, -ret[2]) * r;
+    //r = r * _make_cuComplex(cos(ret[3]), sin(ret[3]));
+
+    //appGeneral(_T("delta = %f\n"), ret[3]);
+
+    //r.Print("r");
+
+    //appGeneral(_T("==============\n"));
+
     return ret;
 }
 
-QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
+QLGate QLAPI CreateZYZGate(const QLMatrix& u)
 {
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
     retGate.m_sName = _T("ZYZ");
     
-    TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
+    TArray<Real> degrees = GetZYZDecompose(u);
 
     QLGate rz1(EBasicOperation::EBO_RZ, -degrees[1]);
     QLGate ry(EBasicOperation::EBO_RY, -degrees[0]);
@@ -106,7 +104,7 @@ QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize)
     return retGate;
 }
 
-QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize)
+QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u)
 {
     QLGate retGate;
     retGate.m_lstQubits.AddItem(0);
@@ -118,7 +116,7 @@ QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize)
     controller.AddItem(0);
     target.AddItem(1);
 
-    TArray<Real> degrees = GetZYZDecompose(u, bNormalize);
+    TArray<Real> degrees = GetZYZDecompose(u);
 
     QLGate rz1(EBasicOperation::EBO_RZ, (degrees[2] - degrees[1]) / 2);
     QLGate cnot1(EBasicOperation::EBO_CX);

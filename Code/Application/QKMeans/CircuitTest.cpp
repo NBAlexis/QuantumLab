@@ -204,34 +204,35 @@ void TestCircuitBuildStateOnce(CParameters& params)
 */
 void TestSimpleEncode(CParameters& params)
 {
-    CCString sValues;
+    UINT w, h;
+    TArray<QLComplex> data = ReadCSVA(_T("testsimpleencode.csv"), w, h);
+    appGeneral(_T("w=%d h=%d\n"), w, h);
+    TArray<Real> ansatzdata = ReadCSVAR(_T("an-testsimpleencode.csv"), w, h);
+    appGeneral(_T("w=%d h=%d\n"), w, h);
 
-    CCString sFileToLoad;
-    __FetchStringWithDefault(_T("FileName"), _T(""));
-    sFileToLoad = sValues;
+    QLGate simpleencodeOne = SimpleEncodeOneVectorWithLinkStype(data.GetData(), ELinkStyle::PairWise, ELinkLayer::CZ, 4, 6);
+    QLGate simpleencodeAll = SimpleEncodeVectorsWithLinkStype(data.GetData(), ELinkStyle::PairWise, ELinkLayer::CZ, 5, 4, 6);
 
-    UINT w = 0;
-    UINT h = 0;
-    TArray<QLComplex> data = ReadCSVA(sFileToLoad, w, h);
-
-    QLComplex onev[6];
-    memcpy(onev, data.GetData() + 6, sizeof(QLComplex) * 6);
-    //QLGate simpleencodeOne = SimpleEncodeOneVector(onev, 4, 6);
-    QLGate simpleencodeOne = SimpleEncodeVectors(data.GetData(), 5, 4, 6);
-
-    //simpleencodeOne.DebugPrint(1);
+    //CTwoLocal ansatz(9, 10, ESingleLayer::RYRZ, ELinkLayer::CZ, ELinkStyle::PairWise);
+    //ansatz.SetParameters(ansatzdata);
+    //QLGate ansatzGate = ansatz.BuildStateWithParam();
 
     QLMatrix res = QLSimulatorVector::ShowState(simpleencodeOne);
-    res.Print(_T("res"));
+    res.Print(_T("res1"));
 
+    QLMatrix res2 = QLSimulatorVector::ShowState(simpleencodeAll);
+    res2.Print(_T("res2"));
 
     //appGeneral(_T("%s"), appToString(data));
 
-    QLQuantumKmeans::TestCircuitBuildState(
-        8,
-        256,
-        1,
-        1);
+    //QLQuantumKmeans::TestCircuitBuildState(
+    //    8,
+    //    256,
+    //    1,
+    //    1);
+
+    simpleencodeOne.DebugPrint(1);
+    simpleencodeAll.DebugPrint(1);
 
 }
 

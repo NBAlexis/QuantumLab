@@ -63,11 +63,12 @@ Real CStateBuilder::LossFunction(const QLGate& ansatzGate)
     destroyQureg(vec, evn);
     destroyQuESTEnv(evn);
 
-    return F(1.0) - _cuCabsf(ansatzState.VectorDot(m_StateToFit));
+    return F(1.0) - (m_bMaeOrMse ? _cuCabsf(ansatzState.VectorDot(m_StateToFit)) : __cuCabsSqf(ansatzState.VectorDot(m_StateToFit)));
 }
 
-void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, 
-    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal)
+void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, 
+    ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial,
+    Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bUseAbsorlute)
 {
     UINT w, h;
     TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
@@ -77,45 +78,35 @@ void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const 
     QLGate aegate = AmplitudeEncodeVectors(points.GetData(), hpower, wpower, FALSE);
     BYTE byQubit = static_cast<BYTE>(aegate.m_lstQubits.Num());
 
-    ESingleLayer eSingle = ESingleLayer::RYRZ;
-    if (bOnlyReal)
-    {
-        eSingle = ESingleLayer::RY;
-    }
-
-    CTwoLocal ansatz(byQubit, uiLevel, eSingle, ELinkLayer::CZ, ELinkStyle::SCA);
+    CTwoLocal ansatz(byQubit, uiLevel, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle, eAnsatzInitial);
     CAdam optimizer(&ansatz, NULL, fLearnRate);
-    CStateBuilder builder(aegate, fGoal);
+    CStateBuilder builder(aegate, fGoal, bUseAbsorlute);
     TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }
 
-void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits,
-    UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal)
+void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits, UINT uiLevel, 
+    ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial,
+    ELinkStyle eSimpleEncodeStyle, ELinkLayer eSimpleencodeLayer, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bUseAbsorlute)
 {
     UINT w, h;
     TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
     //UINT wpower = MostSignificantPowerTwo(w);
     UINT hpower = MostSignificantPowerTwo(h);
 
-    QLGate segate = SimpleEncodeVectors(points.GetData(), static_cast<BYTE>(hpower), byEncodeQubits, w);
+    QLGate segate = SimpleEncodeVectorsWithLinkStype(points.GetData(), eSimpleEncodeStyle, eSimpleencodeLayer, static_cast<BYTE>(hpower), byEncodeQubits, w);
     BYTE byQubit = static_cast<BYTE>(segate.m_lstQubits.Num());
 
-    ESingleLayer eSingle = ESingleLayer::RYRZ;
-    if (bOnlyReal)
-    {
-        eSingle = ESingleLayer::RY;
-    }
-
-    CTwoLocal ansatz(byQubit, uiLevel, eSingle, ELinkLayer::CZ, ELinkStyle::SCA);
+    CTwoLocal ansatz(byQubit, uiLevel, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle, eAnsatzInitial);
     CAdam optimizer(&ansatz, NULL, fLearnRate);
-    CStateBuilder builder(segate, fGoal);
+    CStateBuilder builder(segate, fGoal, bUseAbsorlute);
     TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }
 
-void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile,
-    Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT uiAdaptiveWait, Real fAdaptiveEps, UBOOL bOnlyReal)
+void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, 
+    ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial,
+    Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT uiAdaptiveWait, Real fAdaptiveEps, UBOOL bUseAbsorlute)
 {
     UINT w, h;
     TArray<QLComplex> points = ReadCSVA(sPointFile, w, h);
@@ -125,17 +116,11 @@ void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const 
     QLGate aegate = AmplitudeEncodeVectors(points.GetData(), hpower, wpower, FALSE);
     BYTE byQubit = static_cast<BYTE>(aegate.m_lstQubits.Num());
 
-    ESingleLayer eSingle = ESingleLayer::RYRZ;
-    if (bOnlyReal)
-    {
-        eSingle = ESingleLayer::RY;
-    }
-
-    CTwoLocalAdaptive ansatz(byQubit, eSingle, ELinkLayer::CZ, ELinkStyle::Circular);
+    CTwoLocalAdaptive ansatz(byQubit, eAnsatzSingleLayer, eAnsatzLayer, eAnsatzStyle, eAnsatzInitial);
     ansatz.SetMaxLayer(uiMaxLayer);
     CAdam optimizer(&ansatz, NULL, fLearnRate);
     optimizer.SetAdapetiveParameter(uiAdaptiveWait, fAdaptiveEps);
-    CStateBuilder builder(aegate, fGoal);
+    CStateBuilder builder(aegate, fGoal, bUseAbsorlute);
     TArray<Real> history = builder.Fit(&optimizer, sAnsatzFile, uiMaxStep);
     SaveCSVAR(history.GetData(), 1, history.Num(), sHistoryFile);
 }

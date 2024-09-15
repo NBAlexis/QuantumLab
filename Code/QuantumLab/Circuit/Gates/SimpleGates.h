@@ -30,9 +30,25 @@ static inline CCString Binary(UINT num, INT max)
     return sret;
 }
 
-extern QLGate QLAPI CreateZYZGate(const QLMatrix& u, UBOOL bNormalize = TRUE);
+/**
+* U = [u11 u12]
+*     [u21 u22]
+*
+* U = exp(i delta) [ exp(i (alpha+beta)/2) cos(theta/2)  exp(i (alpha-beta)/2) sin(theta/2)] = exp(i delta) Rz(-alpha) Ry(-theta) Rz(-beta)
+*                  [-exp(-i(alpha-beta)/2) sin(theta/2)  exp(-i(alpha+beta)/2) cos(theta/2)]
+*
+* for OpenQASM
+* 
+* 
+* 
+* U(a,b,c)=Rz(b)Ry(a)Rz(c)|psi>, where a=-theta, b=-alpha, c=-beta
+* a,b,c = degree(0), degree(2), degree(1)
+*/
+extern TArray<Real> QLAPI GetZYZDecompose(const QLMatrix& u);
 
-extern QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u, UBOOL bNormalize = TRUE);
+extern QLGate QLAPI CreateZYZGate(const QLMatrix& u);
+
+extern QLGate QLAPI CreateControlledZYZGate(const QLMatrix& u);
 
 extern QLGate QLAPI CreateSwapGate();
 

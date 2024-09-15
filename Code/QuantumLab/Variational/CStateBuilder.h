@@ -18,7 +18,7 @@ class QLAPI CStateBuilder : public CLossFunction
 {
 public:
 
-    CStateBuilder(const QLGate& gateToBuild, Real fGoal = F(0.000001)) : m_GateToBuild(gateToBuild), m_fGoal(fGoal)
+    CStateBuilder(const QLGate& gateToBuild, Real fGoal = F(0.000001), UBOOL bAbsorlute = TRUE) : m_GateToBuild(gateToBuild), m_fGoal(fGoal), m_bMaeOrMse(bAbsorlute)
     {
     }
 
@@ -31,13 +31,14 @@ protected:
     QLGate m_GateToBuild;
     QLMatrix m_StateToFit;
     Real m_fGoal;
+    UBOOL m_bMaeOrMse;
 };
 
-extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
+extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, UINT uiLevel, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bUseAbsorlute);
 
-extern void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits, UINT uiLevel, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bOnlyReal);
+extern void QLAPI FitSE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, BYTE byEncodeQubits, UINT uiLevel, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial, ELinkStyle eSimpleEncodeStyle, ELinkLayer eSimpleencodeLayer, Real fLearnRate, Real fGoal, UINT uiMaxStep, UBOOL bUseAbsorlute);
 
-extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT adaptiveWait, Real fadaptiveEps, UBOOL bOnlyReal);
+extern void QLAPI FitAE(const CCString& sPointFile, const CCString& sAnsatzFile, const CCString& sHistoryFile, ELinkStyle eAnsatzStyle, ESingleLayer eAnsatzSingleLayer, ELinkLayer eAnsatzLayer, EAnsatzInitial eAnsatzInitial, Real fLearnRate, Real fGoal, UINT uiMaxStep, UINT uiMaxLayer, UINT adaptiveWait, Real fadaptiveEps, UBOOL bUseAbsorlute);
 
 __END_NAMESPACE
 

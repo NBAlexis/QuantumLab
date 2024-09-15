@@ -253,11 +253,11 @@ public:
 
     inline void SetFloatFormat(const CCString& sFormat) { m_sFloatFormat = sFormat; }
 
-    static CCString PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length = 0);
+    static CCString PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length = 0, UBOOL bPy = FALSE);
 
-    CCString PrintComplex(Real fReal, Real fImg, UINT length = 0) const
+    CCString PrintComplex(Real fReal, Real fImg, UINT length = 0, UBOOL bPy = FALSE) const
     {
-        return PrintComplex(fReal, fImg, m_sFloatFormat, length);
+        return PrintComplex(fReal, fImg, m_sFloatFormat, length, bPy);
     }
 
     CCString GetFloatFormat() const { return m_sFloatFormat; }
@@ -341,9 +341,9 @@ inline void appSetLogHeader(const CCString& sHeader)
     GTracer.SetLogHeader(sHeader);
 }
 
-inline CCString appPrintComplex(Real fReal, Real fImg, UINT length = 0)
+inline CCString appPrintComplex(Real fReal, Real fImg, UINT length = 0, UBOOL bPy = FALSE)
 {
-    return GTracer.PrintComplex(fReal, fImg, length);
+    return GTracer.PrintComplex(fReal, fImg, length, bPy);
 }
 
 __END_NAMESPACE

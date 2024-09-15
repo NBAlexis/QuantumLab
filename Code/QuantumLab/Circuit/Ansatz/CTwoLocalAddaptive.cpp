@@ -13,8 +13,8 @@
 __BEGIN_NAMESPACE
 
 CTwoLocalAdaptive::CTwoLocalAdaptive(BYTE qubits,
-    ESingleLayer eSingle, ELinkLayer eLinkerLayer, ELinkStyle eLinkStyle)
-    : CTwoLocal(qubits, 0, eSingle, eLinkerLayer, eLinkStyle)
+    ESingleLayer eSingle, ELinkLayer eLinkerLayer, ELinkStyle eLinkStyle, EAnsatzInitial eInitial)
+    : CTwoLocal(qubits, 0, eSingle, eLinkerLayer, eLinkStyle, eInitial)
     , m_uiFixedLayerCount(0)
     , m_uiMaxLayer(100)
 {

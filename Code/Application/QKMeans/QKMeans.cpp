@@ -23,7 +23,7 @@ int main()
     EQKmeansJob eJob = __STRING_TO_ENUM(EQKmeansJob, sValues);
     switch (eJob)
     {
-    case EQKJ_Kmeans:
+    case EQKmeansJob::EQKJ_Kmeans:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("GPUKmeans"), jobparam))
@@ -36,7 +36,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestBuildStateOnce:
+    case EQKmeansJob::EQKJ_TestBuildStateOnce:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("CircuitTestDim"), jobparam))
@@ -49,7 +49,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestBuildStateRandom:
+    case EQKmeansJob::EQKJ_TestBuildStateRandom:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("CircuitTestDim"), jobparam))
@@ -62,7 +62,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestBuildStateFromFile:
+    case EQKmeansJob::EQKJ_TestBuildStateFromFile:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("CircuitTestDim"), jobparam))
@@ -75,46 +75,46 @@ int main()
             }
         }
         break;
-    case EQKJ_TestQKmeans2D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QKMeans2D"), jobparam))
-            {
-                TestKMeans2D(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QKMeans2D not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_TestQKNN2D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QKNN2D"), jobparam))
-            {
-                TestKNN2D(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QKNN2D not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_TestQKNN3D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QKNN3D"), jobparam))
-            {
-                TestKNN3D(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QKNN3D not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_TestFitPointSet:
+    //case EQKJ_TestQKmeans2D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QKMeans2D"), jobparam))
+    //        {
+    //            TestKMeans2D(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QKMeans2D not found!\n"));
+    //        }
+    //    }
+    //    break;
+    //case EQKJ_TestQKNN2D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QKNN2D"), jobparam))
+    //        {
+    //            TestKNN2D(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QKNN2D not found!\n"));
+    //        }
+    //    }
+    //    break;
+    //case EQKJ_TestQKNN3D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QKNN3D"), jobparam))
+    //        {
+    //            TestKNN3D(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QKNN3D not found!\n"));
+    //        }
+    //    }
+    //    break;
+    case EQKmeansJob::EQKJ_TestFitPointSet:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
@@ -127,7 +127,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestFitPointSetSE:
+    case EQKmeansJob::EQKJ_TestFitPointSetSE:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
@@ -140,7 +140,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestFitPointSetAdap:
+    case EQKmeansJob::EQKJ_TestFitPointSetAdap:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("FitWaveFunction"), jobparam))
@@ -153,46 +153,46 @@ int main()
             }
         }
         break;
-    case EQKJ_QAnomaly2D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QAnomaly2D"), jobparam))
-            {
-                QAnomaly2D(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QAnomaly2D not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_QAnomaly3D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QAnomaly3D"), jobparam))
-            {
-                QAnomaly3D(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QAnomaly3D not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_TestQKNNAnsatz2D:
-        {
-            CParameters jobparam;
-            if (params.FetchParameterValue(_T("QKNN2DAnsatz"), jobparam))
-            {
-                TestKNN2DAnsatz(jobparam);
-            }
-            else
-            {
-                appCrucial(_T("QKNN2DAnsatz not found!\n"));
-            }
-        }
-        break;
-    case EQKJ_TestQKNNAnsatz:
+    //case EQKmeansJob::EQKJ_QAnomaly2D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QAnomaly2D"), jobparam))
+    //        {
+    //            QAnomaly2D(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QAnomaly2D not found!\n"));
+    //        }
+    //    }
+    //    break;
+    //case EQKmeansJob::EQKJ_QAnomaly3D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QAnomaly3D"), jobparam))
+    //        {
+    //            QAnomaly3D(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QAnomaly3D not found!\n"));
+    //        }
+    //    }
+    //    break;
+    //case EQKmeansJob::EQKJ_TestQKNNAnsatz2D:
+    //    {
+    //        CParameters jobparam;
+    //        if (params.FetchParameterValue(_T("QKNN2DAnsatz"), jobparam))
+    //        {
+    //            TestKNN2DAnsatz(jobparam);
+    //        }
+    //        else
+    //        {
+    //            appCrucial(_T("QKNN2DAnsatz not found!\n"));
+    //        }
+    //    }
+    //    break;
+    case EQKmeansJob::EQKJ_TestQKNNAnsatz:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
@@ -205,7 +205,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestQKNNAnsatzSE:
+    case EQKmeansJob::EQKJ_TestQKNNAnsatzSE:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
@@ -218,7 +218,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestQKNNAE:
+    case EQKmeansJob::EQKJ_TestQKNNAE:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
@@ -231,7 +231,7 @@ int main()
             }
         }
         break;
-    case EQKJ_TestQKNNSE:
+    case EQKmeansJob::EQKJ_TestQKNNSE:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("QKNNAnsatz"), jobparam))
@@ -244,7 +244,7 @@ int main()
             }
         }
         break;
-    case EQKT_TestSimpleEncode:
+    case EQKmeansJob::EQKT_TestSimpleEncode:
         {
             CParameters jobparam;
             if (params.FetchParameterValue(_T("SimpleEncodeCircuitTest"), jobparam))

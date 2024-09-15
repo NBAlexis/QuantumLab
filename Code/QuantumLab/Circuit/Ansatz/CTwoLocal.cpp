@@ -13,7 +13,7 @@
 __BEGIN_NAMESPACE
 
 CTwoLocal::CTwoLocal(BYTE qubits, UINT uiLayerCount,
-    ESingleLayer eSingle, ELinkLayer eLinkerLayer, ELinkStyle eLinkStyle)
+    ESingleLayer eSingle, ELinkLayer eLinkerLayer, ELinkStyle eLinkStyle, EAnsatzInitial eInitial)
     : CAnsatz(qubits)
     , m_uiLayerCount(uiLayerCount)
     , m_eSingle(eSingle)
@@ -26,10 +26,47 @@ CTwoLocal::CTwoLocal(BYTE qubits, UINT uiLayerCount,
         m_uiParameterCount += ParamForSingle(eSingle) * qubits + ParamForLink(eLinkerLayer) * LinkCount(eLinkStyle, level);
     }
 
-    for (UINT i = 0; i < m_uiParameterCount; ++i)
+    if (EAnsatzInitial::Small == eInitial && ELinkLayer::CRX == eLinkerLayer)
     {
-        m_lstParameters.AddItem(RandomF() * PI * 2);
+        appGeneral(_T("EAnsatzInitial::Small does not support ELinkLayer::CRX, go back to random\n"));
+        eInitial = EAnsatzInitial::Random;
     }
+
+    if (EAnsatzInitial::MBL == eInitial && (ELinkLayer::CRX == eLinkerLayer || ESingleLayer::RY == eSingle || ESingleLayer::RX == eSingle))
+    {
+        appGeneral(_T("EAnsatzInitial::MBL does not support ELinkLayer::CRX or ESingleLayer::RY or ESingleLayer::RX, go back to random\n"));
+        eInitial = EAnsatzInitial::Random;
+    }
+
+    switch (eInitial)
+    {
+    case EAnsatzInitial::Random:
+        appDetailed(_T("initial type: Random\n"));
+        for (UINT i = 0; i < m_uiParameterCount; ++i)
+        {
+            m_lstParameters.AddItem(RandomF() * PI * 2);
+        }
+        break;
+    case EAnsatzInitial::Small:
+        {
+        appDetailed(_T("initial type: Small\n"));
+            const Real upper = PI / (static_cast<Real>(qubits) * static_cast<Real>(m_uiLayerCount));
+            for (UINT i = 0; i < m_uiParameterCount; ++i)
+            {
+                m_lstParameters.AddItem(RandomF() * upper);
+            }
+        }
+        break;
+    case EAnsatzInitial::MBL:
+        appDetailed(_T("initial type: MBL\n"));
+        for (UINT i = 0; i < m_uiParameterCount / 2; ++i)
+        {
+            m_lstParameters.AddItem(RandomF() * F(0.1));
+            m_lstParameters.AddItem(RandomF() * PI * 2 - PI);
+        }
+        break;
+    }
+
 }
 
 void CTwoLocal::AddSingleLayer(const TArray<Real>& params, UINT& paramIndex, QLGate& gate, BYTE qubit) const
@@ -43,12 +80,30 @@ void CTwoLocal::AddSingleLayer(const TArray<Real>& params, UINT& paramIndex, QLG
             ++paramIndex;
         }
         break;
+    case ESingleLayer::RX:
+        {
+            QLGate rx1(EBasicOperation::EBO_RX, params[paramIndex]);
+            gate.AppendGate(rx1, qubit);
+            ++paramIndex;
+        }
+        break;
     case ESingleLayer::RYRZ:
-        QLGate ry2(EBasicOperation::EBO_RY, params[paramIndex]);
-        QLGate rz2(EBasicOperation::EBO_RZ, params[paramIndex + 1]);
-        gate.AppendGate(ry2, qubit);
-        gate.AppendGate(rz2, qubit);
-        paramIndex += 2;
+        {
+            QLGate ry2(EBasicOperation::EBO_RY, params[paramIndex]);
+            QLGate rz2(EBasicOperation::EBO_RZ, params[paramIndex + 1]);
+            gate.AppendGate(ry2, qubit);
+            gate.AppendGate(rz2, qubit);
+            paramIndex += 2;
+        }
+        break;
+    case ESingleLayer::RXRZ:
+        {
+            QLGate rx3(EBasicOperation::EBO_RX, params[paramIndex]);
+            QLGate rz3(EBasicOperation::EBO_RZ, params[paramIndex + 1]);
+            gate.AppendGate(rx3, qubit);
+            gate.AppendGate(rz3, qubit);
+            paramIndex += 2;
+        }
         break;
     }
 }
@@ -141,6 +196,19 @@ void CTwoLocal::AddLinkLayerAll(const TArray<Real>& params, UINT& paramIndex, QL
                 {
                     AddLinkLayer(params, paramIndex, gate, q1, q1 + 1);
                 }
+            }
+        }
+        break;
+    case ELinkStyle::DoublePairWise:
+        {
+            for (BYTE q1 = 1; q1 < m_byQubits - 1; q1 += 2)
+            {
+                AddLinkLayer(params, paramIndex, gate, q1, q1 + 1);
+            }
+
+            for (BYTE q1 = 0; q1 < m_byQubits - 1; q1 += 2)
+            {
+                AddLinkLayer(params, paramIndex, gate, q1, q1 + 1);
             }
         }
         break;

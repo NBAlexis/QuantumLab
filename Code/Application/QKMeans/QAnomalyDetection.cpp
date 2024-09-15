@@ -36,9 +36,9 @@ void TestFitPointSet(CParameters& params)
     __FetchIntWithDefault(_T("MaxStep"), 10000);
     uiMaxStep = static_cast<UINT>(iValues);
 
-    UBOOL bOnlyReal = FALSE;
-    __FetchIntWithDefault(_T("OnlyReal"), 0);
-    bOnlyReal = (0 != iValues);
+    UBOOL bAbsolute = TRUE;
+    __FetchIntWithDefault(_T("UseAbsorlute"), 1);
+    bAbsolute = (0 != iValues);
 
     Real fLearnRate = F(0.001);
     __FetchRealWithDefault(_T("LearnRate"), F(0.001));
@@ -48,9 +48,21 @@ void TestFitPointSet(CParameters& params)
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
 
+    __FetchStringWithDefault(_T("AnsatzStyle"), _T("PairWise"));
+    ELinkStyle ansatzStyle = __STRING_TO_ENUM(ELinkStyle, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzLayer"), _T("CZ"));
+    ELinkLayer ansatzLayer = __STRING_TO_ENUM(ELinkLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzSingleLayer"), _T("RYRZ"));
+    ESingleLayer ansatzSingleLayer = __STRING_TO_ENUM(ESingleLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzInitial"), _T("MBL"));
+    EAnsatzInitial ansatzInital = __STRING_TO_ENUM(EAnsatzInitial, sValues);
+
     CSpliteAngleBufferHelper helper;
 
-    FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
+    FitAE(sTrainingPoints, sAnsatzFile, sHistory, uiLevel, ansatzStyle, ansatzSingleLayer, ansatzLayer, ansatzInital, fLearnRate, fGoal, uiMaxStep, bAbsolute);
 }
 
 void TestFitPointSetSE(CParameters& params)
@@ -83,9 +95,9 @@ void TestFitPointSetSE(CParameters& params)
     __FetchIntWithDefault(_T("MaxStep"), 10000);
     uiMaxStep = static_cast<UINT>(iValues);
 
-    UBOOL bOnlyReal = FALSE;
-    __FetchIntWithDefault(_T("OnlyReal"), 0);
-    bOnlyReal = (0 != iValues);
+    UBOOL bAbsolute = TRUE;
+    __FetchIntWithDefault(_T("UseAbsorlute"), 1);
+    bAbsolute = (0 != iValues);
 
     Real fLearnRate = F(0.001);
     __FetchRealWithDefault(_T("LearnRate"), F(0.001));
@@ -95,9 +107,27 @@ void TestFitPointSetSE(CParameters& params)
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
 
+    __FetchStringWithDefault(_T("AnsatzStyle"), _T("PairWise"));
+    ELinkStyle ansatzStyle = __STRING_TO_ENUM(ELinkStyle, sValues);
+
+    __FetchStringWithDefault(_T("SEStyle"), _T("PairWise"));
+    ELinkStyle simpleencodeStyle = __STRING_TO_ENUM(ELinkStyle, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzLayer"), _T("CZ"));
+    ELinkLayer ansatzLayer = __STRING_TO_ENUM(ELinkLayer, sValues);
+
+    __FetchStringWithDefault(_T("SELayer"), _T("CZ"));
+    ELinkLayer simpleencodeLayer = __STRING_TO_ENUM(ELinkLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzSingleLayer"), _T("RYRZ"));
+    ESingleLayer ansatzSingleLayer = __STRING_TO_ENUM(ESingleLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzInitial"), _T("MBL"));
+    EAnsatzInitial ansatzInital = __STRING_TO_ENUM(EAnsatzInitial, sValues);
+
     CSpliteAngleBufferHelper helper;
 
-    FitSE(sTrainingPoints, sAnsatzFile, sHistory, uiEncodeBits, uiLevel, fLearnRate, fGoal, uiMaxStep, bOnlyReal);
+    FitSE(sTrainingPoints, sAnsatzFile, sHistory, uiEncodeBits, uiLevel, ansatzStyle, ansatzSingleLayer, ansatzLayer, ansatzInital, simpleencodeStyle, simpleencodeLayer, fLearnRate, fGoal, uiMaxStep, bAbsolute);
 }
 
 void TestFitPointSetAdap(CParameters& params)
@@ -130,9 +160,9 @@ void TestFitPointSetAdap(CParameters& params)
     __FetchIntWithDefault(_T("MaxLayer"), 100);
     uiMaxLayer = static_cast<UINT>(iValues);
 
-    UBOOL bOnlyReal = FALSE;
-    __FetchIntWithDefault(_T("OnlyReal"), 0);
-    bOnlyReal = (0 != iValues);
+    UBOOL bAbsolute = TRUE;
+    __FetchIntWithDefault(_T("UseAbsorlute"), 1);
+    bAbsolute = (0 != iValues);
 
     Real fLearnRate = F(0.001);
     __FetchRealWithDefault(_T("LearnRate"), F(0.001));
@@ -146,9 +176,21 @@ void TestFitPointSetAdap(CParameters& params)
     __FetchRealWithDefault(_T("Goal"), F(0.1));
     fGoal = fValues;
 
+    __FetchStringWithDefault(_T("AnsatzStyle"), _T("PairWise"));
+    ELinkStyle ansatzStyle = __STRING_TO_ENUM(ELinkStyle, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzLayer"), _T("CZ"));
+    ELinkLayer ansatzLayer = __STRING_TO_ENUM(ELinkLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzSingleLayer"), _T("RYRZ"));
+    ESingleLayer ansatzSingleLayer = __STRING_TO_ENUM(ESingleLayer, sValues);
+
+    __FetchStringWithDefault(_T("AnsatzInitial"), _T("MBL"));
+    EAnsatzInitial ansatzInital = __STRING_TO_ENUM(EAnsatzInitial, sValues);
+
     CSpliteAngleBufferHelper helper;
 
-    FitAE(sTrainingPoints, sAnsatzFile, sHistory, fLearnRate, fGoal, uiMaxStep, uiMaxLayer, uiAdap, fAdapEps, bOnlyReal);
+    FitAE(sTrainingPoints, sAnsatzFile, sHistory, ansatzStyle, ansatzSingleLayer, ansatzLayer, ansatzInital, fLearnRate, fGoal, uiMaxStep, uiMaxLayer, uiAdap, fAdapEps, bAbsolute);
 }
 
 //=============================================================================

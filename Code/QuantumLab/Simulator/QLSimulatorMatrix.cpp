@@ -21,6 +21,10 @@ void QLSimulatorMatrix::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
         qubits.AddItem(byQ);
     }
     TArray<SBasicOperation> ops = param->m_MasterGate.GetOperation(qubits);
+    if (0 == ops.Num() && param->m_op.Num() > 0)
+    {
+        ops = param->m_op;
+    }
     SIZE_T opssize = ops.Num();
 
     appGeneral(_T("%d gates to apply!!\n"), opssize);
@@ -88,6 +92,36 @@ void QLSimulatorMatrix::Simulate(QLSimulatorParameters * params, QLSimulatorOutp
     {
         outputMatrix->m_OutputMatrix = resmtr;
     }
+}
+
+QLMatrix QLSimulatorMatrix::ShowMatrix(const QLGate& gate)
+{
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = static_cast<BYTE>(gate.m_lstQubits.Num());
+    param.m_MasterGate = gate;
+    param.m_bPrint = FALSE;
+
+    QLSimulatorOutputMatrix output;
+
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    return output.m_OutputMatrix;
+}
+
+QLMatrix QLSimulatorMatrix::ShowMatrix(const TArray<SBasicOperation>& op, BYTE qubit)
+{
+    QLSimulatorParametersMatrix param;
+    param.m_byQubitCount = qubit;
+    param.m_op = op;
+    param.m_bPrint = FALSE;
+
+    QLSimulatorOutputMatrix output;
+
+    QLSimulatorMatrix sim;
+    sim.Simulate(&param, &output);
+
+    return output.m_OutputMatrix;
 }
 
 __END_NAMESPACE

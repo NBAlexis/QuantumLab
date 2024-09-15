@@ -35,6 +35,10 @@ inline THashMap<CCString, INT> appGetEnumTable(const CCString &inGatheredEnum)
     THashMap<CCString, INT> sOutTable;
     for (INT i = 0; i < sEnumArray.Num(); ++i)
     {
+        if (sEnumArray[i].Left(2) == _T("//"))
+        {
+            continue;
+        }
         TArray <INT> inSeps2;
         inSeps2.AddItem(_T('='));
         TArray <CCString> sEnumArray2 = appGetStringList(sEnumArray[i], inSeps2, EGSLF_IgnorTabSpaceInSide | EGSLF_IgnorEmety);
@@ -51,7 +55,7 @@ inline THashMap<CCString, INT> appGetEnumTable(const CCString &inGatheredEnum)
 
 //This is an example
 //enum class can prevent enum convert to int
-enum class Eabc
+enum class Eabc : UINT
 {
     Ex = 0,
     Ey,
@@ -66,6 +70,10 @@ inline CCString appEnumToStringEabc(Eabc v)
     INT iCurrentNum = -1;
     for (INT i = 0; i < sEnumArray.Num(); ++i)
     {
+        if (sEnumArray[i].Left(2) == _T("//"))
+        {
+            continue;
+        }
         TArray <INT> inSeps2;
         inSeps2.AddItem(_T('='));
         TArray <CCString> sEnumArray2 = appGetStringList(sEnumArray[i], inSeps2, EGSLF_IgnorTabSpaceInSide | EGSLF_IgnorEmety);
@@ -104,6 +112,10 @@ __END_NAMESPACE
     INT iCurrentNum = -1; \
     for (INT i = 0; i < sEnumArray.Num(); ++i) \
     { \
+        if (sEnumArray[i].Left(2) == _T("//")) \
+        { \
+            continue; \
+        } \
         TArray <INT> inSeps2; \
         inSeps2.AddItem(_T('=')); \
         TArray <CCString> sEnumArray2 = appGetStringList(sEnumArray[i], inSeps2, EGSLF_IgnorTabSpaceInSide | EGSLF_IgnorEmety); \
@@ -135,7 +147,7 @@ inline enumname appStringToEnum##enumname(const CCString& s) \
 
 
 #define __DEFINE_ENUM(enumname, ...) \
-    enum enumname \
+    enum class enumname : UINT \
     { \
         __VA_ARGS__ \
     }; \

@@ -21,7 +21,8 @@ public:
     CTwoLocalAdaptive(BYTE qubits,
         ESingleLayer eSingle = ESingleLayer::RYRZ, 
         ELinkLayer eLinkerLayer = ELinkLayer::CZ,
-        ELinkStyle eLinkStyle = ELinkStyle::Circular);
+        ELinkStyle eLinkStyle = ELinkStyle::Circular,
+        EAnsatzInitial eInitial = EAnsatzInitial::MBL);
 
     QLGate BuildState(const TArray<Real>& params) const override;
 

@@ -1,19 +1,14 @@
 //=============================================================================
-// FILENAME : SimpleTest.h
+// FILENAME : OpenQASM.h
 // 
 // DESCRIPTION:
 // This is the file for building options
 //
 // REVISION: [dd/mm/yy]
-//  [12/03/2023 nbale]
+//  [28/08/2024 nbale]
 //=============================================================================
 
-#include "QuantumLab.h"
-
-#include "AmplitudeEncodeTest.h"
-#include "SimulatorTest.h"
-#include "OpenQASM.h"
-#include "GateTest.h"
+extern void TestZYZ();
 
 
 //=============================================================================

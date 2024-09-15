@@ -115,7 +115,7 @@ QLAPI void appParanoiac(const TCHAR *format, ...)
     }
 }
 
-CCString CTracer::PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length)
+CCString CTracer::PrintComplex(Real fReal, Real fImg, const CCString& sFloatFormat, UINT length, UBOOL bPy)
 {
     static TCHAR bufferf[256];
     static TCHAR buffer[256];
@@ -123,11 +123,11 @@ CCString CTracer::PrintComplex(Real fReal, Real fImg, const CCString& sFloatForm
     {
         if (fImg > 0)
         {
-            sprintf_(bufferf, 256, "%s + %s I", sFloatFormat.c_str(), sFloatFormat.c_str());
+            sprintf_(bufferf, 256, bPy ? _T("%s + %sj") : _T("%s + %s I"), sFloatFormat.c_str(), sFloatFormat.c_str());
         }
         else
         {
-            sprintf_(bufferf, 256, "%s - %s I", sFloatFormat.c_str(), sFloatFormat.c_str());
+            sprintf_(bufferf, 256, bPy ? _T("%s - %sj") : _T("%s - %s I"), sFloatFormat.c_str(), sFloatFormat.c_str());
         }
         sprintf_(buffer, 256, bufferf, fReal, abs(fImg));
     }

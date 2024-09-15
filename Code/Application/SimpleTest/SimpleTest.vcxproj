@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClCompile Include="AmplitudeEncodeTest.cpp" />
     <ClCompile Include="GateTest.cpp" />
+    <ClCompile Include="OpenQASM.cpp" />
     <ClCompile Include="SimpleTest.cpp" />
     <ClCompile Include="SimulatorTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmplitudeEncodeTest.h" />
     <ClInclude Include="GateTest.h" />
+    <ClInclude Include="OpenQASM.h" />
     <ClInclude Include="SimpleTest.h" />
     <ClInclude Include="SimulatorTest.h" />
   </ItemGroup>
